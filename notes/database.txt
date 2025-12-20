@@ -1,0 +1,64 @@
+Vehicles Table (Master Data)
+Column Name	Type	Description
+vehicle_id	INT (PK)	Unique ID for the vehicle
+number_plate	VARCHAR(20)	Vehicle number plate (unique)
+owner_name	VARCHAR(100)	Name of the owner
+owner_contact	VARCHAR(20)	Phone/email of owner
+owner_address	VARCHAR(255)	Address of the owner
+vehicle_type	VARCHAR(20)	Car, truck, motorcycle, etc.
+model	VARCHAR(50)	Vehicle model
+year_of_manufacture	YEAR	Manufacturing year
+color	VARCHAR(30)	Vehicle color
+engine_type	VARCHAR(50)	Petrol, Diesel, Electric, Hybrid, etc.
+chassis_number	VARCHAR(50)	Unique chassis number
+registration_date	DATETIME	When vehicle was registered
+registration_expiry	DATETIME	Registration expiry date
+credit_score	INT	Owner's credit score (if relevant)
+status	VARCHAR(20)	Active, Stolen, Suspended, etc.
+
+Column Name	Type	Description
+id	INT (PK)	Unique record ID
+vehicle_id	INT (FK)	References Vehicles.vehicle_id
+driver_id	INT (FK)	References Drivers.driver_id
+assigned_from	DATETIME	When the driver started using the vehicle
+assigned_to	DATETIME	When the driver stopped using the vehicle (nullable if current)
+driver_credit_score	INT	Driver’s credit score (default: 100)
+
+
+Traffic Records Table (Updated)
+Column Name	Type	Description
+record_id	INT (PK)	Unique ID for each record
+vehicle_id	INT (FK)	Reference to Vehicles.vehicle_id
+number_plate	VARCHAR(20)	Number plate detected
+location_id	INT (FK)	Reference to camera/location table
+timestamp	DATETIME	When vehicle was detected
+speed	FLOAT	Optional: vehicle speed if measured
+image_url	VARCHAR(255)	Optional: captured image URL
+violation_type	VARCHAR(100)	Type of violation (e.g., speeding, no entry, red light, etc.)
+violation_severity	VARCHAR(20)	Severity level (e.g., minor, major, critical)
+fine_amount	DECIMAL(10,2)	Fine amount for the violation
+violation_status	VARCHAR(20)	Status (e.g., Pending, Paid, Challenged)
+issued_by	VARCHAR(100)	Officer or system that issued the violation
+violation_notes	TEXT	Optional notes/details about the violation
+
+1. Locations Table (Nodes)
+
+Your existing Locations table works as nodes of the graph:
+
+Column Name	Type	Description
+location_id	INT (PK)	Unique ID for camera/location
+location_name	VARCHAR(100)	Name or description of location
+latitude	FLOAT	GPS latitude
+longitude	FLOAT	GPS longitude
+
+2. LocationEdges Table (Edges with Weights)
+
+To represent connections and distances between locations, create an edges table:
+
+Column Name	Type	Description
+edge_id	INT (PK)	Unique ID for the edge
+from_location_id	INT (FK)	Start node (location_id)
+to_location_id	INT (FK)	End node (location_id)
+distance_km	FLOAT	Distance between the two locations (weight)
+travel_time_min	FLOAT	Optional: estimated travel time
+bidirectional	BOOLEAN	True if the road goes both ways
