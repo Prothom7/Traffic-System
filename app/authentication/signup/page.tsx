@@ -1,31 +1,39 @@
 'use client';
-
 import React, { useEffect, useState } from "react";
-import styles from './signin.module.css';
+import styles from './signup.module.css';
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function SignupPage() {
     const [user, setUser] = useState({
+        username: "",
         email: "",
-        password: "",
+        password: ""
     });
 
     const [buttonDisabled, setButtonDisabled] = useState(true);
 
     useEffect(() => {
-        setButtonDisabled(!(user.email && user.password));
+        setButtonDisabled(!(user.username && user.email && user.password));
     }, [user]);
 
-    const onLogin = (e: React.FormEvent) => {
+    const onSignup = (e: React.FormEvent) => {
         e.preventDefault();
-        alert(`Email: ${user.email}\nPassword: ${user.password}`);
+        alert(`Username: ${user.username}\nEmail: ${user.email}\nPassword: ${user.password}`);
     };
 
     return (
         <div className={styles.fullpage}>
             <div className={styles.container}>
-                <h2 className={styles.title}>Sign in</h2>
-                <form onSubmit={onLogin} className={styles.form}>
+                <h2 className={styles.title}>Sign Up</h2>
+                <form onSubmit={onSignup} className={styles.form}>
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={user.username}
+                        onChange={(e) => setUser({ ...user, username: e.target.value })}
+                        className={styles.input}
+                        required
+                    />
                     <input
                         type="email"
                         placeholder="Email"
@@ -47,10 +55,10 @@ export default function LoginPage() {
                         className={styles.button}
                         disabled={buttonDisabled}
                     >
-                        {buttonDisabled ? "Fill all fields" : "Log In"}
+                        {buttonDisabled ? "Fill all fields" : "Sign Up"}
                     </button>
-                    <Link href="/authentication/signup" className={styles.link}>
-                        Don't have an account?
+                    <Link href="/authentication/signin" className={styles.link}>
+                        Already have an account?
                     </Link>
                 </form>
             </div>
