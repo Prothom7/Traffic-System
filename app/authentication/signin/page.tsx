@@ -49,8 +49,11 @@ export default function LoginPage() {
                     >
                         {buttonDisabled ? "Fill all fields" : "Log In"}
                     </button>
-                    <Link href="/authentication/signup" className={styles.link}>
-                        Don't have an account?
+                    <Link href="/authentication/signup/vehicle" className={styles.link}>
+                        Register Vehicle
+                    </Link>
+                    <Link href="/authentication/signup/driver" className={styles.link}>
+                        Register Driver
                     </Link>
                 </form>
             </div>
