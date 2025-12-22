@@ -1,0 +1,23 @@
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+
+const ViolationSchema = new Schema({
+  type: { type: String },
+  severity: { type: String },
+  fine_amount: { type: Number, default: 0 },
+  status: { type: String, default: 'Pending' },
+  issued_by: { type: String },
+  notes: { type: String }
+});
+
+const TrafficRecordSchema = new Schema({
+  vehicle_id: { type: Schema.Types.ObjectId, ref: 'Vehicle', required: true },
+  number_plate: { type: String },
+  location_id: { type: Schema.Types.ObjectId, ref: 'Location' },
+  timestamp: { type: Date, default: Date.now },
+  speed: { type: Number },
+  image_url: { type: String },
+  violation: ViolationSchema
+});
+
+module.exports = mongoose.model('TrafficRecord', TrafficRecordSchema);

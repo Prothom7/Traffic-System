@@ -1,0 +1,147 @@
+.fullpage {
+  min-height: 100vh;
+  width: 100%;
+  background-image: url("/image/admin_background.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.92);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: 0.03em;
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 160px 20px 40px;
+  padding: 40px 32px;
+  background-color: rgba(255, 255, 255, 0.96);
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(8px);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #111;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #444;
+  max-width: 720px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.primaryButton {
+  background-color: #111;
+  color: #fff;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.secondaryButton {
+  background-color: transparent;
+  color: #111;
+  border: 2px solid #111;
+  padding: 12px 26px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.secondaryButton:hover {
+  background-color: #111;
+  color: #fff;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    margin: 140px 16px 32px;
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.8rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.6rem;
+  }
+}
