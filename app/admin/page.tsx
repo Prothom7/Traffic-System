@@ -1,21 +1,36 @@
 'use client';
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import styles from "./admin.module.css";
 
 export default function AdminDashboard() {
+   const router = useRouter();
   return (
     <div className={styles.fullpage}>
-      <header className={styles.header}>
+            <header className={styles.header}>
         <h1 className={styles.title}>Admin Dashboard</h1>
+
         <nav className={styles.nav}>
-          <button className={styles.navButton}>Vehicles</button>
-          <button className={styles.navButton}>Drivers</button>
-          <button className={styles.navButton}>Driver Assignments</button>
-          <button className={styles.navButton}>Camera Locations</button>
-          <button className={styles.navButton}>Traffic Records</button>
-          <button className={styles.navButton}>Violations</button>
-          <button className={styles.navButton}>Simulate Violation</button> 
+          <button onClick={() => router.push('/admin')} className={styles.navButton}>
+            Camera Locations
+          </button>
+
+          <button onClick={() => router.push('/admin/vehicles')} className={styles.navButton}>
+            Vehicles
+          </button>
+
+          <button onClick={() => router.push('/admin/traffic-records')} className={styles.navButton}>
+            Traffic Records
+          </button>
+
+          <button onClick={() => router.push('/admin/violations')} className={styles.navButton}>
+            Violations
+          </button>
+
+          <button className={styles.navButton}>
+            Simulate Violation
+          </button>
         </nav>
       </header>
 
