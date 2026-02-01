@@ -3,19 +3,25 @@ import { NextRequest, NextResponse } from "next/server";
 import Vehicle from "@/models/vehicleModel";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/helpers/jwtToken";
+import { connect } from "@/dbConnection/dbConnection";
 
 export async function POST(request: NextRequest) {
   try {
+    await connect();
     const body = await request.json();
     const { email, password } = body;
 
     if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email and password are required" },
+        { status: 400 },
+      );
     }
 
-    await Vehicle.db; // ensure Mongoose connected (or use your connect function)
 
-    const vehicle = await Vehicle.findOne({ owner_email: email }).select("+password");
+    const vehicle = await Vehicle.findOne({ owner_email: email }).select(
+      "+password",
+    );
     if (!vehicle) {
       return NextResponse.json({ error: "Account not found" }, { status: 404 });
     }
@@ -27,7 +33,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!vehicle.isVerified) {
-      return NextResponse.json({ error: "Email not verified" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email not verified" },
+        { status: 400 },
+      );
     }
 
     // Generate JWT token
@@ -38,7 +47,7 @@ export async function POST(request: NextRequest) {
       name: vehicle.owner_name,
     });
 
-    return NextResponse.json({ success: true, token });
+    return NextResponse.json({ success: true, token,name: vehicle.owner_name });
   } catch (err: any) {
     console.error("Signin error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });

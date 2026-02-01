@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState } from "react";
-import styles from './signin.module.css';
+import styles from "./signin.module.css";
 import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -25,8 +25,10 @@ export default function LoginPage() {
 
       if (res.data.success && res.data.token) {
         toast.success("Logged in successfully!");
-        // Save token in localStorage
+
         localStorage.setItem("authToken", res.data.token);
+        localStorage.setItem("authName", res.data.name || "User");
+
         router.push("/dashboard");
       }
     } catch (error: any) {
@@ -44,7 +46,9 @@ export default function LoginPage() {
   return (
     <div className={styles.fullpage}>
       <div className={styles.container}>
-        <h2 className={styles.title}>{loading ? "Signing in..." : "Sign in"}</h2>
+        <h2 className={styles.title}>
+          {loading ? "Signing in..." : "Sign in"}
+        </h2>
         <form onSubmit={onLogin} className={styles.form}>
           <input
             type="email"
@@ -67,7 +71,11 @@ export default function LoginPage() {
             className={styles.button}
             disabled={buttonDisabled || loading}
           >
-            {buttonDisabled ? "Fill all fields" : loading ? "Logging in..." : "Log In"}
+            {buttonDisabled
+              ? "Fill all fields"
+              : loading
+                ? "Logging in..."
+                : "Log In"}
           </button>
 
           <Link href="/authentication/signup/vehicle" className={styles.link}>
