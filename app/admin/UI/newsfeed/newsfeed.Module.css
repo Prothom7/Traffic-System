@@ -1,0 +1,113 @@
+/* File: app/admin/UI/newsfeed/newsfeed.module.css */
+
+.container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f5f6fa;
+}
+
+/* Page heading */
+.pageTitle {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #0a3161;
+}
+
+/* News Feed Section */
+.newsFeedSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Individual News Card */
+.newsCard {
+  display: flex;
+  flex-direction: row;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.newsCard:hover {
+  transform: translateX(5px);
+}
+
+.newsImage {
+  width: 150px;
+  object-fit: cover;
+}
+
+.newsContent {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.newsContent h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #0a3161;
+}
+
+.newsContent p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.newsMeta {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Load More Button */
+.loadMoreButton {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #0a3161;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: fit-content;
+  transition: background-color 0.2s;
+}
+
+.loadMoreButton:hover {
+  background-color: #072249;
+}
+
+/* Form for adding news (optional for admin page) */
+.newsForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.newsForm input,
+.newsForm textarea {
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.newsForm button {
+  width: fit-content;
+  padding: 8px 16px;
+  background-color: #0a3161;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.newsForm button:hover {
+  background-color: #072249;
+}

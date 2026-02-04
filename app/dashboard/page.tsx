@@ -11,12 +11,25 @@ interface CarouselImage {
   description?: string;
 }
 
+interface NewsItem {
+  _id: string;
+  title: string;
+  description: string;
+  imageUrl?: string;
+  source?: string;
+  category?: string;
+  readingTime?: string;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const [userName, setUserName] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+
   const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([]);
+  const [newsFeed, setNewsFeed] = useState<NewsItem[]>([]);
+  const [visibleCount, setVisibleCount] = useState(2);
 
   // ✅ Check authentication on mount
   useEffect(() => {
@@ -33,7 +46,7 @@ export default function DashboardPage() {
 
   // ✅ Fetch carousel images from API
   useEffect(() => {
-    const fetchImages = async () => {
+    const fetchCarousel = async () => {
       try {
         const res = await fetch("/api/dashboard/carousel");
         const data = await res.json();
@@ -44,7 +57,23 @@ export default function DashboardPage() {
         console.error("Failed to fetch carousel images", err);
       }
     };
-    fetchImages();
+    fetchCarousel();
+  }, []);
+
+  // ✅ Fetch news feed from API
+  useEffect(() => {
+    const fetchNewsFeed = async () => {
+      try {
+        const res = await fetch("/api/dashboard/newsfeed");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          setNewsFeed(data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch news feed", err);
+      }
+    };
+    fetchNewsFeed();
   }, []);
 
   // ✅ Auto-slide carousel safely
@@ -65,6 +94,13 @@ export default function DashboardPage() {
     localStorage.removeItem("authToken");
     localStorage.removeItem("authName");
     router.push("/authentication/signin");
+  };
+
+  // ✅ Load more news
+  const loadMoreNews = () => {
+    setVisibleCount((prev) =>
+      prev + 2 > newsFeed.length ? newsFeed.length : prev + 2
+    );
   };
 
   if (!mounted) return null;
@@ -121,22 +157,35 @@ export default function DashboardPage() {
           Official vehicle and transportation management dashboard
         </p>
 
-        <div className={styles.cards}>
-          <div className={styles.card}>
-            <h2>Registered Vehicles</h2>
-            <p className={styles.stat}>09</p>
-          </div>
-
-          <div className={styles.card}>
-            <h2>Active Status</h2>
-            <p className={styles.statGreen}>Verified</p>
-          </div>
-
-          <div className={styles.card}>
-            <h2>Pending Actions</h2>
-            <p className={styles.statWarning}>1</p>
-          </div>
-        </div>
+        {/* 🔹 News Feed */}
+        <section className={styles.newsFeed}>
+          <h2>Latest News & Updates</h2>
+          {newsFeed.slice(0, visibleCount).map((news) => (
+            <div key={news._id} className={styles.newsCard}>
+              {news.imageUrl && (
+                <img
+                  src={news.imageUrl}
+                  alt={news.title}
+                  className={styles.newsImage}
+                />
+              )}
+              <div className={styles.newsContent}>
+                <h3>{news.title}</h3>
+                <p>{news.description}</p>
+                <div className={styles.newsMeta}>
+                  {news.source && <span>{news.source}</span>}
+                  {news.category && <span> | {news.category}</span>}
+                  {news.readingTime && <span> | {news.readingTime}</span>}
+                </div>
+              </div>
+            </div>
+          ))}
+          {visibleCount < newsFeed.length && (
+            <button className={styles.loadMoreButton} onClick={loadMoreNews}>
+              … Load More
+            </button>
+          )}
+        </section>
       </main>
     </div>
   );

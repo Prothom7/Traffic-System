@@ -17,9 +17,9 @@ export default function AdminUIPage() {
         <div className={styles.buttonGrid}>
           <button
             className={styles.uiButton}
-            onClick={() => router.push("/admin/UI/newsletter")}
+            onClick={() => router.push("/admin/UI/newsfeed")}
           >
-            Newsletter
+            Newsfeed
           </button>
 
           <button
