@@ -1,0 +1,42 @@
+.fullpage {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f5f6fa;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.title {
+  font-size: 28px;
+  color: #0a3161;
+  font-weight: bold;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.buttonGrid {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.uiButton {
+  padding: 20px 40px;
+  background-color: #0a3161;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.2s;
+}
+
+.uiButton:hover {
+  background-color: #06305a;
+}

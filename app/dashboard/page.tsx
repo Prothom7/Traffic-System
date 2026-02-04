@@ -18,6 +18,7 @@ export default function DashboardPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([]);
 
+  // ✅ Check authentication on mount
   useEffect(() => {
     setMounted(true);
     const token = localStorage.getItem("authToken");
@@ -30,12 +31,15 @@ export default function DashboardPage() {
     }
   }, [router]);
 
+  // ✅ Fetch carousel images from API
   useEffect(() => {
     const fetchImages = async () => {
       try {
         const res = await fetch("/api/dashboard/carousel");
         const data = await res.json();
-        if (data.success) setCarouselImages(data.images);
+        if (data.success && Array.isArray(data.data)) {
+          setCarouselImages(data.data);
+        }
       } catch (err) {
         console.error("Failed to fetch carousel images", err);
       }
@@ -43,8 +47,9 @@ export default function DashboardPage() {
     fetchImages();
   }, []);
 
+  // ✅ Auto-slide carousel safely
   useEffect(() => {
-    if (carouselImages.length === 0) return;
+    if (!carouselImages || carouselImages.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) =>
@@ -53,8 +58,9 @@ export default function DashboardPage() {
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [carouselImages.length]);
+  }, [carouselImages]);
 
+  // ✅ Logout
   const logout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("authName");
@@ -65,6 +71,7 @@ export default function DashboardPage() {
 
   return (
     <div className={styles.container}>
+      {/* Top Header */}
       <header className={styles.topbar}>
         <div className={styles.logo}>National Transportation Portal</div>
         <button className={styles.logoutButton} onClick={logout}>
@@ -72,6 +79,7 @@ export default function DashboardPage() {
         </button>
       </header>
 
+      {/* Top Navigation */}
       <nav className={styles.navBar}>
         <ul>
           <li className={styles.active}>Dashboard</li>
@@ -96,9 +104,9 @@ export default function DashboardPage() {
               alt={item.title || "Carousel image"}
               className={styles.carouselImage}
             />
-            {item.title && (
+            {(item.title || item.description) && (
               <div className={styles.carouselCaption}>
-                <h2>{item.title}</h2>
+                {item.title && <h2>{item.title}</h2>}
                 {item.description && <p>{item.description}</p>}
               </div>
             )}
@@ -106,11 +114,29 @@ export default function DashboardPage() {
         ))}
       </section>
 
+      {/* Main Content */}
       <main className={styles.main}>
         <h1>Welcome, {userName}</h1>
         <p className={styles.subtitle}>
           Official vehicle and transportation management dashboard
         </p>
+
+        <div className={styles.cards}>
+          <div className={styles.card}>
+            <h2>Registered Vehicles</h2>
+            <p className={styles.stat}>09</p>
+          </div>
+
+          <div className={styles.card}>
+            <h2>Active Status</h2>
+            <p className={styles.statGreen}>Verified</p>
+          </div>
+
+          <div className={styles.card}>
+            <h2>Pending Actions</h2>
+            <p className={styles.statWarning}>1</p>
+          </div>
+        </div>
       </main>
     </div>
   );
