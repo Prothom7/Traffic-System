@@ -12,22 +12,16 @@ export interface JWTTokenPayload {
   exp?: number;
 }
 
-/**
- * Sign a JWT token safely
- */
 export function signToken(
   payload: JWTTokenPayload,
-  expiresIn: string = "1h" // can be "1h", "24h", "7d", etc.
+  expiresIn: string = "1h" 
 ): string {
   const options: SignOptions = {
-    expiresIn: expiresIn as any, // cast to any to satisfy TS
+    expiresIn: expiresIn as any, 
   };
   return jwt.sign(payload as object, JWT_SECRET, options);
 }
 
-/**
- * Decode a JWT token safely
- */
 export function decodeJWTToken(token: string): JWTTokenPayload | null {
   try {
     return jwt.verify(token, JWT_SECRET) as JWTTokenPayload;

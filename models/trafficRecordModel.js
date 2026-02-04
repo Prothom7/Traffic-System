@@ -21,7 +21,6 @@ const TrafficRecordSchema = new Schema({
   violation: ViolationSchema,
 });
 
-// ✅ Use existing model if already compiled
 const TrafficRecord = mongoose.models.TrafficRecord || mongoose.model("TrafficRecord", TrafficRecordSchema);
 
 export default TrafficRecord;

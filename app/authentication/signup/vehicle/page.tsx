@@ -29,7 +29,6 @@ export default function VehicleSignupPage() {
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  // Enable submit only when all fields are filled
   useEffect(() => {
     const allFilled = Object.values(vehicle).every((v) => v !== "");
     setButtonDisabled(!allFilled);

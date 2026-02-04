@@ -4,15 +4,24 @@ import React, { useEffect, useState } from "react";
 import styles from "./dashboard.module.css";
 import { useRouter } from "next/navigation";
 
+interface CarouselImage {
+  _id: string;
+  imageUrl: string;
+  title?: string;
+  description?: string;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const [userName, setUserName] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([]);
 
   useEffect(() => {
-    setMounted(true); // ensure we are on client
+    setMounted(true);
     const token = localStorage.getItem("authToken");
-    const name = localStorage.getItem("authName") || "User"; // fallback
+    const name = localStorage.getItem("authName") || "Vehicle Owner";
 
     if (!token) {
       router.push("/authentication/signin");
@@ -20,6 +29,31 @@ export default function DashboardPage() {
       setUserName(name);
     }
   }, [router]);
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const res = await fetch("/api/dashboard/carousel");
+        const data = await res.json();
+        if (data.success) setCarouselImages(data.images);
+      } catch (err) {
+        console.error("Failed to fetch carousel images", err);
+      }
+    };
+    fetchImages();
+  }, []);
+
+  useEffect(() => {
+    if (carouselImages.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) =>
+        prev === carouselImages.length - 1 ? 0 : prev + 1
+      );
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [carouselImages.length]);
 
   const logout = () => {
     localStorage.removeItem("authToken");
@@ -30,13 +64,54 @@ export default function DashboardPage() {
   if (!mounted) return null;
 
   return (
-    <div className={styles.dashboardPage}>
-      <header className={styles.header}>
-        <h1>Welcome, {userName}!</h1>
+    <div className={styles.container}>
+      <header className={styles.topbar}>
+        <div className={styles.logo}>National Transportation Portal</div>
         <button className={styles.logoutButton} onClick={logout}>
           Logout
         </button>
       </header>
+
+      <nav className={styles.navBar}>
+        <ul>
+          <li className={styles.active}>Dashboard</li>
+          <li>My Vehicles</li>
+          <li>Registrations</li>
+          <li>Reports</li>
+          <li>Profile</li>
+        </ul>
+      </nav>
+
+      {/* Carousel */}
+      <section className={styles.carousel}>
+        {carouselImages.map((item, index) => (
+          <div
+            key={item._id}
+            className={`${styles.carouselSlide} ${
+              index === currentSlide ? styles.active : ""
+            }`}
+          >
+            <img
+              src={item.imageUrl}
+              alt={item.title || "Carousel image"}
+              className={styles.carouselImage}
+            />
+            {item.title && (
+              <div className={styles.carouselCaption}>
+                <h2>{item.title}</h2>
+                {item.description && <p>{item.description}</p>}
+              </div>
+            )}
+          </div>
+        ))}
+      </section>
+
+      <main className={styles.main}>
+        <h1>Welcome, {userName}</h1>
+        <p className={styles.subtitle}>
+          Official vehicle and transportation management dashboard
+        </p>
+      </main>
     </div>
   );
 }

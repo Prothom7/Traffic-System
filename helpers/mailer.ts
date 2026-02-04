@@ -1,61 +1,60 @@
 import nodemailer from "nodemailer";
 
-interface SendEmailProps {
+export interface SendEmailProp {
   email: string;
-  emailType: "VERIFY";
-  token: string; // always plain token
-  userId?: string;
+  emailType: "VERIFY" | "RESET";
+  token: string;
+  vehicleId: string; 
 }
 
-export const sendEmail = async ({ email, emailType, token }: SendEmailProps) => {
+export const sendEmail = async ({
+  email,
+  emailType,
+  token,
+  vehicleId,
+}: SendEmailProp) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: process.env.MAILTRAP_HOST,
-      port: Number(process.env.MAILTRAP_PORT),
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      secure: false,
       auth: {
-        user: process.env.MAILTRAP_USER,
-        pass: process.env.MAILTRAP_PASS,
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
       },
     });
 
-    // Verification link
-    const verifyUrl =
-      emailType === "VERIFY"
-        ? `${process.env.DOMAIN}/api/authentication/verifyemail?token=${token}`
-        : "";
+    let subject = "";
+    let html = "";
 
-    const mailOptions = {
-      from: `"Website" <${process.env.EMAIL_FROM}>`,
+    if (emailType === "VERIFY") {
+      subject = "Verify your vehicle registration";
+      html = `
+        <p>Please verify your vehicle registration</p>
+        <a href="${process.env.DOMAIN}/verify?token=${token}&id=${vehicleId}">
+          Click here to verify
+        </a>
+      `;
+    }
+
+    if (emailType === "RESET") {
+      subject = "Reset your password";
+      html = `
+        <p>Reset your password</p>
+        <a href="${process.env.DOMAIN}/reset-password?token=${token}&id=${vehicleId}">
+          Click here to reset password
+        </a>
+      `;
+    }
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM,
       to: email,
-      subject: "Verify Your Email",
-      html: `
-        <div style="font-family: Arial, sans-serif; line-height:1.6">
-          <h2>Verify Your Email</h2>
-          <p>Click the button below to complete verification:</p>
-          <a href="${verifyUrl}"
-            style="
-              display:inline-block;
-              padding:10px 16px;
-              background:#2563eb;
-              color:#fff;
-              text-decoration:none;
-              border-radius:6px;
-            "
-          >Verify Now</a>
-          <p style="margin-top:20px;font-size:12px;color:#666">
-            This link will expire in 1 hour.
-          </p>
-        </div>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    console.log("✅ Mail sent via Mailtrap");
-
-    return true;
-  } catch (error: any) {
-    console.error("Mailer error:", error);
+      subject,
+      html,
+    });
+  } catch (error) {
+    console.error("Send email error:", error);
     throw new Error("Email could not be sent");
   }
 };
