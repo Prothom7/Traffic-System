@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Vehicle from "@/models/vehicleModel";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/helpers/jwtToken";
+import { connect } from "@/dbConnection/dbConnection";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,12 +11,16 @@ export async function POST(request: NextRequest) {
     const { email, password } = body;
 
     if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email and password are required" },
+        { status: 400 },
+      );
     }
+    await connect();
 
-    await Vehicle.db; 
-
-    const vehicle = await Vehicle.findOne({ owner_email: email }).select("+password");
+    const vehicle = await Vehicle.findOne({ owner_email: email }).select(
+      "+password",
+    );
     if (!vehicle) {
       return NextResponse.json({ error: "Account not found" }, { status: 404 });
     }
@@ -26,7 +31,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!vehicle.isVerified) {
-      return NextResponse.json({ error: "Email not verified" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email not verified" },
+        { status: 400 },
+      );
     }
 
     const token = signToken({
