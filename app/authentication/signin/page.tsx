@@ -26,7 +26,7 @@ export default function LoginPage() {
       if (res.data.success && res.data.token) {
         toast.success("Logged in successfully!");
         localStorage.setItem("authToken", res.data.token);
-        router.push("/dashboard");
+        router.push("/explore");
       }
     } catch (error: any) {
       if (error.response?.data?.error === "Email not verified") {

@@ -144,7 +144,7 @@ export default function ExplorePage() {
           <div className={styles.infoCardWithImage}>
             <div className={styles.infoImageContainer}>
               <img
-                src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=600&h=400&fit=crop"
+                src="https://relianceinternational.com.bd/wp-content/uploads/2022/07/visa-cover.jpg"
                 alt="Vehicle Registration"
                 className={styles.infoImage}
               />
@@ -169,7 +169,7 @@ export default function ExplorePage() {
           <div className={`${styles.infoCardWithImage} ${styles.reverse}`}>
             <div className={styles.infoImageContainer}>
               <img
-                src="https://images.unsplash.com/photo-1593642532400-2682810df593?w=600&h=400&fit=crop"
+                src="https://ida-wp.nyc3.digitaloceanspaces.com/wp-content/uploads/2024/05/18152428/01995680aee08bf69b42e9e9bdddda46.webp"
                 alt="Traffic Laws"
                 className={styles.infoImage}
               />
@@ -194,7 +194,7 @@ export default function ExplorePage() {
           <div className={styles.infoCardWithImage}>
             <div className={styles.infoImageContainer}>
               <img
-                src="https://images.unsplash.com/photo-1569098644584-210bcd375b59?w=600&h=400&fit=crop"
+                src="https://media.licdn.com/dms/image/v2/D4D12AQFDvhSDqa5OOw/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1685121284556?e=2147483647&v=beta&t=GNqvFA10bBpgImTWcjco1MZ-QH8LZVpGwpl1Cpmlz-0"
                 alt="Safety Programs"
                 className={styles.infoImage}
               />
@@ -218,7 +218,7 @@ export default function ExplorePage() {
           <div className={`${styles.infoCardWithImage} ${styles.reverse}`}>
             <div className={styles.infoImageContainer}>
               <img
-                src="https://images.unsplash.com/photo-1486299267070-83823f5448dd?w=600&h=400&fit=crop"
+                src="https://www.theigc.org/sites/default/files/2016/01/Fig4-1-e1453725451466.png"
                 alt="Traffic Statistics"
                 className={styles.infoImage}
               />
