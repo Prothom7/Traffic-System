@@ -42,40 +42,47 @@ export default function LoginPage() {
 
   return (
     <div className={styles.fullpage}>
-      <div className={styles.container}>
-        <h2 className={styles.title}>{loading ? "Signing in..." : "Sign in"}</h2>
-        <form onSubmit={onLogin} className={styles.form}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={user.email}
-            onChange={(e) => setUser({ ...user, email: e.target.value })}
-            className={styles.input}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={user.password}
-            onChange={(e) => setUser({ ...user, password: e.target.value })}
-            className={styles.input}
-            required
-          />
-          <button
-            type="submit"
-            className={styles.button}
-            disabled={buttonDisabled || loading}
-          >
-            {buttonDisabled ? "Fill all fields" : loading ? "Logging in..." : "Log In"}
-          </button>
+      {/* Top header */}
+      <header className={styles.header}>Traffic System</header>
 
-          <Link href="/authentication/signup/vehicle" className={styles.link}>
-            Register Vehicle
-          </Link>
-          <Link href="/authentication/signup/driver" className={styles.link}>
-            Register Driver
-          </Link>
-        </form>
+      {/* Main content */}
+      <div className={styles.main}>
+        <div className={styles.welcome}>
+          Welcome to Traffic System
+        </div>
+
+        <div className={styles.container}>
+          <h2 className={styles.title}>{loading ? "Signing in..." : "Sign in"}</h2>
+          <form onSubmit={onLogin} className={styles.form}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={user.email}
+              onChange={(e) => setUser({ ...user, email: e.target.value })}
+              className={styles.input}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={user.password}
+              onChange={(e) => setUser({ ...user, password: e.target.value })}
+              className={styles.input}
+              required
+            />
+            <button
+              type="submit"
+              className={styles.button}
+              disabled={buttonDisabled || loading}
+            >
+              {buttonDisabled ? "Fill all fields" : loading ? "Logging in..." : "Log In"}
+            </button>
+
+            <Link href="/authentication/signup/vehicle" className={styles.link}>
+              Register 
+            </Link>
+          </form>
+        </div>
       </div>
     </div>
   );

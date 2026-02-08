@@ -1,68 +1,133 @@
-.container {
-  width: 95%;
-  max-width: 650px;
-  margin: 0 auto;                 
-  padding: 20px;                 
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
+/* Full page layout */
 .fullpage {
-  min-height: 100vh;              
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;               
+  justify-content: center;   /* center horizontally */
+  align-items: center;       /* center vertically */
+  margin: 0;
+  font-family: 'Montserrat', sans-serif; /* modern clean font */
+  background-image: url('/source/signup.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;           /* prevent fullpage overflow */
 }
 
+/* Header at top - semi-transparent full width */
+.header {
+  position: fixed;                 
+  top: 0;                          
+  left: 0;                         
+  width: 100%;                     
+  padding: 20px 40px;
+  font-size: 26px;                 
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif; 
+  text-align: left;
+  background-color: rgba(0, 0, 0, 0.3); /* semi-transparent black */
+  color: #fff;                     
+  box-sizing: border-box;
+  letter-spacing: 1px;             
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5); 
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+  z-index: 1000;                   
+  backdrop-filter: blur(5px);      /* optional: soft glass effect */
+}
+
+
+/* Container - centered, scrollable, responsive */
+.container {
+  max-height: 80vh;               /* max height relative to viewport */
+  width: clamp(280px, 90%, 900px); 
+  padding: clamp(30px, 4%, 50px) clamp(25px, 4%, 45px); /* top-bottom + left-right padding */
+  background-color: rgba(0,0,0,0.6);
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  color: #fff;
+  box-sizing: border-box;
+  overflow-y: auto;               /* scroll wheel if content exceeds container height */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Optional scrollbar styling */
+.container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background-color: rgba(128, 128, 128, 0.6);
+  border-radius: 4px;
+}
+
+.container::-webkit-scrollbar-track {
+  background-color: rgba(255,255,255,0.05);
+}
+
+/* Login box title */
 .title {
-  font-size: 22px;                
-  margin-bottom: 12px;
-  color: #333;
-  font-family: Arial, Helvetica, sans-serif;
+  font-size: 28px;           
+  font-weight: 700;          
+  color: #fff;               
+  margin-bottom: 25px;       
+  padding: 10px 15px;        
+  text-align: center;        
+  letter-spacing: 1px;       
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.5); 
+  border-radius: 6px;        
+  transition: color 0.3s ease, transform 0.3s ease; 
 }
 
+/* Form elements */
 .form {
   display: flex;
   flex-direction: column;
-  gap: 10px;                      
+  gap: 18px; 
 }
 
 .input {
   width: 100%;
-  padding: 8px 10px;             
-  font-size: 14px;
-  background-color: #111;
-  color: #ffffff;                 
-  border: 1px solid #444;
-  border-radius: 6px;
+  padding: 14px;
+  font-size: 17px;
+  border: 1px solid #888;
+  border-radius: 10px;
   outline: none;
-}
-
-.input:focus {
-  border-color: #0070f3;
+  background-color: rgba(255,255,255,0.1);
+  color: #fff;
+  transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.2s ease;
 }
 
 .input::placeholder {
-  color: #9ca3af;                
+  color: #ccc;
   opacity: 1;
 }
 
+.input:focus {
+  border-color: #00aaff;
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.02);
+}
+
+/* Buttons */
 .button {
-  padding: 10px;
-  font-size: 14px;
+  padding: 14px;
+  font-size: 17px;
+  font-weight: 600;
   background-color: #0070f3;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .button:hover {
   background-color: #005bb5;
+  transform: scale(1.03);
 }
 
 .button:disabled {
@@ -70,16 +135,72 @@
   cursor: not-allowed;
 }
 
+/* Link */
 .link {
-  margin-top: 8px;                
+  margin-top: 6px;
   display: inline-block;
-  color: #0070f3;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: #00aaff;
   text-decoration: none;
-  font-size: 13px;
-  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease, transform 0.2s ease;
 }
 
 .link:hover {
-  color: #005bb5;
+  color: #0088cc;
   text-decoration: underline;
+  transform: translateY(-1px);
+}
+
+/* Responsive design */
+@media (max-width: 900px) {
+  .container {
+    width: 90%;
+    padding: 25px;
+  }
+
+  .title {
+    font-size: clamp(18px, 3vw, 24px);
+  }
+
+  .input {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .button {
+    font-size: 15px;
+    padding: 12px;
+  }
+
+  .link {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 500px) {
+  .container {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .title {
+    font-size: clamp(16px, 4vw, 20px);
+  }
+
+  .input {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .button {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .link {
+    font-size: 14px;
+  }
 }
