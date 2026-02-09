@@ -1,5 +1,4 @@
-// File: models/carouselModel.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const carouselSchema = new mongoose.Schema(
   {
@@ -15,11 +14,8 @@ const carouselSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
 );
 
-const Carousel =
-  mongoose.models.Carousel || mongoose.model("Carousel", carouselSchema);
-
-module.exports = Carousel;
+export default mongoose.models.Carousel || mongoose.model("Carousel", carouselSchema);
