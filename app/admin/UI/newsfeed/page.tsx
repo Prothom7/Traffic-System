@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./newsfeed.module.css";
 import { useRouter } from "next/navigation";
+import AdminHeader from "../../adminHeader";
 
 interface NewsItem {
   _id?: string;
@@ -103,8 +104,10 @@ export default function NewsFeedAdmin() {
   };
 
   return (
-    <div className={styles.container}>
-      <h1>News Feed Management</h1>
+    <>
+      <AdminHeader />
+      <div className={styles.container}>
+        <h1>News Feed Management</h1>
 
       {/* Add News Form */}
       <div className={styles.addForm}>
@@ -178,6 +181,7 @@ export default function NewsFeedAdmin() {
           ))
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

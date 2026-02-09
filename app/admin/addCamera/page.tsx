@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import styles from "../admin.module.css";
+import styles from "./addCamera.module.css";
+import AdminHeader from "../adminHeader";
 
 interface Location {
   _id: string;
@@ -13,7 +13,6 @@ interface Location {
 }
 
 export default function AddCamera() {
-  const router = useRouter();
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -136,29 +135,7 @@ export default function AddCamera() {
 
   return (
     <div className={styles.fullpage}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Camera Management</h1>
-        <nav className={styles.nav}>
-          <button onClick={() => router.push("/admin")} className={styles.navButton}>
-            Map
-          </button>
-          <button onClick={() => router.push("/admin/addCamera")} className={styles.navButton}>
-            Add Camera
-          </button>
-          <button onClick={() => router.push("/admin/vehicles")} className={styles.navButton}>
-            Vehicles
-          </button>
-          <button onClick={() => router.push("/admin/traffic-records")} className={styles.navButton}>
-            Traffic Records
-          </button>
-          <button onClick={() => router.push("/admin/violations")} className={styles.navButton}>
-            Violations
-          </button>
-          <button onClick={() => router.push("/admin/UI")} className={styles.navButton}>
-            UI
-          </button>
-        </nav>
-      </header>
+      <AdminHeader />
 
       <main className={styles.container}>
         <h2 className={styles.sectionTitle}>
