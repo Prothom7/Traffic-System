@@ -73,10 +73,10 @@ export default function AdminCarouselPage() {
   };
 
   return (
-    <>
+    <div className={styles.fullpage}>
       <AdminHeader />
-      <div className={styles.container}>
-        <h1>Carousel Management</h1>
+      <main className={styles.container}>
+        <h1 className={styles.title}>Carousel Management</h1>
 
       <div className={styles.form}>
         <input
@@ -114,7 +114,7 @@ export default function AdminCarouselPage() {
           </div>
         ))}
       </div>
-      </div>
-    </>
+      </main>
+    </div>
   );
 }

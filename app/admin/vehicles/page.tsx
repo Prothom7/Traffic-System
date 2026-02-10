@@ -87,7 +87,7 @@ export default function VehiclesPage() {
                   <td>{v.owner_contact}</td>
                   <td>{v.vehicle_type}</td>
                   <td>{v.model}</td>
-                  <td>{v.isVerified ? "✅ Yes" : "❌ No"}</td>
+                  <td>{v.isVerified ? "Yes" : "No"}</td>
                 </tr>
               ))}
             </tbody>

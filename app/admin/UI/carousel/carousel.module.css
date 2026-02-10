@@ -1,15 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* Full page layout */
+.fullpage {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(20px, 4vw, 60px);
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  background-image: url('/source/admin.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 .container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
+  width: 100%;
+  max-width: min(1400px, 92vw);
+  min-height: min(500px, 80vh);
+  padding: clamp(24px, 4vw, 48px);
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  color: #fff;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
 .title {
-  font-size: 28px;
+  font-size: clamp(24px, 3.5vw, 32px);
+  font-weight: 700;
   margin-bottom: 20px;
-  color: #0a3161;
+  text-align: center;
+  color: #fff;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Form to add image */
@@ -18,34 +47,51 @@
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 30px;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .form input {
   flex: 1 1 200px;
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.95);
   font-size: 14px;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form input:focus {
+  outline: none;
+  border-color: #0a3161;
+  box-shadow: 0 0 0 3px rgba(10, 49, 97, 0.2);
 }
 
 .form button {
   padding: 10px 20px;
   border: none;
-  background-color: #0a3161;
+  background-color: #4CAF50;
   color: white;
   font-weight: bold;
   cursor: pointer;
   border-radius: 6px;
-  transition: background-color 0.2s ease;
+  font-family: 'Poppins', sans-serif;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
 .form button:hover {
-  background-color: #0d3d80;
+  background-color: #45a049;
+  transform: translateY(-2px);
 }
 
 .form button:disabled {
   background-color: #999;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* Image list/grid */
@@ -56,18 +102,24 @@
 }
 
 .imageCard {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .imageCard img {
   width: 100%;
   height: 150px;
   object-fit: cover;
+}
+
+.imageCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .info {
@@ -97,10 +149,13 @@
   border: none;
   border-radius: 4px;
   font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  font-family: 'Poppins', sans-serif;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
 .info button:hover {
   background-color: #d32f2f;
+  transform: translateY(-2px);
 }

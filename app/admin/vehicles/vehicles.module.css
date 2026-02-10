@@ -5,17 +5,18 @@
   min-height: 100vh;
   width: 100vw;
   display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
+  justify-content: center;     /* horizontal centering */
+  align-items: center;         /* vertical centering */
+  padding-top: clamp(100px, 14vh, 160px); /* space for fixed header */
+  padding-inline: clamp(12px, 4vw, 48px);
+  box-sizing: border-box;
+
   font-family: 'Poppins', sans-serif;
   background-image: url('/source/admin.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  overflow-x: hidden;
-  box-sizing: border-box;
 }
 
 /* Header at top - full width */
@@ -53,13 +54,14 @@
 .container {
   width: 100%;
   max-width: min(1400px, 92vw);
-  min-height: min(600px, 85vh);
+  min-height: min(600px, calc(100vh - 200px));
   padding: clamp(24px, 4vw, 48px);
-  margin: clamp(120px, 15vh, 160px) auto 40px;
+
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 18px;
   backdrop-filter: blur(10px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
   color: #fff;
   box-sizing: border-box;
 }

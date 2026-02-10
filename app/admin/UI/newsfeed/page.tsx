@@ -104,10 +104,10 @@ export default function NewsFeedAdmin() {
   };
 
   return (
-    <>
+    <div className={styles.fullpage}>
       <AdminHeader />
-      <div className={styles.container}>
-        <h1>News Feed Management</h1>
+      <main className={styles.container}>
+        <h1 className={styles.pageTitle}>News Feed Management</h1>
 
       {/* Add News Form */}
       <div className={styles.addForm}>
@@ -181,7 +181,7 @@ export default function NewsFeedAdmin() {
           ))
         )}
       </div>
-      </div>
-    </>
+      </main>
+    </div>
   );
 }

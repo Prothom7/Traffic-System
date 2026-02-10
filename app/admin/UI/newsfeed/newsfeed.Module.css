@@ -1,46 +1,157 @@
-/* File: app/admin/UI/newsfeed/newsfeed.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
+/* Full page layout */
+.fullpage {
+  min-height: 100vh;
+  width: 100vw;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: clamp(20px, 4vw, 60px);
+  box-sizing: border-box;
+
+  font-family: 'Poppins', sans-serif;
+
+  background-image: url('/source/admin.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Main container */
 .container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  background-color: #f5f6fa;
+  width: 100%;
+  max-width: min(1400px, 92vw);
+  min-height: min(500px, 80vh);
+
+  padding: clamp(24px, 4vw, 48px);
+
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  color: #fff;
+  box-sizing: border-box;
 }
 
 /* Page heading */
 .pageTitle {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #0a3161;
+  font-size: clamp(24px, 3.5vw, 32px);
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* News Feed Section */
-.newsFeedSection {
+/* Add news form */
+.addForm {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vw, 18px);
+  margin-bottom: 32px;
+
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.addForm input,
+.addForm textarea {
+  padding: clamp(10px, 1.5vw, 14px);
+  font-size: clamp(14px, 1.5vw, 16px);
+
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.95);
+
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.addForm input:focus,
+.addForm textarea:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.addForm textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.addForm button {
+  align-self: flex-start;
+
+  padding: clamp(10px, 1.5vw, 14px)
+           clamp(18px, 2vw, 26px);
+
+  background-color: #4CAF50;
+  color: #fff;
+
+  border: none;
+  border-radius: 6px;
+
+  font-size: clamp(14px, 1.5vw, 16px);
+  font-weight: 600;
+
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.addForm button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+}
+
+.addForm button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* News list */
+.newsList {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* Individual News Card */
+/* News card */
 .newsCard {
   display: flex;
-  flex-direction: row;
-  background-color: white;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  gap: 16px;
+
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  transition: transform 0.2s;
+
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .newsCard:hover {
-  transform: translateX(5px);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .newsImage {
   width: 150px;
+  height: 150px;
   object-fit: cover;
 }
 
+/* News content */
 .newsContent {
   padding: 12px 16px;
   display: flex;
@@ -65,49 +176,28 @@
   color: #888;
 }
 
-/* Load More Button */
-.loadMoreButton {
+/* Delete button */
+.deleteButton {
+  align-self: flex-start;
   margin-top: 10px;
+
   padding: 8px 16px;
-  background-color: #0a3161;
+  background-color: #f44336;
   color: white;
+
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  width: fit-content;
-  transition: background-color 0.2s;
-}
+  border-radius: 6px;
 
-.loadMoreButton:hover {
-  background-color: #072249;
-}
-
-/* Form for adding news (optional for admin page) */
-.newsForm {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.newsForm input,
-.newsForm textarea {
-  padding: 8px 10px;
   font-size: 14px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
+  font-weight: 600;
 
-.newsForm button {
-  width: fit-content;
-  padding: 8px 16px;
-  background-color: #0a3161;
-  color: white;
-  border: none;
-  border-radius: 4px;
   cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+
+  transition: background-color 0.2s, transform 0.1s;
 }
 
-.newsForm button:hover {
-  background-color: #072249;
+.deleteButton:hover {
+  background-color: #d32f2f;
+  transform: translateY(-2px);
 }
