@@ -32,7 +32,12 @@ export default function AdminHeader() {
         <button onClick={() => router.push("/admin/UI")} className={styles.navButton}>
           UI
         </button>
-        <button className={styles.navButton}>Simulate Violation</button>
+        <button
+          onClick={() => router.push("/admin/simulate-violation")}
+          className={styles.navButton}
+        >
+          Simulate Violation
+        </button>
       </nav>
     </header>
   );

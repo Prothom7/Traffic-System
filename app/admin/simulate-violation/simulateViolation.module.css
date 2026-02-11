@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+.fullpage {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: clamp(110px, 15vh, 160px);
+  padding-inline: clamp(12px, 4vw, 48px);
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-image: url('/source/admin.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 100%;
+  max-width: min(1200px, 92vw);
+  min-height: min(520px, calc(100vh - 220px));
+  padding: clamp(24px, 4vw, 48px);
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.sectionTitle {
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #fff;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.input,
+.select,
+.textarea {
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #00aaff;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.fullRow {
+  grid-column: 1 / -1;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.submitButton {
+  background-color: #0070f3;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submitButton:hover {
+  background-color: #005bb5;
+  transform: translateY(-1px);
+}
+
+.submitButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+}
+
+.status {
+  margin-top: 16px;
+  font-size: 0.95rem;
+}
+
+.success {
+  color: #7dd3fc;
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 28px;
+  }
+}

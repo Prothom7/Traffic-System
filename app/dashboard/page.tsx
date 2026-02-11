@@ -14,6 +14,16 @@ interface CarouselImage {
   description?: string;
 }
 
+interface NotificationItem {
+  _id: string;
+  number_plate: string;
+  violation_type: string;
+  cause: string;
+  camera_location: string;
+  message: string;
+  createdAt: string;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
 
@@ -21,6 +31,10 @@ export default function DashboardPage() {
   const [userName, setUserName] = useState("User");
   const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [notificationError, setNotificationError] = useState("");
 
   /* AUTH + USER */
   useEffect(() => {
@@ -32,9 +46,68 @@ export default function DashboardPage() {
       return;
     }
 
+    setAuthToken(token);
+
     const decoded = decodeJWTClient(token);
     if (decoded?.name) setUserName(decoded.name);
   }, [router]);
+
+  /* FETCH NOTIFICATIONS */
+  useEffect(() => {
+    if (!authToken) return;
+
+    let isActive = true;
+
+    const fetchNotifications = async () => {
+      try {
+        const res = await fetch(`/api/notifications?token=${encodeURIComponent(authToken)}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Failed to fetch notifications");
+
+        if (!isActive) return;
+        setNotifications(data.notifications || []);
+        setNotificationsEnabled(data.notificationsEnabled !== false);
+      } catch (err: any) {
+        console.error("Notifications fetch failed", err);
+        if (!isActive) return;
+        setNotificationError(err.message || "Failed to load notifications");
+      }
+    };
+
+    fetchNotifications();
+
+    return () => {
+      isActive = false;
+    };
+  }, [authToken]);
+
+  /* SUBSCRIBE TO VIOLATION EVENTS */
+  useEffect(() => {
+    if (!authToken || !notificationsEnabled) return;
+
+    const source = new EventSource(
+      `/api/notifications/stream?token=${encodeURIComponent(authToken)}`
+    );
+
+    const onViolation = (event: MessageEvent) => {
+      try {
+        const payload = JSON.parse(event.data) as NotificationItem;
+        setNotifications((prev) => [payload, ...prev].slice(0, 20));
+      } catch (err) {
+        console.error("Notification parse failed", err);
+      }
+    };
+
+    source.addEventListener("violation", onViolation as EventListener);
+    source.onerror = () => {
+      source.close();
+    };
+
+    return () => {
+      source.removeEventListener("violation", onViolation as EventListener);
+      source.close();
+    };
+  }, [authToken, notificationsEnabled]);
 
   /* FETCH CAROUSEL */
   useEffect(() => {
@@ -99,6 +172,45 @@ export default function DashboardPage() {
             <h3>Total Fines</h3>
             <p className={styles.statNumber}>$450</p>
           </div>
+        </section>
+
+        <section className={styles.notificationsSection}>
+          <div className={styles.notificationsHeader}>
+            <h2>Notifications</h2>
+            <span className={styles.notificationStatus}>
+              {notificationsEnabled ? "On" : "Off"}
+            </span>
+          </div>
+
+          {notificationError && (
+            <p className={styles.notificationError}>{notificationError}</p>
+          )}
+
+          {!notificationsEnabled && (
+            <p className={styles.notificationEmpty}>
+              Notifications are turned off for this vehicle.
+            </p>
+          )}
+
+          {notificationsEnabled && notifications.length === 0 && !notificationError && (
+            <p className={styles.notificationEmpty}>No notifications yet.</p>
+          )}
+
+          {notificationsEnabled && notifications.length > 0 && (
+            <ul className={styles.notificationsList}>
+              {notifications.map((notice) => (
+                <li key={notice._id} className={styles.notificationItem}>
+                  <div className={styles.notificationTitle}>{notice.message}</div>
+                  <div className={styles.notificationMeta}>
+                    {notice.number_plate} | {notice.violation_type} | {notice.cause} | {notice.camera_location || "Unknown"}
+                  </div>
+                  <div className={styles.notificationTime}>
+                    {new Date(notice.createdAt).toLocaleString()}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         {carouselImages.length > 0 && (
