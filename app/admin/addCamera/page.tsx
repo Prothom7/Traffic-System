@@ -9,13 +9,23 @@ interface Location {
   location_name: string;
   latitude: number;
   longitude: number;
-  edges: [];
+}
+
+interface Edge {
+  _id: string;
+  to_location_id: string;
+  to_location_name: string;
+  distance_km: number;
 }
 
 export default function AddCamera() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [managingEdgesFor, setManagingEdgesFor] = useState<string | null>(null);
+  const [currentEdges, setCurrentEdges] = useState<Edge[]>([]);
+  const [selectedEdges, setSelectedEdges] = useState<Set<string>>(new Set());
+  const [customDistances, setCustomDistances] = useState<Record<string, number>>({});
   const [formData, setFormData] = useState({
     location_name: "",
     latitude: "",
@@ -63,7 +73,6 @@ export default function AddCamera() {
         location_name: formData.location_name,
         latitude: parseFloat(formData.latitude),
         longitude: parseFloat(formData.longitude),
-        edges: [],
       };
 
       if (editingId) {
@@ -133,6 +142,104 @@ export default function AddCamera() {
     setFormData({ location_name: "", latitude: "", longitude: "" });
   };
 
+  const handleManageEdges = async (location: Location) => {
+    setManagingEdgesFor(location._id);
+    try {
+      const res = await fetch(`/api/admin/edges?locationId=${location._id}`);
+      const edges: Edge[] = await res.json();
+      setCurrentEdges(edges);
+
+      const selected = new Set(edges.map((e) => e.to_location_id));
+      setSelectedEdges(selected);
+
+      const distances: Record<string, number> = {};
+      edges.forEach((e) => {
+        distances[e.to_location_id] = e.distance_km;
+      });
+      setCustomDistances(distances);
+    } catch (err) {
+      console.error("Failed to fetch edges:", err);
+      alert("Failed to load edges");
+    }
+  };
+
+  const calculateDistance = (loc1: Location, loc2: Location) => {
+    const toRad = (val: number) => (val * Math.PI) / 180;
+    const R = 6371;
+    const dLat = toRad(loc2.latitude - loc1.latitude);
+    const dLon = toRad(loc2.longitude - loc1.longitude);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(loc1.latitude)) *
+        Math.cos(toRad(loc2.latitude)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Number((R * c).toFixed(3));
+  };
+
+  const toggleEdge = (toId: string) => {
+    const newSelected = new Set(selectedEdges);
+    if (newSelected.has(toId)) {
+      newSelected.delete(toId);
+    } else {
+      newSelected.add(toId);
+      if (!customDistances[toId]) {
+        const from = locations.find((l) => l._id === managingEdgesFor)!;
+        const to = locations.find((l) => l._id === toId)!;
+        setCustomDistances((prev) => ({
+          ...prev,
+          [toId]: calculateDistance(from, to),
+        }));
+      }
+    }
+    setSelectedEdges(newSelected);
+  };
+
+  const handleDistanceChange = (toId: string, value: string) => {
+    const num = parseFloat(value);
+    if (!isNaN(num) && num >= 0) {
+      setCustomDistances((prev) => ({ ...prev, [toId]: num }));
+    }
+  };
+
+  const handleSaveEdges = async () => {
+    if (!managingEdgesFor) return;
+
+    const edges = Array.from(selectedEdges).map((toId) => ({
+      to_location_id: toId,
+      distance_km: customDistances[toId] || 0,
+    }));
+
+    try {
+      setLoading(true);
+      const res = await fetch("/api/admin/edges", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ from_location_id: managingEdgesFor, edges }),
+      });
+
+      if (!res.ok) throw new Error("Failed to save edges");
+      alert("Edges saved successfully!");
+      setManagingEdgesFor(null);
+      setCurrentEdges([]);
+      setSelectedEdges(new Set());
+      setCustomDistances({});
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save edges");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelEdges = () => {
+    setManagingEdgesFor(null);
+    setCurrentEdges([]);
+    setSelectedEdges(new Set());
+    setCustomDistances({});
+  };
+
   return (
     <div className={styles.fullpage}>
       <AdminHeader />
@@ -141,6 +248,108 @@ export default function AddCamera() {
         <h2 className={styles.sectionTitle}>
           {editingId ? "Edit Camera Location" : "Add New Camera Location"}
         </h2>
+
+        {managingEdgesFor && (
+          <div
+            style={{
+              marginBottom: "40px",
+              padding: "24px",
+              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              borderRadius: "12px",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+            }}
+          >
+            <h3 style={{ fontSize: "1.3rem", marginBottom: "16px", fontWeight: "700" }}>
+              Manage Edges for{" "}
+              {locations.find((l) => l._id === managingEdgesFor)?.location_name}
+            </h3>
+
+            <div style={{ marginBottom: "20px" }}>
+              {locations
+                .filter((loc) => loc._id !== managingEdgesFor)
+                .map((loc) => (
+                  <div
+                    key={loc._id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      marginBottom: "12px",
+                      padding: "10px",
+                      backgroundColor: selectedEdges.has(loc._id)
+                        ? "rgba(0, 170, 255, 0.1)"
+                        : "transparent",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedEdges.has(loc._id)}
+                      onChange={() => toggleEdge(loc._id)}
+                      style={{ cursor: "pointer", transform: "scale(1.2)" }}
+                    />
+                    <label style={{ flex: 1, fontWeight: "500" }}>
+                      {loc.location_name}
+                    </label>
+                    {selectedEdges.has(loc._id) && (
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ fontSize: "0.9rem" }}>Distance (km):</span>
+                        <input
+                          type="number"
+                          step="0.001"
+                          min="0"
+                          value={customDistances[loc._id] || 0}
+                          onChange={(e) => handleDistanceChange(loc._id, e.target.value)}
+                          style={{
+                            width: "100px",
+                            padding: "6px",
+                            borderRadius: "6px",
+                            border: "1px solid rgba(255, 255, 255, 0.3)",
+                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            color: "#fff",
+                            fontSize: "0.95rem",
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+
+            <div style={{ display: "flex", gap: "12px" }}>
+              <button
+                onClick={handleSaveEdges}
+                disabled={loading}
+                style={{
+                  padding: "10px 24px",
+                  backgroundColor: "#4CAF50",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontWeight: "600",
+                  cursor: loading ? "not-allowed" : "pointer",
+                  opacity: loading ? 0.6 : 1,
+                }}
+              >
+                {loading ? "Saving..." : "Save Edges"}
+              </button>
+              <button
+                onClick={handleCancelEdges}
+                style={{
+                  padding: "10px 24px",
+                  backgroundColor: "#757575",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={{ marginBottom: "40px" }}>
           <div style={{ marginBottom: "16px" }}>
@@ -339,6 +548,22 @@ export default function AddCamera() {
                         }}
                       >
                         Delete
+                      </button>
+                      <button
+                        onClick={() => handleManageEdges(location)}
+                        disabled={loading}
+                        style={{
+                          padding: "6px 12px",
+                          backgroundColor: "#FF9800",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: loading ? "not-allowed" : "pointer",
+                          fontWeight: "600",
+                          opacity: loading ? 0.6 : 1,
+                        }}
+                      >
+                        Manage Edges
                       </button>
                     </td>
                   </tr>
