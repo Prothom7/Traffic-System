@@ -91,16 +91,31 @@ const Map: React.FC<MapProps> = ({ markers = [] }) => {
   useEffect(() => {
     if (!mapRef.current) return;
 
+    console.log("Updating map with markers:", markers);
+    console.log("Number of markers to add:", markers.length);
+
     // Update markers
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
+    if (markers.length === 0) {
+      console.log("No markers to display");
+      return;
+    }
+
     markers.forEach((location) => {
       const position: [number, number] = [location.latitude, location.longitude];
+      console.log(`Adding marker at [${position[0]}, ${position[1]}] for ${location.name}`);
       const marker = L.marker(position).addTo(mapRef.current!);
       marker.bindPopup(`📍 ${location.name}`);
       markersRef.current.push(marker);
     });
+
+    // Fit map bounds to show all markers
+    if (markersRef.current.length > 0) {
+      const group = L.featureGroup(markersRef.current);
+      mapRef.current.fitBounds(group.getBounds(), { padding: [50, 50] });
+    }
   }, [markers]);
 
   return (

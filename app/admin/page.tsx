@@ -24,9 +24,21 @@ export default function AdminDashboard() {
       try {
         const response = await fetch("/api/admin/locations");
         const data = await response.json();
-        setMarkers(data);
+        console.log("Fetched locations:", data);
+        console.log("Number of locations:", data.length);
+        
+        if (data.error) {
+          console.error("API returned error:", data.error);
+          alert("Error: " + data.error);
+        } else {
+          setMarkers(data);
+          if (data.length === 0) {
+            console.warn("No camera locations found in database. Please add locations via 'Add Camera Location' page.");
+          }
+        }
       } catch (error) {
         console.error("Error fetching locations:", error);
+        alert("Failed to fetch locations. Check console for details.");
       } finally {
         setLoading(false);
       }
@@ -42,7 +54,18 @@ export default function AdminDashboard() {
       <main className={styles.container}>
         <h2 className={styles.sectionTitle}>Live Camera Location Map</h2>
         <div className={styles.mapWrapper} style={{ padding: "20px 0", height: "530px" }}>
-          {loading ? <p>Loading map...</p> : <Map markers={markers} />}
+          {loading ? (
+            <p>Loading map...</p>
+          ) : markers.length === 0 ? (
+            <div style={{ padding: "20px", textAlign: "center" }}>
+              <p style={{ fontSize: "18px", marginBottom: "10px" }}>No camera locations found in database.</p>
+              <p style={{ fontSize: "14px", color: "#666" }}>
+                Please add camera locations using the <a href="/admin/addCamera" style={{ color: "#0070f3" }}>Add Camera Location</a> page.
+              </p>
+            </div>
+          ) : (
+            <Map markers={markers} />
+          )}
         </div>
       </main>
     </div>

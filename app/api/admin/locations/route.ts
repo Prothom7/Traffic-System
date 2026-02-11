@@ -6,16 +6,18 @@ export async function GET() {
   try {
     await connect();
     
-    const locations = await Location.find({
-      latitude: { $exists: true, $ne: null },
-      longitude: { $exists: true, $ne: null },
-    }).select("location_name latitude longitude");
+    // Get all locations - latitude and longitude are required fields in the schema
+    const locations = await Location.find({}).select("location_name latitude longitude");
+
+    console.log(`Found ${locations.length} locations in database`);
 
     const markers = locations.map((location: any) => ({
       name: location.location_name,
       latitude: location.latitude,
       longitude: location.longitude,
     }));
+
+    console.log("Returning markers:", JSON.stringify(markers));
 
     return NextResponse.json(markers);
   } catch (error) {
