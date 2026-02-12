@@ -3,11 +3,70 @@
 /* ===== ROOT CONTAINER ===== */
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  background-image: url("/source/explore.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
   font-family: 'Poppins', "Inter", "Segoe UI", Arial, sans-serif;
-  color: #e2e8f0;
+  color: #e5e7eb;
   display: flex;
   flex-direction: column;
+  padding-top: 140px; /* Space for fixed header */
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw; /* full width */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.35); /* glass effect */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Logo in center */
+.header .logo {
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  flex: 1;
+}
+
+/* Navigation */
+.header nav {
+  display: flex;
+  justify-content: center; /* center nav items */
+  gap: 2rem;
+  flex: 2; /* takes 2/3 width to keep logo center */
+}
+
+.header nav a {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+}
+
+.header nav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 /* ===== MAIN WRAPPER ===== */
@@ -18,39 +77,42 @@
   flex: 1;
 }
 
-/* ===== HERO (NOW BELOW CAROUSEL) ===== */
+/* ===== HERO SECTION ===== */
 .hero {
   text-align: center;
   margin-top: 3.5rem;
   margin-bottom: 3rem;
-  padding: 2.5rem 1rem;
+  padding: clamp(4rem, 10vh, 8rem) 2rem;
+  min-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .hero h1 {
-  font-size: clamp(2rem, 3.5vw, 2.5rem);
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: #ffffff;
   letter-spacing: -0.5px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 .hero p {
-  font-size: 1.05rem;
+  font-size: clamp(1.15rem, 2.5vw, 1.5rem);
   color: #cbd5e1;
-  max-width: 650px;
+  max-width: 850px;
   margin: 0 auto;
-  line-height: 1.7;
+  line-height: 1.8;
 }
 
-/* ======================================================
-   NEWS CAROUSEL — FULL WIDTH (EDGE TO EDGE)
-====================================================== */
-
+/* ===== NEWS CAROUSEL ===== */
 .newsCarousel {
   width: 100vw;
   margin-left: calc(-50vw + 50%);
@@ -58,30 +120,40 @@
   margin-bottom: clamp(3rem, 6vw, 4.5rem);
 }
 
-/* Section title */
-.newsCarousel h2 {
-  max-width: 1200px;
-  margin: 1.8rem auto 1.2rem;
-  padding: 0 2rem;
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
-  font-weight: 600;
-  color: #ffffff;
-  letter-spacing: 0.4px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
 /* Carousel shell */
 .carousel {
   position: relative;
   width: 100%;
-  height: clamp(450px, 65vh, 900px);
+  height: calc(100vh - 140px); /* fill entire viewport minus header */
   overflow: hidden;
-  background: #1e293b;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border-radius: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
 }
 
-/* Slide */
+/* Overlapping title with backdrop blur */
+.carouselTitle {
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  text-align: center;
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.4px;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  padding: 1.5rem 3rem;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Slides */
 .carouselSlide {
   position: absolute;
   inset: 0;
@@ -99,9 +171,10 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 16px;
 }
 
-/* Caption (glass gradient style) */
+/* Caption */
 .carouselCaption {
   position: absolute;
   bottom: 0;
@@ -117,22 +190,12 @@
   );
   backdrop-filter: blur(4px);
   color: #ffffff;
+  border-radius: 0 0 16px 16px;
 }
 
-/* Caption title */
-.carouselCaption h3 {
-  font-size: clamp(1.3rem, 2.5vw, 1.9rem);
-  font-weight: 600;
-  margin-bottom: 0.6rem;
-  line-height: 1.2;
-}
-
-/* Caption text */
+.carouselCaption h3,
 .carouselCaption p {
-  font-size: clamp(0.95rem, 2vw, 1.05rem);
-  max-width: 900px;
-  line-height: 1.5;
-  opacity: 0.95;
+  text-align: center;
 }
 
 /* Dots */
@@ -170,17 +233,138 @@
   font-size: 1rem;
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== SERVICES SECTION ===== */
+.servicesSection {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
 
+.servicesSection h2 {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 700;
+  margin-bottom: 3.5rem;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: -0.3px;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.serviceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(320px, 40vw, 420px), 1fr));
+  gap: clamp(2rem, 4vw, 3rem);
+  margin-top: 3rem;
+  width: 100%;
+}
+
+.serviceCard {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: clamp(2.5rem, 4vw, 4rem); /* adjusted padding for larger image */
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: clamp(450px, 50vh, 650px); /* taller cards for larger images */
+}
+
+.serviceIcon {
+  width: 100%; /* fill width of card */
+  max-width: none; /* no limit - fill card */
+  height: clamp(280px, 35vh, 500px); /* much larger height that scales */
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5));
+}
+
+.serviceIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 12px; /* optional: rounded corners for image */
+}
+
+.serviceCard h3 {
+  font-size: clamp(1.6rem, 2.5vw, 2rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.serviceCard p {
+  font-size: clamp(1.1rem, 2vw, 1.25rem);
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
-  .carousel {
-    height: clamp(360px, 55vh, 520px);
+  .serviceGrid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
   }
 
-  .carouselCaption p {
-    max-width: 100%;
+  .serviceCard {
+    padding: clamp(2rem, 3vw, 3rem);
   }
 }
+
+@media (max-width: 768px) {
+  .serviceGrid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .serviceCard {
+    padding: 2rem 1.5rem;
+  }
+
+  .serviceIcon {
+    width: clamp(60px, 12vw, 100px);
+    height: clamp(60px, 12vw, 100px);
+  }
+
+  .serviceCard h3 {
+    font-size: clamp(1.4rem, 3vw, 1.6rem);
+  }
+
+  .serviceCard p {
+    font-size: clamp(1rem, 2vw, 1.1rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .serviceGrid {
+    grid-template-columns: 1fr; /* full width cards */
+    gap: 1rem;
+  }
+
+  .serviceCard {
+    padding: 1.8rem 1.2rem;
+  }
+
+  .serviceIcon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .serviceCard h3 {
+    font-size: 1.4rem;
+  }
+
+  .serviceCard p {
+    font-size: 1rem;
+  }
+}
+
 
 @media (max-width: 640px) {
   .carousel {
@@ -207,77 +391,14 @@
   .main {
     padding: 2rem 1.2rem 2.5rem;
   }
-}
 
-/* ===== SERVICES SECTION ===== */
-
-.servicesSection {
-  margin-top: 3.5rem;
-  margin-bottom: 3.5rem;
-}
-
-.servicesSection h2 {
-  font-size: clamp(1.7rem, 3vw, 2.2rem);
-  font-weight: 600;
-  margin-bottom: 2.5rem;
-  color: #ffffff;
-  text-align: center;
-  letter-spacing: -0.3px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.serviceGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.75rem;
-  margin-top: 2rem;
-}
-
-.serviceCard {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 14px;
-  padding: 2.25rem 1.75rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(10px);
-}
-
-.serviceCard:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.3);
-  border-color: rgba(59, 130, 246, 0.6);
-  background: rgba(59, 130, 246, 0.12);
-}
-
-.serviceIcon {
-  font-size: 3.5rem;
-  margin-bottom: 1.25rem;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
-}
-
-.serviceCard h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.85rem;
-  color: #ffffff;
-}
-
-.serviceCard p {
-  font-size: 0.95rem;
-  color: #cbd5e1;
-  line-height: 1.6;
-}
-
-@media (max-width: 768px) {
-  .serviceGrid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.25rem;
+  .header {
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1rem;
   }
-  
-  .serviceCard {
-    padding: 2rem 1.5rem;
+
+  .header nav {
+    gap: 1rem;
   }
 }
