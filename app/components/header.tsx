@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import styles from "@/app/dashboard/dashboard.module.css";
+import styles from "./header.module.css";
 import { useRouter, usePathname } from "next/navigation";
 
 interface HeaderProps {
@@ -24,19 +24,20 @@ export default function Header({ userName }: HeaderProps) {
   return (
     <>
       {/* TOP BAR */}
-      <header className={styles.topbar}>
-        <div className={styles.logo}>Traffic Management System</div>
-        <div className={styles.headerRight}>
-          <span className={styles.userName}>Welcome, {userName}</span>
-          <button onClick={logout} className={styles.logoutButton}>
-            Logout
-          </button>
+      <header className={styles.header}>
+        <div className={styles.topbar}>
+          <div className={styles.logo}>Traffic Management System</div>
+          <div className={styles.headerRight}>
+            <span className={styles.userName}>Welcome, {userName}</span>
+            <button onClick={logout} className={styles.logoutButton}>
+              Logout
+            </button>
+          </div>
         </div>
-      </header>
 
-      {/* NAVBAR */}
-      <nav className={styles.navBar}>
-        <ul>
+        {/* NAVBAR */}
+        <nav className={styles.navBar}>
+          <ul>
           <li
             className={isActive("/explore")}
             onClick={() => router.push("/explore")}
@@ -80,6 +81,7 @@ export default function Header({ userName }: HeaderProps) {
           </li>
         </ul>
       </nav>
+      </header>
     </>
   );
 }
