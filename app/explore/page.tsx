@@ -157,11 +157,6 @@ export default function ExplorePage() {
                 vehicle types including cars, motorcycles, trucks, and
                 commercial vehicles.
               </p>
-              <ul className={styles.featureList}>
-                <li>Online registration renewal</li>
-                <li>Digital documentation access</li>
-                <li>Real-time status updates</li>
-              </ul>
               <button className={styles.learnMore}>Learn More →</button>
             </div>
           </div>
@@ -182,11 +177,6 @@ export default function ExplorePage() {
                 complete traffic code and understand your rights and
                 responsibilities.
               </p>
-              <ul className={styles.featureList}>
-                <li>Complete traffic law database</li>
-                <li>Regional regulation updates</li>
-                <li>Violation penalties guide</li>
-              </ul>
               <button className={styles.learnMore}>Learn More →</button>
             </div>
           </div>
@@ -206,11 +196,6 @@ export default function ExplorePage() {
                 to promote safe driving and reduce accidents. Join community
                 initiatives and defensive driving courses.
               </p>
-              <ul className={styles.featureList}>
-                <li>Free safety education courses</li>
-                <li>Community awareness programs</li>
-                <li>Accident prevention resources</li>
-              </ul>
               <button className={styles.learnMore}>Learn More →</button>
             </div>
           </div>
@@ -230,11 +215,6 @@ export default function ExplorePage() {
                 transportation statistics to stay informed about road
                 conditions. Access historical data and traffic pattern analysis.
               </p>
-              <ul className={styles.featureList}>
-                <li>Real-time traffic monitoring</li>
-                <li>Accident statistics & trends</li>
-                <li>Road condition reports</li>
-              </ul>
               <button className={styles.learnMore}>Learn More →</button>
             </div>
           </div>
