@@ -3,6 +3,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "./explore.module.css";
 import { useRouter } from "next/navigation";
+import Header from "@/app/components/header";
+import Footer from "@/app/components/footer";
+import { decodeJWTClient } from "@/helpers/jwtClient";
 
 interface NewsItem {
   _id: string;
@@ -13,75 +16,115 @@ interface NewsItem {
 
 export default function ExplorePage() {
   const router = useRouter();
+
   const [mounted, setMounted] = useState(false);
+  const [userName, setUserName] = useState("User");
   const [currentSlide, setCurrentSlide] = useState(0);
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
 
-  // ✅ Auth check
+  /* ---------------- AUTH ---------------- */
   useEffect(() => {
     setMounted(true);
+
     const token = localStorage.getItem("authToken");
-    if (!token) router.push("/authentication/signin");
+    if (!token) {
+      router.push("/authentication/signin");
+      return;
+    }
+
+    const decoded = decodeJWTClient(token);
+    if (decoded?.name) setUserName(decoded.name);
   }, [router]);
 
-  // ✅ Fetch news feed
+  /* ---------------- FETCH NEWS ---------------- */
   useEffect(() => {
     const fetchNews = async () => {
       try {
         const res = await fetch("/api/dashboard/newsfeed");
         const data = await res.json();
-        if (data.success) setNewsItems(data.data);
+        if (data.success && Array.isArray(data.data)) {
+          setNewsItems(data.data);
+        }
       } catch (e) {
-        console.error(e);
+        console.error("Failed to fetch news", e);
       }
     };
+
     fetchNews();
   }, []);
 
-  // ✅ Auto slide for news carousel
+  /* ---------------- AUTO SLIDE ---------------- */
   useEffect(() => {
     if (!newsItems.length) return;
+
     const timer = setInterval(() => {
-      setCurrentSlide((p) => (p === newsItems.length - 1 ? 0 : p + 1));
+      setCurrentSlide((p) =>
+        p === newsItems.length - 1 ? 0 : p + 1
+      );
     }, 5000);
+
     return () => clearInterval(timer);
   }, [newsItems]);
-
-  const logout = () => {
-    localStorage.clear();
-    router.push("/authentication/signin");
-  };
 
   if (!mounted) return null;
 
   return (
     <div className={styles.container}>
       {/* HEADER */}
-      <header className={styles.topbar}>
-        <div className={styles.logo}> Traffic Management System</div>
-        <div className={styles.headerRight}>
-          <span className={styles.userName}>Welcome, User</span>
-          <button onClick={logout} className={styles.logoutButton}>
-            Logout
-          </button>
+      <Header userName={userName} />
+
+      {/* 🔥 FULL WIDTH NEWS CAROUSEL */}
+      <section className={styles.newsCarousel}>
+        <div className={styles.carousel}>
+          <h2 className={styles.carouselTitle}>Latest News & Updates</h2>
+          {newsItems.length > 0 ? (
+            newsItems.map((item, index) => (
+              <div
+                key={item._id}
+                className={`${styles.carouselSlide} ${
+                  index === currentSlide ? styles.active : ""
+                }`}
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={item.title || "News"}
+                  className={styles.carouselImage}
+                />
+
+                <div className={styles.carouselCaption}>
+                  <h3>{item.title || "Transportation Update"}</h3>
+                  <p>
+                    {item.description ||
+                      "Stay informed about the latest transportation updates"}
+                  </p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className={styles.carouselPlaceholder}>
+              <p>No news available</p>
+            </div>
+          )}
+
+          {newsItems.length > 1 && (
+            <div className={styles.carouselDots}>
+              {newsItems.map((_, index) => (
+                <span
+                  key={index}
+                  className={`${styles.dot} ${
+                    index === currentSlide ? styles.activeDot : ""
+                  }`}
+                  onClick={() => setCurrentSlide(index)}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      </header>
+      </section>
 
-      {/* NAV */}
-      <nav className={styles.navBar}>
-        <ul>
-          <li className={styles.active}>Explore</li>
-          <li onClick={() => router.push("/dashboard")}>Dashboard</li>
-          <li>My Vehicles</li>
-          <li>Tickets & Violations</li>
-          <li>Reports</li>
-          <li>Profile</li>
-        </ul>
-      </nav>
-
-      {/* MAIN */}
+      {/* MAIN CONTENT */}
       <main className={styles.main}>
-        {/* HERO SECTION */}
+        {/* HERO */}
         <section className={styles.hero}>
           <h1>Explore Traffic Management System</h1>
           <p>
@@ -90,236 +133,62 @@ export default function ExplorePage() {
           </p>
         </section>
 
-        {/* NEWS CAROUSEL */}
-        <section className={styles.newsCarousel}>
-          <h2>Latest News & Updates</h2>
-          <div className={styles.carousel}>
-            {newsItems.length > 0 ? (
-              newsItems.map((item, index) => (
-                <div
-                  key={item._id}
-                  className={`${styles.carouselSlide} ${
-                    index === currentSlide ? styles.active : ""
-                  }`}
-                >
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title || "News"}
-                    className={styles.carouselImage}
-                  />
-                  <div className={styles.carouselCaption}>
-                    <h3>{item.title || "Transportation Update"}</h3>
-                    <p>
-                      {item.description ||
-                        "Stay informed about the latest transportation news and regulations"}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className={styles.carouselPlaceholder}>
-                <p>No news available at the moment</p>
+        {/* SERVICE CARDS */}
+        <section className={styles.servicesSection}>
+          <h2>Our Services</h2>
+          <div className={styles.serviceGrid}>
+            <div className={styles.serviceCard} onClick={() => router.push("/services/renew-registration")}>
+              <div className={styles.serviceIcon}>
+                <img src="/source/service_registration.jpg" alt="Renew Registration" />
               </div>
-            )}
-            {newsItems.length > 1 && (
-              <div className={styles.carouselDots}>
-                {newsItems.map((_, index) => (
-                  <span
-                    key={index}
-                    className={`${styles.dot} ${
-                      index === currentSlide ? styles.activeDot : ""
-                    }`}
-                    onClick={() => setCurrentSlide(index)}
-                  />
-                ))}
+              <h3>Renew Registration</h3>
+              <p>Renew your vehicle registration online quickly and easily</p>
+            </div>
+
+            <div className={styles.serviceCard} onClick={() => router.push("/services/change-ownership")}>
+              <div className={styles.serviceIcon}>
+                <img src="/source/service_ownership.jpg" alt="Change Ownership" />
               </div>
-            )}
-          </div>
-        </section>
+              <h3>Change Ownership</h3>
+              <p>Transfer vehicle ownership with our streamlined process</p>
+            </div>
 
-        {/* INFORMATION SECTIONS */}
-        <section className={styles.infoSection}>
-          <h2>Services & Information</h2>
-
-          <div className={styles.infoCardWithImage}>
-            <div className={styles.infoImageContainer}>
-              <img
-                src="https://relianceinternational.com.bd/wp-content/uploads/2022/07/visa-cover.jpg"
-                alt="Vehicle Registration"
-                className={styles.infoImage}
-              />
-            </div>
-            <div className={styles.infoContent}>
-              <h3>Vehicle Registration</h3>
-              <p>
-                Register your vehicle, renew registration, and access vehicle
-                documentation online. Quick and secure processing for all
-                vehicle types including cars, motorcycles, trucks, and
-                commercial vehicles.
-              </p>
-              <button className={styles.learnMore}>Learn More →</button>
-            </div>
-          </div>
-
-          <div className={`${styles.infoCardWithImage} ${styles.reverse}`}>
-            <div className={styles.infoImageContainer}>
-              <img
-                src="https://ida-wp.nyc3.digitaloceanspaces.com/wp-content/uploads/2024/05/18152428/01995680aee08bf69b42e9e9bdddda46.webp"
-                alt="Traffic Laws"
-                className={styles.infoImage}
-              />
-            </div>
-            <div className={styles.infoContent}>
-              <h3>Traffic Laws & Regulations</h3>
-              <p>
-                Stay informed about traffic laws, speed limits, parking
-                regulations, and safety requirements in your area. Access the
-                complete traffic code and understand your rights and
-                responsibilities.
-              </p>
-              <button className={styles.learnMore}>Learn More →</button>
-            </div>
-          </div>
-
-          <div className={styles.infoCardWithImage}>
-            <div className={styles.infoImageContainer}>
-              <img
-                src="https://media.licdn.com/dms/image/v2/D4D12AQFDvhSDqa5OOw/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1685121284556?e=2147483647&v=beta&t=GNqvFA10bBpgImTWcjco1MZ-QH8LZVpGwpl1Cpmlz-0"
-                alt="Safety Programs"
-                className={styles.infoImage}
-              />
-            </div>
-            <div className={styles.infoContent}>
-              <h3>Safety Programs</h3>
-              <p>
-                Access educational resources, safety tips, and programs designed
-                to promote safe driving and reduce accidents. Join community
-                initiatives and defensive driving courses.
-              </p>
-              <button className={styles.learnMore}>Learn More →</button>
-            </div>
-          </div>
-
-          <div className={`${styles.infoCardWithImage} ${styles.reverse}`}>
-            <div className={styles.infoImageContainer}>
-              <img
-                src="https://www.theigc.org/sites/default/files/2016/01/Fig4-1-e1453725451466.png"
-                alt="Traffic Statistics"
-                className={styles.infoImage}
-              />
-            </div>
-            <div className={styles.infoContent}>
-              <h3>Traffic Statistics</h3>
-              <p>
-                View real-time traffic data, accident reports, and
-                transportation statistics to stay informed about road
-                conditions. Access historical data and traffic pattern analysis.
-              </p>
-              <button className={styles.learnMore}>Learn More →</button>
-            </div>
-          </div>
-        </section>
-
-        {/* PRIORITY INITIATIVES */}
-        <section className={styles.initiatives}>
-          <h2>National Transportation Priorities</h2>
-          <div className={styles.initiativesList}>
-            <div className={styles.initiativeItem}>
-              <div className={styles.initiativeNumber}>01</div>
-              <div className={styles.initiativeContent}>
-                <h3>Zero Traffic Fatalities</h3>
-                <p>
-                  Working towards eliminating traffic-related deaths through
-                  enhanced safety measures, better infrastructure, and public
-                  awareness campaigns.
-                </p>
+            <div className={styles.serviceCard} onClick={() => router.push("/services/update-details")}>
+              <div className={styles.serviceIcon}>
+                <img src="/source/service_update.jpg" alt="Update Details" />
               </div>
+              <h3>Update Details</h3>
+              <p>Update your vehicle or owner information</p>
             </div>
 
-            <div className={styles.initiativeItem}>
-              <div className={styles.initiativeNumber}>02</div>
-              <div className={styles.initiativeContent}>
-                <h3>Smart Transportation</h3>
-                <p>
-                  Implementing intelligent transportation systems, connected
-                  vehicles, and innovative technologies to improve traffic flow
-                  and safety.
-                </p>
+            <div className={styles.serviceCard} onClick={() => router.push("/services/report-stolen")}>
+              <div className={styles.serviceIcon}>
+                <img src="/source/service_stolen.jpg" alt="Report Stolen Vehicle" />
               </div>
+              <h3>Report Stolen Vehicle</h3>
+              <p>Report a stolen vehicle to authorities immediately</p>
             </div>
 
-            <div className={styles.initiativeItem}>
-              <div className={styles.initiativeNumber}>03</div>
-              <div className={styles.initiativeContent}>
-                <h3>Infrastructure Modernization</h3>
-                <p>
-                  Upgrading roads, bridges, and transportation networks to meet
-                  modern safety standards and accommodate growing traffic
-                  demands.
-                </p>
+            <div className={styles.serviceCard} onClick={() => router.push("/services/check-status")}>
+              <div className={styles.serviceIcon}>
+                <img src="/source/service_status.jpg" alt="Check Status" />
               </div>
+              <h3>Check Status</h3>
+              <p>View your vehicle's current registration status</p>
             </div>
 
-            <div className={styles.initiativeItem}>
-              <div className={styles.initiativeNumber}>04</div>
-              <div className={styles.initiativeContent}>
-                <h3>Environmental Sustainability</h3>
-                <p>
-                  Promoting eco-friendly transportation options, reducing
-                  emissions, and supporting electric vehicle adoption for a
-                  cleaner future.
-                </p>
+            <div className={styles.serviceCard} onClick={() => router.push("/services/payment-history")}>
+              <div className={styles.serviceIcon}>
+                <img src="/source/service_payment.jpg" alt="Payment History" />
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* RESOURCES SECTION */}
-        <section className={styles.resources}>
-          <h2>Quick Resources</h2>
-          <div className={styles.resourcesGrid}>
-            <div className={styles.resourceCard}>
-              <h4>Mobile App</h4>
-              <p>Download our mobile app for on-the-go access</p>
-            </div>
-            <div className={styles.resourceCard}>
-              <h4>Contact Support</h4>
-              <p>24/7 customer support for all your queries</p>
-            </div>
-            <div className={styles.resourceCard}>
-              <h4>Documentation</h4>
-              <p>Access guides, forms, and official documents</p>
-            </div>
-            <div className={styles.resourceCard}>
-              <h4>Alerts</h4>
-              <p>Subscribe to traffic alerts and notifications</p>
+              <h3>Payment History</h3>
+              <p>View all your transaction and payment records</p>
             </div>
           </div>
         </section>
       </main>
-      <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerLeft}>
-            <h3> Traffic Management System</h3>
-            <p>
-              Ensuring safer roads through smart monitoring, transparent
-              enforcement, and digital services.
-            </p>
-          </div>
 
-          <div className={styles.footerLinks}>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Help Center</a>
-            <a href="#">Contact</a>
-          </div>
-        </div>
-
-        <div className={styles.footerBottom}>
-          © {new Date().getFullYear()} Traffic Management System. All rights
-          reserved.
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

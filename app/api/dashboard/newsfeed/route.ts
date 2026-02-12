@@ -1,5 +1,5 @@
 import { connect } from "@/dbConnection/dbConnection";
-const NewsFeed = require("@/models/newsFeedModel");
+import NewsFeed from "@/models/newsFeedModel";
 
 export async function GET(req: Request) {
   try {

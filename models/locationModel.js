@@ -1,18 +1,9 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+import mongoose from "mongoose";
 
-const EdgeSchema = new Schema({
-  to_location_id: { type: Schema.Types.ObjectId, ref: 'Location', required: true },
-  distance_km: { type: Number, required: true },
-  travel_time_min: { type: Number },
-  bidirectional: { type: Boolean, default: true }
-});
-
-const LocationSchema = new Schema({
+const LocationSchema = new mongoose.Schema({
   location_name: { type: String, required: true },
-  latitude: { type: Number },
-  longitude: { type: Number },
-  edges: [EdgeSchema]
+  latitude: { type: Number, required: true },
+  longitude: { type: Number, required: true },
 });
 
-module.exports = mongoose.model('Location', LocationSchema);
+export default mongoose.models.Location || mongoose.model("Location", LocationSchema);

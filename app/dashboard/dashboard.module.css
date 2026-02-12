@@ -2,9 +2,12 @@
 
 .container {
   min-height: 100vh;
-  background-color: #f8fafc;
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
-  color: #1e293b;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  font-family: 'Poppins', "Inter", "Segoe UI", Arial, sans-serif;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 140px; /* Space for fixed header */
 }
 
 /* ===== TOP HEADER ===== */
@@ -14,15 +17,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 3rem;
-  background-color: #09090a;
+  background: rgba(9, 9, 10, 0.95);
   color: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
 }
 
 .logo {
   font-size: 1.2rem;
   font-weight: 600;
-  letter-spacing: normal;
+  letter-spacing: 0.5px;
 }
 
 .headerRight {
@@ -38,16 +42,18 @@
 
 .logoutButton {
   background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: #ffffff;
-  padding: 0.45rem 1rem;
-  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 .logoutButton:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* ===== NAVIGATION ===== */
@@ -55,6 +61,7 @@
 .navBar {
   background-color: #ffffff;
   border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .navBar ul {
@@ -62,153 +69,259 @@
   list-style: none;
   padding: 0 3rem;
   margin: 0;
+  gap: 0.5rem;
 }
 
 .navBar li {
-  padding: 1rem 1.4rem;
+  padding: 1rem 1.2rem;
   font-size: 0.95rem;
   color: #475569;
   cursor: pointer;
   font-weight: 500;
   border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+  border-radius: 8px 8px 0 0;
 }
 
 .navBar li:hover {
-  background-color: #f1f5f9;
+  background-color: #f8fafc;
+  color: #1e3a8a;
 }
 
 .navBar li.active {
   color: #1e3a8a;
   font-weight: 600;
   border-bottom-color: #1e3a8a;
+  background-color: #f8fafc;
 }
 
 /* ===== ANNOUNCEMENTS & CAROUSEL ===== */
 
 .announcements {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
 }
 
 .announcements h2 {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .carousel {
   position: relative;
-  height: 320px;
+  height: 360px;
   overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .carouselSlide {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.3s linear;
+  transition: opacity 0.5s ease-in-out;
 }
 
 .carouselSlide.active {
   opacity: 1;
+  z-index: 1;
 }
 
 .carouselImage {
   width: 100%;
-  height: 320px;
+  height: 360px;
   object-fit: cover;
 }
 
 .carouselCaption {
   position: absolute;
-  bottom: 1.5rem;
-  left: 1.5rem;
-  right: 1.5rem;
-  background-color: rgba(15, 23, 42, 0.9);
+  bottom: 1.75rem;
+  left: 1.75rem;
+  right: 1.75rem;
+  background: linear-gradient(
+    to top,
+    rgba(15, 23, 42, 0.95),
+    rgba(15, 23, 42, 0.85)
+  );
+  backdrop-filter: blur(8px);
   color: #ffffff;
-  padding: 1rem;
-  border-radius: 6px;
+  padding: 1.25rem 1.5rem;
+  border-radius: 10px;
 }
 
 .carouselCaption h3 {
-  margin: 0 0 0.4rem;
-  font-size: 1.2rem;
+  margin: 0 0 0.5rem;
+  font-size: 1.3rem;
   font-weight: 600;
 }
 
 .carouselCaption p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  opacity: 0.95;
 }
 
 /* ===== MAIN CONTENT ===== */
 
 .main {
-  padding: 2rem 3rem 4rem;
+  padding: 2.5rem 3rem 4rem;
   max-width: 1400px;
   margin: 0 auto;
+  flex: 1;
 }
 
 /* ===== WELCOME SECTION ===== */
 
 .welcomeSection {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .welcomeSection h1 {
-  font-size: 1.9rem;
+  font-size: 2rem;
   font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .welcomeSection p {
   font-size: 1rem;
-  color: #64748b;
+  color: #cbd5e1;
 }
 
 /* ===== STATS GRID ===== */
 
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.2rem;
-  margin-bottom: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
 }
 
 .statCard {
-  background-color: #ffffff;
-  padding: 1.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.75rem;
   display: flex;
-  gap: 1rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  gap: 1.25rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .statCard.warning {
-  border-left-color: #d97706;
+  border-left: 4px solid #fb923c;
 }
 
 .statCard.success {
-  border-left-color: #059669;
+  border-left: 4px solid #4ade80;
 }
 
 .statIcon {
-  font-size: 2.2rem;
+  font-size: 2.5rem;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
 .statContent h3 {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #64748b;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .statNumber {
-  font-size: 1.9rem;
+  font-size: 2rem;
   font-weight: 600;
+  color: #ffffff;
 }
 
 .statLabel {
   font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* ===== NOTIFICATIONS ===== */
+
+.notificationsSection {
+  margin-bottom: 2.5rem;
+}
+
+.notificationsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.notificationsHeader h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.notificationStatus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.notificationsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.notificationItem {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.notificationTitle {
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.notificationMeta {
+  color: #475569;
+  font-size: 0.88rem;
+  margin-bottom: 0.35rem;
+}
+
+.notificationTime {
   color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.notificationError {
+  color: #dc2626;
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+}
+
+.notificationEmpty {
+  color: #64748b;
+  font-size: 0.95rem;
 }
 
 /* ===== QUICK ACTIONS ===== */

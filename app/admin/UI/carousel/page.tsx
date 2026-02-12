@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./carousel.module.css"; // create CSS for styling
+import styles from "./carousel.module.css";
+import AdminHeader from "../../adminHeader";
 
 interface CarouselImage {
   _id: string;
@@ -72,8 +73,10 @@ export default function AdminCarouselPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <h1>Carousel Management</h1>
+    <div className={styles.fullpage}>
+      <AdminHeader />
+      <main className={styles.container}>
+        <h1 className={styles.title}>Carousel Management</h1>
 
       <div className={styles.form}>
         <input
@@ -111,6 +114,7 @@ export default function AdminCarouselPage() {
           </div>
         ))}
       </div>
+      </main>
     </div>
   );
 }

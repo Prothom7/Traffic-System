@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* ===== HEADER WRAPPER ===== */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== TOP BAR ===== */
+.topbar {
+  width: 100%;
+  padding: 20px 40px;
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: center; /* center the logo */
+  align-items: center;
+  position: relative; /* for absolute positioning of headerRight if needed */
+  gap: 16px;
+}
+
+.logo {
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+
+  text-align: center; /* center text inside */
+}
+
+/* Place the user info / logout button on the right */
+.headerRight {
+  position: absolute; /* stays on the right */
+  right: 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+
+.userName {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.logoutButton {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+
+  cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    transform 0.2s ease,
+    border-color 0.25s ease;
+}
+
+.logoutButton:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+/* ===== EDGE-TO-EDGE NAV BAR ===== */
+.navBar {
+  width: 100%;
+  padding: 10px 0;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.02)
+  );
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.navBar ul {
+  list-style: none;
+  display: flex;
+  justify-content: space-around; /* evenly space items across full width */
+  align-items: center;
+  margin: 0;
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+/* ===== NAV ITEMS ===== */
+.navBar li {
+  padding: 10px 20px;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  white-space: nowrap;
+
+  border-radius: 999px;
+  letter-spacing: 0.4px;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease;
+}
+
+.navBar li:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.navBar li.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .topbar {
+    padding: 18px 28px;
+  }
+
+  .navBar ul {
+    padding: 0 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .headerRight {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .navBar ul {
+    padding: 0 20px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 20px;
+  }
+
+  .userName {
+    font-size: 0.85rem;
+  }
+
+  .navBar ul {
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 16px;
+  }
+
+  .navBar li {
+    width: 100%;
+    text-align: center;
+  }
+}

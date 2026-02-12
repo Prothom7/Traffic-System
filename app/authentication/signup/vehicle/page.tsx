@@ -58,6 +58,12 @@ export default function VehicleSignupPage() {
 
   return (
     <div className={styles.fullpage}>
+      {/* Header at top-left */}
+      <div className={styles.header}>
+        Vehicle Registration Portal
+      </div>
+
+      {/* Main container */}
       <div className={styles.container}>
         <h2 className={styles.title}>
           {loading ? "Processing..." : "Vehicle Registration"}
@@ -72,7 +78,6 @@ export default function VehicleSignupPage() {
             className={styles.input}
             required
           />
-
           <input
             type="text"
             placeholder="Chassis Number"
@@ -81,7 +86,6 @@ export default function VehicleSignupPage() {
             className={styles.input}
             required
           />
-
           <input
             type="text"
             placeholder="Owner Name"
@@ -90,7 +94,6 @@ export default function VehicleSignupPage() {
             className={styles.input}
             required
           />
-
           <input
             type="email"
             placeholder="Owner Email"
@@ -99,7 +102,6 @@ export default function VehicleSignupPage() {
             className={styles.input}
             required
           />
-
           <input
             type="text"
             placeholder="Owner Contact"
@@ -108,7 +110,6 @@ export default function VehicleSignupPage() {
             className={styles.input}
             required
           />
-
           <input
             type="text"
             placeholder="Owner Address"
@@ -117,7 +118,6 @@ export default function VehicleSignupPage() {
             className={styles.input}
             required
           />
-
           <select
             className={styles.input}
             value={vehicle.vehicle_type}
@@ -132,7 +132,6 @@ export default function VehicleSignupPage() {
             <option value="Van">Van</option>
             <option value="Other">Other</option>
           </select>
-
           <input
             type="text"
             placeholder="Vehicle Model"
@@ -141,7 +140,6 @@ export default function VehicleSignupPage() {
             className={styles.input}
             required
           />
-
           <input
             type="password"
             placeholder="Password"
@@ -150,7 +148,6 @@ export default function VehicleSignupPage() {
             className={styles.input}
             required
           />
-
           <input
             type="text"
             placeholder="Color"
@@ -159,7 +156,6 @@ export default function VehicleSignupPage() {
             className={styles.input}
             required
           />
-
           <input
             type="number"
             placeholder="Year of Manufacture"
@@ -170,7 +166,6 @@ export default function VehicleSignupPage() {
             max={new Date().getFullYear()}
             required
           />
-
           <select
             className={styles.input}
             value={vehicle.engine_type}
@@ -185,7 +180,6 @@ export default function VehicleSignupPage() {
             <option value="CNG">CNG</option>
             <option value="Other">Other</option>
           </select>
-
           <input
             type="date"
             placeholder="Registration Expiry"

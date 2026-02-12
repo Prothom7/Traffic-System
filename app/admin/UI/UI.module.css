@@ -1,42 +1,229 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* Full page layout */
 .fullpage {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  background-color: #f5f6fa;
   min-height: 100vh;
+  width: 100vw;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding-top: clamp(110px, 15vh, 160px);
+  padding-inline: clamp(12px, 4vw, 48px);
+
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+
+  background-image: url('/source/admin_UI.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
+/* Header at top - full width */
 .header {
-  margin-bottom: 40px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  padding: 20px 40px;
+  background-color: rgba(0, 0, 0, 0.6);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  z-index: 1000;
+  box-sizing: border-box;
 }
 
 .title {
-  font-size: 28px;
-  color: #0a3161;
-  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  font-size: clamp(24px, 3.5vw, 32px);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
 }
 
+/* Main content container */
 .container {
+  width: 100%;
+  max-width: min(1400px, 92vw);
+  min-height: min(520px, calc(100vh - 220px));
+
+  padding: clamp(24px, 4vw, 48px);
+
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  color: #fff;
+  box-sizing: border-box;
+
   display: flex;
+  flex-direction: column;
   justify-content: center;
 }
 
+/* Section title */
+.sectionTitle {
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 700;
+  margin-bottom: clamp(20px, 4vh, 32px);
+  text-align: center;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Button Grid */
 .buttonGrid {
-  display: flex;
-  gap: 30px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(18px, 4vw, 36px);
+  width: 100%;
 }
 
+/* NAV STYLE BUTTONS */
 .uiButton {
-  padding: 20px 40px;
-  background-color: #0a3161;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  position: relative;
+
+  padding: clamp(22px, 3vw, 32px);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 112, 243, 0.9),
+    rgba(0, 170, 255, 0.9)
+  );
+
+  color: #fff;
+  border: 1px solid rgba(0, 170, 255, 0.4);
+  border-radius: 14px;
+
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+
   cursor: pointer;
-  font-size: 18px;
-  transition: background-color 0.2s;
+  user-select: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 6px 18px rgba(0, 112, 243, 0.35);
+  transition: all 0.3s ease;
 }
 
+/* Hover = nav feel */
 .uiButton:hover {
-  background-color: #06305a;
+  transform: translateY(-6px);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 112, 243, 1),
+    rgba(0, 190, 255, 1)
+  );
+  border-color: #00c8ff;
+  box-shadow: 0 14px 35px rgba(0, 170, 255, 0.6);
+}
+
+/* Active */
+.uiButton:active {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 112, 243, 0.4);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .header {
+    padding: 16px 30px;
+  }
+
+  .container {
+    padding: 32px;
+  }
+
+  .buttonGrid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+/* Mobile landscape */
+@media (max-width: 768px) {
+  .header {
+    padding: 14px 20px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .container {
+    padding: 26px;
+    min-height: auto;
+  }
+
+  .buttonGrid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+  }
+
+  .uiButton {
+    font-size: 15px;
+    padding: 18px;
+  }
+}
+
+/* Mobile portrait */
+@media (max-width: 500px) {
+  .container {
+    padding: 22px;
+  }
+
+  .sectionTitle {
+    font-size: 18px;
+  }
+
+  .buttonGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .uiButton {
+    font-size: 14px;
+    padding: 16px;
+  }
+}
+
+/* Extra small */
+@media (max-width: 380px) {
+  .header {
+    padding: 10px 12px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .container {
+    padding: 18px;
+  }
+
+  .uiButton {
+    font-size: 13px;
+    padding: 14px;
+  }
 }

@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from "react";
+import styles from "./trafficRecords.module.css";
+import AdminHeader from "../adminHeader";
 
 type TrafficRecord = {
   _id: string;
@@ -39,33 +41,44 @@ export default function TrafficRecordsPage() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Traffic Records</h1>
+    <div className={styles.fullpage}>
+      <AdminHeader />
 
-      <input
-        type="text"
-        placeholder="Enter number plate"
-        value={plate}
-        onChange={e => setPlate(e.target.value)}
-        style={{ padding: 8, marginRight: 8 }}
-      />
-      <button onClick={handleSearch} style={{ padding: 8 }}>Search</button>
+      <main className={styles.container}>
+        <h2 className={styles.sectionTitle}>Search Traffic Records</h2>
 
-      {loading && <p>Loading records...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {!loading && !error && records.length === 0 && plate && <p>No records found.</p>}
+        <div className={styles.searchSection}>
+          <input
+            type="text"
+            placeholder="Enter number plate"
+            value={plate}
+            onChange={e => setPlate(e.target.value)}
+            className={styles.searchInput}
+          />
+          <button onClick={handleSearch} className={styles.searchButton}>
+            Search
+          </button>
+        </div>
 
-      <ul>
-        {records.map(r => (
-          <li key={r._id}>
-            {r.number_plate} — {r.violation_type || "No Violation"} 
-            {r.severity && ` | Severity: ${r.severity}`}
-            {r.fine_amount !== undefined && ` | Fine: ${r.fine_amount}`}
-            {r.status && ` | Status: ${r.status}`}
-            ({new Date(r.date).toLocaleDateString()})
-          </li>
-        ))}
-      </ul>
+        {loading && <p className={styles.loading}>Loading records...</p>}
+        {error && <p className={styles.error}>{error}</p>}
+        {!loading && !error && records.length === 0 && plate && (
+          <p className={styles.noRecords}>No records found.</p>
+        )}
+
+        <ul className={styles.recordsList}>
+          {records.map(r => (
+            <li key={r._id} className={styles.recordItem}>
+              <strong>{r.number_plate}</strong> — {r.violation_type || "No Violation"}
+              {r.severity && ` | Severity: ${r.severity}`}
+              {r.fine_amount !== undefined && ` | Fine: ${r.fine_amount}`}
+              {r.status && ` | Status: ${r.status}`}
+              <br />
+              <small>({new Date(r.date).toLocaleDateString()})</small>
+            </li>
+          ))}
+        </ul>
+      </main>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/dbConnection/dbConnection";
-const Carousel = require("@/models/carouselModel");
+import Carousel from "@/models/carouselModel";
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {

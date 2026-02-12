@@ -1,7 +1,7 @@
 // File: app/api/admin/UI/newsfeed/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/dbConnection/dbConnection";
-const NewsFeed = require("@/models/newsFeedModel");
+import NewsFeed from "@/models/newsFeedModel";
 
 // POST: Add a new news item
 export async function POST(req: NextRequest) {

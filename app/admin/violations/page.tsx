@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from "react";
+import styles from "./violations.module.css";
+import AdminHeader from "../adminHeader";
 
 type Violation = {
   _id: string;
@@ -37,27 +39,49 @@ export default function ViolationsPage() {
     fetchViolations();
   }, []);
 
-  if (loading) return <p style={{ padding: 20 }}>Loading violations...</p>;
-  if (error) return <p style={{ padding: 20, color: "red" }}>{error}</p>;
+  if (loading)
+    return (
+      <div className={styles.fullpage}>
+        <AdminHeader />
+        <main className={styles.container}>
+          <p className={styles.loading}>Loading violations...</p>
+        </main>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className={styles.fullpage}>
+        <AdminHeader />
+        <main className={styles.container}>
+          <p className={styles.error}>{error}</p>
+        </main>
+      </div>
+    );
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Recent Violations</h1>
+    <div className={styles.fullpage}>
+      <AdminHeader />
 
-      {violations.length === 0 ? (
-        <p>No violations found.</p>
-      ) : (
-        <ul>
-          {violations.map(v => (
-            <li key={v._id}>
-              {v.plate} — {v.type} ({new Date(v.date).toLocaleDateString()})
-              {v.severity && ` | Severity: ${v.severity}`}
-              {v.fine_amount !== undefined && ` | Fine: ${v.fine_amount}`}
-              {v.status && ` | Status: ${v.status}`}
-            </li>
-          ))}
-        </ul>
-      )}
+      <main className={styles.container}>
+        <h2 className={styles.sectionTitle}>Violation Records</h2>
+
+        {violations.length === 0 ? (
+          <p className={styles.empty}>No violations found.</p>
+        ) : (
+          <ul className={styles.violationsList}>
+            {violations.map(v => (
+              <li key={v._id} className={styles.violationItem}>
+                <strong>{v.plate}</strong> — {v.type}{" "}
+                <small>({new Date(v.date).toLocaleDateString()})</small>
+                {v.severity && <div>Severity: {v.severity}</div>}
+                {v.fine_amount !== undefined && <div>Fine: ${v.fine_amount}</div>}
+                {v.status && <div>Status: {v.status}</div>}
+              </li>
+            ))}
+          </ul>
+        )}
+      </main>
     </div>
   );
 }

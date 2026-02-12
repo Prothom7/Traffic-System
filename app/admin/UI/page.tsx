@@ -2,16 +2,15 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import styles from "./UI.module.css"; // Make a CSS module for styling buttons
+import styles from "./UI.module.css";
+import AdminHeader from "../adminHeader";
 
 export default function AdminUIPage() {
   const router = useRouter();
 
   return (
     <div className={styles.fullpage}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Admin UI Panel</h1>
-      </header>
+      <AdminHeader />
 
       <main className={styles.container}>
         <div className={styles.buttonGrid}>

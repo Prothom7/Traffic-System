@@ -1,68 +1,71 @@
-'use client';
+"use client";
 
-import React from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import styles from "./admin.module.css";
+import AdminHeader from "./adminHeader";
+import "leaflet/dist/leaflet.css";
+
+// Dynamically import Map to prevent SSR issues
+const Map = dynamic(() => import("./map"), { ssr: false });
+
+interface LocationMarker {
+  name: string;
+  latitude: number;
+  longitude: number;
+}
 
 export default function AdminDashboard() {
-  const router = useRouter();
+  const [markers, setMarkers] = useState<LocationMarker[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await fetch("/api/admin/locations");
+        const data = await response.json();
+        console.log("Fetched locations:", data);
+        console.log("Number of locations:", data.length);
+        
+        if (data.error) {
+          console.error("API returned error:", data.error);
+          alert("Error: " + data.error);
+        } else {
+          setMarkers(data);
+          if (data.length === 0) {
+            console.warn("No camera locations found in database. Please add locations via 'Add Camera Location' page.");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+        alert("Failed to fetch locations. Check console for details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLocations();
+  }, []);
 
   return (
     <div className={styles.fullpage}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Admin Dashboard</h1>
-
-        <nav className={styles.nav}>
-          <button
-            onClick={() => router.push('/admin')}
-            className={styles.navButton}
-          >
-            Camera Locations
-          </button>
-
-          <button
-            onClick={() => router.push('/admin/vehicles')}
-            className={styles.navButton}
-          >
-            Vehicles
-          </button>
-
-          <button
-            onClick={() => router.push('/admin/traffic-records')}
-            className={styles.navButton}
-          >
-            Traffic Records
-          </button>
-
-          <button
-            onClick={() => router.push('/admin/violations')}
-            className={styles.navButton}
-          >
-            Violations
-          </button>
-
-          <button
-            onClick={() => router.push('/admin/UI')}
-            className={styles.navButton}
-          >
-            UI
-          </button>
-
-          <button className={styles.navButton}>
-            Simulate Violation
-          </button>
-        </nav>
-      </header>
+      <AdminHeader />
 
       <main className={styles.container}>
         <h2 className={styles.sectionTitle}>Live Camera Location Map</h2>
-        <div className={styles.mapWrapper}>
-          <iframe
-            title="Camera Locations Map"
-            width="100%"
-            height="500"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=90.35%2C23.65%2C90.45%2C23.80&layer=mapnik"
-          />
+        <div className={styles.mapWrapper} style={{ padding: "20px 0", height: "530px" }}>
+          {loading ? (
+            <p>Loading map...</p>
+          ) : markers.length === 0 ? (
+            <div style={{ padding: "20px", textAlign: "center" }}>
+              <p style={{ fontSize: "18px", marginBottom: "10px" }}>No camera locations found in database.</p>
+              <p style={{ fontSize: "14px", color: "#666" }}>
+                Please add camera locations using the <a href="/admin/addCamera" style={{ color: "#0070f3" }}>Add Camera Location</a> page.
+              </p>
+            </div>
+          ) : (
+            <Map markers={markers} />
+          )}
         </div>
       </main>
     </div>

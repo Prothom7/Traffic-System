@@ -29,6 +29,7 @@ const vehicleSchema = new mongoose.Schema(
 
     isAdmin: { type: Boolean, required: true, default: false },
     isVerified: { type: Boolean, required: true, default: false },
+    notifications_enabled: { type: Boolean, required: true, default: true },
 
     verifyToken: { type: String, required: true },
     verifyTokenExpiry: { type: Date, required: true },

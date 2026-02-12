@@ -15,6 +15,11 @@ const TrafficRecordSchema = new Schema({
   vehicle_id: { type: Schema.Types.ObjectId, ref: "Vehicle", required: true },
   number_plate: { type: String },
   location_id: { type: Schema.Types.ObjectId, ref: "Location" },
+  location: {
+    location_name: { type: String },
+    latitude: { type: Number },
+    longitude: { type: Number },
+  },
   timestamp: { type: Date, default: Date.now },
   speed: { type: Number },
   image_url: { type: String },
