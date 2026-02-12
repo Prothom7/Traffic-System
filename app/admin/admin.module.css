@@ -5,9 +5,12 @@
   min-height: 100vh;
   width: 100vw;
   display: flex;
-  justify-content: center;   /* horizontal center */
-  align-items: center;       /* vertical center */
-  padding: clamp(20px, 4vw, 60px);
+  flex-direction: column;
+  align-items: center;       /* horizontal center */
+  padding-top: 180px;        /* space for fixed header */
+  padding-bottom: clamp(20px, 4vw, 60px);
+  padding-left: clamp(20px, 4vw, 60px);
+  padding-right: clamp(20px, 4vw, 60px);
   box-sizing: border-box;
 
   font-family: 'Poppins', sans-serif;
@@ -134,20 +137,28 @@
 
 .mapWrapper {
   width: 100%;
+  height: clamp(400px, 60vh, 700px); /* responsive height */
+  margin: 0 auto; /* center horizontally */
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Responsive design for tablets */
 @media (max-width: 1024px) {
+  .fullpage {
+    padding-top: 160px;
+  }
+
   .header {
     padding: 16px 30px;
   }
 
   .container {
-    margin: 140px 20px 32px;
     padding: 30px;
   }
 
@@ -158,6 +169,10 @@
 
 /* Responsive design for mobile landscape */
 @media (max-width: 768px) {
+  .fullpage {
+    padding-top: 150px;
+  }
+
   .header {
     padding: 14px 20px;
     gap: 10px;
@@ -174,7 +189,6 @@
   }
 
   .container {
-    margin: 130px 16px 24px;
     padding: 25px;
   }
 
@@ -186,6 +200,10 @@
 
 /* Responsive design for mobile portrait */
 @media (max-width: 500px) {
+  .fullpage {
+    padding-top: 140px;
+  }
+
   .header {
     padding: 12px 16px;
   }
@@ -205,7 +223,6 @@
   }
 
   .container {
-    margin: 120px 12px 20px;
     padding: 20px;
   }
 
@@ -220,6 +237,10 @@
 
 /* Extra small screens */
 @media (max-width: 380px) {
+  .fullpage {
+    padding-top: 130px;
+  }
+
   .header {
     padding: 10px 12px;
   }
@@ -235,7 +256,6 @@
   }
 
   .container {
-    margin: 110px 10px 16px;
     padding: 16px;
   }
 }

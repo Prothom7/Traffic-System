@@ -53,7 +53,7 @@ export default function AdminDashboard() {
 
       <main className={styles.container}>
         <h2 className={styles.sectionTitle}>Live Camera Location Map</h2>
-        <div className={styles.mapWrapper} style={{ padding: "20px 0", height: "530px" }}>
+        <div className={styles.mapWrapper}>
           {loading ? (
             <p>Loading map...</p>
           ) : markers.length === 0 ? (

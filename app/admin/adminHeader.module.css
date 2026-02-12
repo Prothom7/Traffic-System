@@ -34,7 +34,7 @@
 .nav {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-evenly;
   gap: clamp(8px, 1.5vw, 14px);
   width: 100%;
   padding: 10px 14px;
