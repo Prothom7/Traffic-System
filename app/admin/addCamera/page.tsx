@@ -240,6 +240,10 @@ export default function AddCamera() {
     setCustomDistances({});
   };
 
+  const handleUncheckAll = () => {
+    setSelectedEdges(new Set());
+  };
+
   return (
     <div className={styles.fullpage}>
       <AdminHeader />
@@ -318,17 +322,51 @@ export default function AddCamera() {
 
             <div style={{ display: "flex", gap: "12px" }}>
               <button
+                onClick={handleUncheckAll}
+                style={{
+                  padding: "10px 24px",
+                  backgroundColor: "transparent",
+                  color: "rgba(255, 255, 255, 0.85)",
+                  border: "none",
+                  borderRadius: "999px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "background-color 0.25s ease, color 0.25s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                  e.currentTarget.style.color = "#ffffff";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)";
+                }}
+              >
+                Uncheck All
+              </button>
+              <button
                 onClick={handleSaveEdges}
                 disabled={loading}
                 style={{
                   padding: "10px 24px",
-                  backgroundColor: "#4CAF50",
-                  color: "white",
+                  backgroundColor: "transparent",
+                  color: "rgba(255, 255, 255, 0.85)",
                   border: "none",
-                  borderRadius: "6px",
+                  borderRadius: "999px",
                   fontWeight: "600",
                   cursor: loading ? "not-allowed" : "pointer",
                   opacity: loading ? 0.6 : 1,
+                  transition: "background-color 0.25s ease, color 0.25s ease",
+                }}
+                onMouseEnter={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                    e.currentTarget.style.color = "#ffffff";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)";
                 }}
               >
                 {loading ? "Saving..." : "Save Edges"}
@@ -337,12 +375,21 @@ export default function AddCamera() {
                 onClick={handleCancelEdges}
                 style={{
                   padding: "10px 24px",
-                  backgroundColor: "#757575",
-                  color: "white",
+                  backgroundColor: "transparent",
+                  color: "rgba(255, 255, 255, 0.85)",
                   border: "none",
-                  borderRadius: "6px",
+                  borderRadius: "999px",
                   fontWeight: "600",
                   cursor: "pointer",
+                  transition: "background-color 0.25s ease, color 0.25s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                  e.currentTarget.style.color = "#ffffff";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)";
                 }}
               >
                 Cancel
@@ -424,13 +471,24 @@ export default function AddCamera() {
               disabled={loading}
               style={{
                 padding: "10px 24px",
-                backgroundColor: "#4CAF50",
-                color: "white",
+                backgroundColor: "transparent",
+                color: "rgba(255, 255, 255, 0.85)",
                 border: "none",
-                borderRadius: "6px",
+                borderRadius: "999px",
                 fontWeight: "600",
                 cursor: loading ? "not-allowed" : "pointer",
                 opacity: loading ? 0.6 : 1,
+                transition: "background-color 0.25s ease, color 0.25s ease",
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                  e.currentTarget.style.color = "#ffffff";
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)";
               }}
             >
               {loading ? "Saving..." : editingId ? "Update Location" : "Add Location"}
@@ -441,12 +499,21 @@ export default function AddCamera() {
                 onClick={handleCancel}
                 style={{
                   padding: "10px 24px",
-                  backgroundColor: "#757575",
-                  color: "white",
+                  backgroundColor: "transparent",
+                  color: "rgba(255, 255, 255, 0.85)",
                   border: "none",
-                  borderRadius: "6px",
+                  borderRadius: "999px",
                   fontWeight: "600",
                   cursor: "pointer",
+                  transition: "background-color 0.25s ease, color 0.25s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                  e.currentTarget.style.color = "#ffffff";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)";
                 }}
               >
                 Cancel
@@ -475,17 +542,17 @@ export default function AddCamera() {
               }}
             >
               <thead>
-                <tr style={{ backgroundColor: "#f5f5f5" }}>
-                  <th style={{ padding: "12px", textAlign: "left", fontWeight: "700" }}>
+                <tr style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+                  <th style={{ padding: "12px", textAlign: "left", fontWeight: "700", color: "#fff" }}>
                     Camera Name
                   </th>
-                  <th style={{ padding: "12px", textAlign: "left", fontWeight: "700" }}>
+                  <th style={{ padding: "12px", textAlign: "left", fontWeight: "700", color: "#fff" }}>
                     Latitude
                   </th>
-                  <th style={{ padding: "12px", textAlign: "left", fontWeight: "700" }}>
+                  <th style={{ padding: "12px", textAlign: "left", fontWeight: "700", color: "#fff" }}>
                     Longitude
                   </th>
-                  <th style={{ padding: "12px", textAlign: "center", fontWeight: "700" }}>
+                  <th style={{ padding: "12px", textAlign: "center", fontWeight: "700", color: "#fff" }}>
                     Actions
                   </th>
                 </tr>
@@ -496,14 +563,7 @@ export default function AddCamera() {
                     key={location._id}
                     style={{
                       borderBottom: "1px solid #eee",
-                      transition: "background-color 0.2s",
                     }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.backgroundColor = "#f9f9f9")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.backgroundColor = "white")
-                    }
                   >
                     <td style={{ padding: "12px" }}>{location.location_name}</td>
                     <td style={{ padding: "12px" }}>{location.latitude.toFixed(4)}</td>
@@ -521,14 +581,25 @@ export default function AddCamera() {
                         onClick={() => handleEdit(location)}
                         disabled={loading}
                         style={{
-                          padding: "6px 12px",
-                          backgroundColor: "#2196F3",
-                          color: "white",
+                          padding: "8px 16px",
+                          backgroundColor: "transparent",
+                          color: "rgba(255, 255, 255, 0.85)",
                           border: "none",
-                          borderRadius: "4px",
+                          borderRadius: "999px",
                           cursor: loading ? "not-allowed" : "pointer",
                           fontWeight: "600",
                           opacity: loading ? 0.6 : 1,
+                          transition: "background-color 0.25s ease, color 0.25s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!loading) {
+                            e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                            e.currentTarget.style.color = "#ffffff";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)";
                         }}
                       >
                         Edit
@@ -537,14 +608,25 @@ export default function AddCamera() {
                         onClick={() => handleDelete(location._id)}
                         disabled={loading}
                         style={{
-                          padding: "6px 12px",
-                          backgroundColor: "#f44336",
-                          color: "white",
+                          padding: "8px 16px",
+                          backgroundColor: "transparent",
+                          color: "rgba(255, 255, 255, 0.85)",
                           border: "none",
-                          borderRadius: "4px",
+                          borderRadius: "999px",
                           cursor: loading ? "not-allowed" : "pointer",
                           fontWeight: "600",
                           opacity: loading ? 0.6 : 1,
+                          transition: "background-color 0.25s ease, color 0.25s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!loading) {
+                            e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                            e.currentTarget.style.color = "#ffffff";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)";
                         }}
                       >
                         Delete
@@ -553,14 +635,25 @@ export default function AddCamera() {
                         onClick={() => handleManageEdges(location)}
                         disabled={loading}
                         style={{
-                          padding: "6px 12px",
-                          backgroundColor: "#FF9800",
-                          color: "white",
+                          padding: "8px 16px",
+                          backgroundColor: "transparent",
+                          color: "rgba(255, 255, 255, 0.85)",
                           border: "none",
-                          borderRadius: "4px",
+                          borderRadius: "999px",
                           cursor: loading ? "not-allowed" : "pointer",
                           fontWeight: "600",
                           opacity: loading ? 0.6 : 1,
+                          transition: "background-color 0.25s ease, color 0.25s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!loading) {
+                            e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.12)";
+                            e.currentTarget.style.color = "#ffffff";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)";
                         }}
                       >
                         Manage Edges
