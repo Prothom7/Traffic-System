@@ -1,0 +1,228 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+.container {
+  min-height: 100vh;
+  background-image: url("/source/explore.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: 'Poppins', 'Inter', sans-serif;
+  color: #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  padding-top: 140px;
+}
+
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem 4rem;
+  flex: 1;
+}
+
+.pageHeader {
+  text-align: center;
+  padding: clamp(2rem, 4vw, 3rem);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  margin-bottom: 2.5rem;
+}
+
+.pageHeader h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin: 0.6rem 0 0.4rem;
+  color: #ffffff;
+}
+
+.pageHeader p {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.headerBadge {
+  display: inline-block;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.statCard {
+  background: rgba(15, 23, 42, 0.65);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+.statCard span {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #94a3b8;
+}
+
+.statCard strong {
+  font-size: 1.8rem;
+  color: #ffffff;
+}
+
+.listSection {
+  margin-bottom: 2.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #ffffff;
+}
+
+.sectionHeader span {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.cardList {
+  display: grid;
+  gap: 1rem;
+}
+
+.ticketCard {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
+}
+
+.ticketCard h3 {
+  margin: 0 0 0.4rem;
+  color: #ffffff;
+}
+
+.ticketCard p {
+  margin: 0.2rem 0;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.ticketMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: right;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.ticketStatus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #93c5fd;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.ticketFine {
+  font-weight: 600;
+  color: #fbbf24;
+}
+
+.placeholder {
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 16px;
+  padding: 1.8rem;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: #94a3b8;
+  text-align: center;
+}
+
+.analyticsCard {
+  background: rgba(15, 23, 42, 0.65);
+  border-radius: 18px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.analyticsCard h2 {
+  margin-top: 0;
+  color: #ffffff;
+}
+
+.analyticsCard p {
+  color: #cbd5e1;
+  margin-bottom: 1.5rem;
+}
+
+.analyticsPlaceholder {
+  min-height: 220px;
+  border-radius: 14px;
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 3rem 2rem;
+  font-size: 1.1rem;
+  color: #cbd5e1;
+}
+
+.error {
+  color: #f87171;
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 2rem 1.2rem 3rem;
+  }
+
+  .ticketCard {
+    flex-direction: column;
+    text-align: left;
+  }
+
+  .ticketMeta {
+    text-align: left;
+  }
+}

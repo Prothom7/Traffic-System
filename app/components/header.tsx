@@ -53,15 +53,15 @@ export default function Header({ userName }: HeaderProps) {
           </li>
 
           <li
-            className={isActive("/vehicles")}
-            onClick={() => router.push("/vehicles")}
+            className={isActive("/myvehicle")}
+            onClick={() => router.push("/myvehicle")}
           >
             My Vehicles
           </li>
 
           <li
-            className={isActive("/tickets")}
-            onClick={() => router.push("/tickets")}
+            className={isActive("/tickets&violations")}
+            onClick={() => router.push("/tickets&violations")}
           >
             Tickets & Violations
           </li>

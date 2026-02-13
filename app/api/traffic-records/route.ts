@@ -31,6 +31,11 @@ export async function GET(req: Request) {
         fine_amount: doc.violation?.fine_amount,
         status: doc.violation?.status,
         date: doc.timestamp,
+        location_name: doc.location?.location_name,
+        latitude: doc.location?.latitude,
+        longitude: doc.location?.longitude,
+        image_url: doc.image_url,
+        speed: doc.speed,
       };
     });
 
