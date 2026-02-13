@@ -36,11 +36,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Invalid or expired token" }, { status: 400 });
     }
 
-    // Update vehicle verification status
-    vehicleFound.isVerified = true;
-    vehicleFound.verifyToken = undefined;
-    vehicleFound.verifyTokenExpiry = undefined;
-    await vehicleFound.save();
+    // Update verification status without triggering required-field validation
+    await Vehicle.updateOne(
+      { _id: vehicleFound._id },
+      {
+        $set: { isVerified: true },
+        $unset: { verifyToken: "", verifyTokenExpiry: "" },
+      }
+    );
 
     console.log("✅ Vehicle owner verified:", vehicleFound.owner_email);
 

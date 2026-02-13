@@ -7,14 +7,15 @@
 
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 
   padding: clamp(20px, 4vw, 60px);
+  padding-top: clamp(140px, 18vw, 200px);
   box-sizing: border-box;
 
   font-family: 'Poppins', sans-serif;
 
-  background-image: url('/source/admin.png');
+  background-image: url('/source/admin_UI.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
