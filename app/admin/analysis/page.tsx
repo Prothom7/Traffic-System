@@ -4,10 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import styles from "./analysis.module.css";
 
 type ViolationRecord = {
-  _id: { $oid: string };
-  vehicle_id: { $oid: string };
+  _id: string;
+  vehicle_id: string;
   number_plate: string;
-  timestamp: { $date: string };
+  timestamp: string;
   speed: number;
   violation: {
     type: string;
@@ -63,7 +63,7 @@ export default function AnalysisPage() {
     const bySeverity: Record<string, number> = {};
 
     data.forEach((r) => {
-      const hour = getHour(r.timestamp.$date);
+      const hour = getHour(r.timestamp);
       byHour[hour] = (byHour[hour] || 0) + 1;
       byType[r.violation.type] = (byType[r.violation.type] || 0) + 1;
       byArea[r.violation.issued_by] = (byArea[r.violation.issued_by] || 0) + 1;
@@ -209,9 +209,9 @@ export default function AnalysisPage() {
           </thead>
           <tbody>
             {data.map((r, idx) => (
-              <tr key={r._id?.$oid ?? idx}>
+              <tr key={r._id ?? idx}>
                 <td>{r.number_plate}</td>
-                <td>{formatDate(r.timestamp.$date)}</td>
+                <td>{formatDate(r.timestamp)}</td>
                 <td>{r.violation.type}</td>
                 <td>{r.violation.severity}</td>
                 <td>{r.violation.issued_by}</td>
