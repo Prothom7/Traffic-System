@@ -1,4 +1,4 @@
-# Smart Traffic & Vehicle Management Portal
+# Traffic-System
 
 A full‑stack web platform for managing vehicle registration, traffic violations, accidents, and ownership services. Built using **Next.js**, the system simulates a digital traffic authority portal where citizens and administrators can interact with real‑time vehicle and violation data.
 

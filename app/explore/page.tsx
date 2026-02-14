@@ -12,6 +12,7 @@ interface NewsItem {
   imageUrl: string;
   title?: string;
   description?: string;
+  source?: string;
 }
 
 export default function ExplorePage() {
@@ -78,28 +79,34 @@ export default function ExplorePage() {
         <div className={styles.carousel}>
           <h2 className={styles.carouselTitle}>Latest News & Updates</h2>
           {newsItems.length > 0 ? (
-            newsItems.map((item, index) => (
-              <div
-                key={item._id}
-                className={`${styles.carouselSlide} ${
-                  index === currentSlide ? styles.active : ""
-                }`}
-              >
-                <img
-                  src={item.imageUrl}
-                  alt={item.title || "News"}
-                  className={styles.carouselImage}
-                />
+            newsItems.map((item, index) => {
+              const isExternal = item.source?.startsWith("http");
+              const href = item.source || "#";
 
-                <div className={styles.carouselCaption}>
-                  <h3>{item.title || "Transportation Update"}</h3>
-                  <p>
-                    {item.description ||
-                      "Stay informed about the latest transportation updates"}
-                  </p>
-                </div>
-              </div>
-            ))
+              return (
+                <a
+                  key={item._id}
+                  href={href}
+                  target={isExternal ? "_blank" : "_self"}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                  className={`${styles.carouselSlide} ${index === currentSlide ? styles.active : ""}`}
+                >
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title || "News"}
+                    className={styles.carouselImage}
+                  />
+
+                  <div className={styles.carouselCaption}>
+                    <h3>{item.title || "Transportation Update"}</h3>
+                    <p>
+                      {item.description ||
+                        "Stay informed about the latest transportation updates"}
+                    </p>
+                  </div>
+                </a>
+              );
+            })
           ) : (
             <div className={styles.carouselPlaceholder}>
               <p>No news available</p>
