@@ -99,7 +99,9 @@ export default function AnalysisPage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1>Traffic Violation Analysis</h1>
-        <p>Insights on when violations happen, vulnerable areas, and top types.</p>
+        <p>
+          Insights on when violations happen, vulnerable areas, and top types.
+        </p>
       </header>
 
       <section className={styles.kpis}>
@@ -109,15 +111,27 @@ export default function AnalysisPage() {
         </div>
         <div className={styles.kpi}>
           <h3>Most Vulnerable Area</h3>
-          <p>{totals.topArea ? `${totals.topArea[0]} (${totals.topArea[1]})` : "—"}</p>
+          <p>
+            {totals.topArea
+              ? `${totals.topArea[0]} (${totals.topArea[1]})`
+              : "—"}
+          </p>
         </div>
         <div className={styles.kpi}>
           <h3>Most Common Type</h3>
-          <p>{totals.topType ? `${totals.topType[0]} (${totals.topType[1]})` : "—"}</p>
+          <p>
+            {totals.topType
+              ? `${totals.topType[0]} (${totals.topType[1]})`
+              : "—"}
+          </p>
         </div>
         <div className={styles.kpi}>
           <h3>Peak Hour</h3>
-          <p>{totals.topHour ? `${totals.topHour[0]}:00 (${totals.topHour[1]})` : "—"}</p>
+          <p>
+            {totals.topHour
+              ? `${totals.topHour[0]}:00 (${totals.topHour[1]})`
+              : "—"}
+          </p>
         </div>
       </section>
 
@@ -194,8 +208,8 @@ export default function AnalysisPage() {
             </tr>
           </thead>
           <tbody>
-            {data.map((r) => (
-              <tr key={r._id.$oid}>
+            {data.map((r, idx) => (
+              <tr key={r._id?.$oid ?? idx}>
                 <td>{r.number_plate}</td>
                 <td>{formatDate(r.timestamp.$date)}</td>
                 <td>{r.violation.type}</td>
