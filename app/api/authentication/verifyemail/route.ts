@@ -1,6 +1,6 @@
 // File: app/api/authentication/verifyemail/route.ts
 import { connect } from "@/dbConnection/dbConnection";
-import Vehicle from "@/models/vehicleModel";
+import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
@@ -16,36 +16,36 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Token missing" }, { status: 400 });
     }
 
-    // Find all vehicles whose verifyToken hasn't expired
-    const vehicles = await Vehicle.find({
+    // Find all users whose verifyToken hasn't expired
+    const users = await User.find({
       verifyTokenExpiry: { $gt: Date.now() },
     });
 
-    let vehicleFound = null;
+    let userFound = null;
 
     // Compare SHA-256 hash of the token with the stored hashed token
-    for (const vehicle of vehicles) {
+    for (const user of users) {
       const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-      if (hashedToken === vehicle.verifyToken) {
-        vehicleFound = vehicle;
+      if (hashedToken === user.verifyToken) {
+        userFound = user;
         break;
       }
     }
 
-    if (!vehicleFound) {
+    if (!userFound) {
       return NextResponse.json({ error: "Invalid or expired token" }, { status: 400 });
     }
 
     // Update verification status without triggering required-field validation
-    await Vehicle.updateOne(
-      { _id: vehicleFound._id },
+    await User.updateOne(
+      { _id: userFound._id },
       {
         $set: { isVerified: true },
         $unset: { verifyToken: "", verifyTokenExpiry: "" },
       }
     );
 
-    console.log("✅ Vehicle owner verified:", vehicleFound.owner_email);
+    console.log("✅ User verified:", userFound.email);
 
     // Redirect to signin page after successful verification
     return NextResponse.redirect(
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     );
 
   } catch (error: any) {
-    console.error("Verify vehicle email error:", error);
+    console.error("Verify user email error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

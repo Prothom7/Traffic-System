@@ -3,6 +3,7 @@ import { connect } from "@/dbConnection/dbConnection";
 import { decodeJWTToken } from "@/helpers/jwtToken";
 import Notification from "@/models/notificationModel";
 import Vehicle from "@/models/vehicleModel";
+import User from "@/models/userModel";
 
 function extractToken(req: NextRequest): string | null {
   const authHeader = req.headers.get("authorization");
@@ -28,14 +29,24 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const vehicle = await Vehicle.findById(decoded.id).select("notifications_enabled");
-    const notificationsEnabled = vehicle?.notifications_enabled !== false;
+    // Get user (decoded.id is now user_id)
+    const user = await User.findById(decoded.id).select("notifications_enabled");
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const notificationsEnabled = user?.notifications_enabled !== false;
 
     if (!notificationsEnabled) {
       return NextResponse.json({ notifications: [], notificationsEnabled: false });
     }
 
-    const notifications = await Notification.find({ vehicle_id: decoded.id })
+    // Get all vehicles for this user
+    const vehicles = await Vehicle.find({ userId: decoded.id });
+    const vehicleIds = vehicles.map((v) => v._id);
+
+    // Get notifications for all vehicles
+    const notifications = await Notification.find({ vehicle_id: { $in: vehicleIds } })
       .sort({ createdAt: -1 })
       .limit(20)
       .lean();

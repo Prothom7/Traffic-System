@@ -7,45 +7,32 @@ import { useRouter } from "next/navigation";
 import styles from "./vehicle.module.css";
 import Link from "next/link";
 
-export default function VehicleSignupPage() {
+export default function UserSignupPage() {
   const router = useRouter();
 
-  const [vehicle, setVehicle] = useState({
-    number_plate: "",
-    chassis_number: "",
+  const [user, setUser] = useState({
     owner_name: "",
-    owner_email: "",
-    owner_contact: "",
-    owner_address: "",
-    vehicle_type: "",
-    model: "",
+    email: "",
     password: "",
-    color: "",
-    year_of_manufacture: "",
-    engine_type: "",
-    registration_expiry: "",
+    contact: "",
+    address: "",
   });
 
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [showTooltip, setShowTooltip] = useState<string | null>(null);
 
   useEffect(() => {
-    const allFilled = Object.values(vehicle).every((v) => v !== "");
+    const allFilled = Object.values(user).every((v) => v !== "");
     setButtonDisabled(!allFilled);
-  }, [vehicle]);
+  }, [user]);
 
   const onSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setLoading(true);
 
-      const payload = {
-        ...vehicle,
-        year_of_manufacture: Number(vehicle.year_of_manufacture),
-        registration_expiry: new Date(vehicle.registration_expiry),
-      };
-
-      await axios.post("/api/authentication/signup", payload);
+      await axios.post("/api/authentication/signup", user);
 
       toast.success("Verification email sent!");
       router.push("/check-email");
@@ -56,152 +43,182 @@ export default function VehicleSignupPage() {
     }
   };
 
+  const tooltips = {
+    owner_name: { label: "Full Name", example: "e.g., John Ahmed Khan", help: "Enter your complete first and last name" },
+    email: { label: "Email", example: "e.g., john.khan@gmail.com", help: "Use a valid email you can access" },
+    password: { label: "Password", example: "e.g., SecurePass@123", help: "Min 8 chars: letters, numbers, special chars" },
+    contact: { label: "Contact Number", example: "e.g., +923001234567 or 0300-1234567", help: "Your phone number for communication" },
+    address: { label: "Address", example: "e.g., 123 Main Street, Karachi, Pakistan", help: "Your residential or business address" },
+  };
+
   return (
     <div className={styles.fullpage}>
       {/* Header at top-left */}
       <div className={styles.header}>
-        Vehicle Registration Portal
+        User Registration Portal
       </div>
 
       {/* Main container */}
       <div className={styles.container}>
         <h2 className={styles.title}>
-          {loading ? "Processing..." : "Vehicle Registration"}
+          {loading ? "Processing..." : "Create Account"}
         </h2>
 
         <form onSubmit={onSignup} className={styles.form}>
-          <input
-            type="text"
-            placeholder="Number Plate"
-            value={vehicle.number_plate}
-            onChange={(e) => setVehicle({ ...vehicle, number_plate: e.target.value.toUpperCase() })}
-            className={styles.input}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Chassis Number"
-            value={vehicle.chassis_number}
-            onChange={(e) => setVehicle({ ...vehicle, chassis_number: e.target.value })}
-            className={styles.input}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Owner Name"
-            value={vehicle.owner_name}
-            onChange={(e) => setVehicle({ ...vehicle, owner_name: e.target.value })}
-            className={styles.input}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Owner Email"
-            value={vehicle.owner_email}
-            onChange={(e) => setVehicle({ ...vehicle, owner_email: e.target.value })}
-            className={styles.input}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Owner Contact"
-            value={vehicle.owner_contact}
-            onChange={(e) => setVehicle({ ...vehicle, owner_contact: e.target.value })}
-            className={styles.input}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Owner Address"
-            value={vehicle.owner_address}
-            onChange={(e) => setVehicle({ ...vehicle, owner_address: e.target.value })}
-            className={styles.input}
-            required
-          />
-          <select
-            className={styles.input}
-            value={vehicle.vehicle_type}
-            onChange={(e) => setVehicle({ ...vehicle, vehicle_type: e.target.value })}
-            required
-          >
-            <option value="">Select Vehicle Type</option>
-            <option value="Car">Car</option>
-            <option value="Truck">Truck</option>
-            <option value="Motorcycle">Motorcycle</option>
-            <option value="Bus">Bus</option>
-            <option value="Van">Van</option>
-            <option value="Other">Other</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Vehicle Model"
-            value={vehicle.model}
-            onChange={(e) => setVehicle({ ...vehicle, model: e.target.value })}
-            className={styles.input}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={vehicle.password}
-            onChange={(e) => setVehicle({ ...vehicle, password: e.target.value })}
-            className={styles.input}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Color"
-            value={vehicle.color}
-            onChange={(e) => setVehicle({ ...vehicle, color: e.target.value })}
-            className={styles.input}
-            required
-          />
-          <input
-            type="number"
-            placeholder="Year of Manufacture"
-            value={vehicle.year_of_manufacture}
-            onChange={(e) => setVehicle({ ...vehicle, year_of_manufacture: e.target.value })}
-            className={styles.input}
-            min={1900}
-            max={new Date().getFullYear()}
-            required
-          />
-          <select
-            className={styles.input}
-            value={vehicle.engine_type}
-            onChange={(e) => setVehicle({ ...vehicle, engine_type: e.target.value })}
-            required
-          >
-            <option value="">Select Engine Type</option>
-            <option value="Petrol">Petrol</option>
-            <option value="Diesel">Diesel</option>
-            <option value="Electric">Electric</option>
-            <option value="Hybrid">Hybrid</option>
-            <option value="CNG">CNG</option>
-            <option value="Other">Other</option>
-          </select>
-          <input
-            type="date"
-            placeholder="Registration Expiry"
-            value={vehicle.registration_expiry}
-            onChange={(e) => setVehicle({ ...vehicle, registration_expiry: e.target.value })}
-            className={styles.input}
-            required
-          />
+          <div className={styles.inputGroup}>
+            <div className={styles.labelWithIcon}>
+              <label>Full Name</label>
+              <span 
+                className={styles.infoIcon}
+                onMouseEnter={() => setShowTooltip("owner_name")}
+                onMouseLeave={() => setShowTooltip(null)}
+                title="Enter your complete name"
+              >
+                ℹ️
+              </span>
+              {showTooltip === "owner_name" && (
+                <div className={styles.tooltip}>
+                  <p className={styles.tooltipText}>{tooltips.owner_name.help}</p>
+                  <p className={styles.tooltipExample}>{tooltips.owner_name.example}</p>
+                </div>
+              )}
+            </div>
+            <input
+              type="text"
+              placeholder="John Ahmed Khan"
+              value={user.owner_name}
+              onChange={(e) => setUser({ ...user, owner_name: e.target.value })}
+              className={styles.input}
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <div className={styles.labelWithIcon}>
+              <label>Email</label>
+              <span 
+                className={styles.infoIcon}
+                onMouseEnter={() => setShowTooltip("email")}
+                onMouseLeave={() => setShowTooltip(null)}
+                title="Enter a valid email address"
+              >
+                ℹ️
+              </span>
+              {showTooltip === "email" && (
+                <div className={styles.tooltip}>
+                  <p className={styles.tooltipText}>{tooltips.email.help}</p>
+                  <p className={styles.tooltipExample}>{tooltips.email.example}</p>
+                </div>
+              )}
+            </div>
+            <input
+              type="email"
+              placeholder="your.email@example.com"
+              value={user.email}
+              onChange={(e) => setUser({ ...user, email: e.target.value })}
+              className={styles.input}
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <div className={styles.labelWithIcon}>
+              <label>Password</label>
+              <span 
+                className={styles.infoIcon}
+                onMouseEnter={() => setShowTooltip("password")}
+                onMouseLeave={() => setShowTooltip(null)}
+                title="Create a strong password"
+              >
+                ℹ️
+              </span>
+              {showTooltip === "password" && (
+                <div className={styles.tooltip}>
+                  <p className={styles.tooltipText}>{tooltips.password.help}</p>
+                  <p className={styles.tooltipExample}>{tooltips.password.example}</p>
+                </div>
+              )}
+            </div>
+            <input
+              type="password"
+              placeholder="SecurePass@123"
+              value={user.password}
+              onChange={(e) => setUser({ ...user, password: e.target.value })}
+              className={styles.input}
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <div className={styles.labelWithIcon}>
+              <label>Contact Number</label>
+              <span 
+                className={styles.infoIcon}
+                onMouseEnter={() => setShowTooltip("contact")}
+                onMouseLeave={() => setShowTooltip(null)}
+                title="Enter your contact number"
+              >
+                ℹ️
+              </span>
+              {showTooltip === "contact" && (
+                <div className={styles.tooltip}>
+                  <p className={styles.tooltipText}>{tooltips.contact.help}</p>
+                  <p className={styles.tooltipExample}>{tooltips.contact.example}</p>
+                </div>
+              )}
+            </div>
+            <input
+              type="text"
+              placeholder="+923001234567"
+              value={user.contact}
+              onChange={(e) => setUser({ ...user, contact: e.target.value })}
+              className={styles.input}
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <div className={styles.labelWithIcon}>
+              <label>Address</label>
+              <span 
+                className={styles.infoIcon}
+                onMouseEnter={() => setShowTooltip("address")}
+                onMouseLeave={() => setShowTooltip(null)}
+                title="Enter your complete address"
+              >
+                ℹ️
+              </span>
+              {showTooltip === "address" && (
+                <div className={styles.tooltip}>
+                  <p className={styles.tooltipText}>{tooltips.address.help}</p>
+                  <p className={styles.tooltipExample}>{tooltips.address.example}</p>
+                </div>
+              )}
+            </div>
+            <input
+              type="text"
+              placeholder="123 Main Street, Karachi, Pakistan"
+              value={user.address}
+              onChange={(e) => setUser({ ...user, address: e.target.value })}
+              className={styles.input}
+              required
+            />
+          </div>
 
           <button
             type="submit"
             className={styles.button}
             disabled={buttonDisabled || loading}
           >
-            {buttonDisabled ? "Fill all fields" : loading ? "Registering..." : "Register Vehicle"}
+            {buttonDisabled ? "Fill all fields" : loading ? "Creating account..." : "Register"}
           </button>
 
           <Link href="/authentication/signin" className={styles.link}>
-            Already registered? Sign in
+            Already have an account? Sign in
           </Link>
         </form>
       </div>
     </div>
   );
 }
+

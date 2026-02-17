@@ -1,6 +1,6 @@
 // File: app/api/authentication/signin/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import Vehicle from "@/models/vehicleModel";
+import User from "@/models/userModel";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/helpers/jwtToken";
 import { connect } from "@/dbConnection/dbConnection";
@@ -18,19 +18,19 @@ export async function POST(request: NextRequest) {
     }
     await connect();
 
-    const vehicle = await Vehicle.findOne({ owner_email: email }).select(
+    const user = await User.findOne({ email }).select(
       "+password",
     );
-    if (!vehicle) {
+    if (!user) {
       return NextResponse.json({ error: "Account not found" }, { status: 404 });
     }
 
-    const isMatch = await vehicle.comparePassword(password);
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return NextResponse.json({ error: "Invalid password" }, { status: 400 });
     }
 
-    if (!vehicle.isVerified) {
+    if (!user.isVerified) {
       return NextResponse.json(
         { error: "Email not verified" },
         { status: 400 },
@@ -38,10 +38,10 @@ export async function POST(request: NextRequest) {
     }
 
     const token = signToken({
-      id: vehicle._id.toString(),
-      email: vehicle.owner_email,
-      type: "vehicle",
-      name: vehicle.owner_name,
+      id: user._id.toString(),
+      email: user.email,
+      type: "user",
+      name: user.owner_name,
     });
 
     return NextResponse.json({ success: true, token });

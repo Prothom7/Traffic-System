@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [user, setUser] = useState({ email: "", password: "" });
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [showTooltip, setShowTooltip] = useState<string | null>(null);
 
   useEffect(() => {
     setButtonDisabled(!(user.email && user.password));
@@ -40,6 +41,11 @@ export default function LoginPage() {
     }
   };
 
+  const tooltips = {
+    email: { label: "Email", example: "e.g., john.khan@gmail.com", help: "Enter the email address you registered with" },
+    password: { label: "Password", example: "e.g., SecurePass@123", help: "Your account password - case sensitive" },
+  };
+
   return (
     <div className={styles.fullpage}>
       {/* Top header */}
@@ -54,22 +60,62 @@ export default function LoginPage() {
         <div className={styles.container}>
           <h2 className={styles.title}>{loading ? "Signing in..." : "Sign in"}</h2>
           <form onSubmit={onLogin} className={styles.form}>
-            <input
-              type="email"
-              placeholder="Email"
-              value={user.email}
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
-              className={styles.input}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={user.password}
-              onChange={(e) => setUser({ ...user, password: e.target.value })}
-              className={styles.input}
-              required
-            />
+            <div className={styles.inputGroup}>
+              <div className={styles.labelWithIcon}>
+                <label>Email</label>
+                <span 
+                  className={styles.infoIcon}
+                  onMouseEnter={() => setShowTooltip("email")}
+                  onMouseLeave={() => setShowTooltip(null)}
+                  title="Enter your registered email"
+                >
+                  ℹ️
+                </span>
+                {showTooltip === "email" && (
+                  <div className={styles.tooltip}>
+                    <p className={styles.tooltipText}>{tooltips.email.help}</p>
+                    <p className={styles.tooltipExample}>{tooltips.email.example}</p>
+                  </div>
+                )}
+              </div>
+              <input
+                type="email"
+                placeholder="your.email@example.com"
+                value={user.email}
+                onChange={(e) => setUser({ ...user, email: e.target.value })}
+                className={styles.input}
+                required
+              />
+            </div>
+
+            <div className={styles.inputGroup}>
+              <div className={styles.labelWithIcon}>
+                <label>Password</label>
+                <span 
+                  className={styles.infoIcon}
+                  onMouseEnter={() => setShowTooltip("password")}
+                  onMouseLeave={() => setShowTooltip(null)}
+                  title="Enter your password"
+                >
+                  ℹ️
+                </span>
+                {showTooltip === "password" && (
+                  <div className={styles.tooltip}>
+                    <p className={styles.tooltipText}>{tooltips.password.help}</p>
+                    <p className={styles.tooltipExample}>{tooltips.password.example}</p>
+                  </div>
+                )}
+              </div>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={user.password}
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                className={styles.input}
+                required
+              />
+            </div>
+
             <button
               type="submit"
               className={styles.button}

@@ -15,8 +15,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const vehicle = await Vehicle.findOne({ number_plate: number_plate.toUpperCase() })
-      .select("-password -verifyToken -verifyTokenExpiry");
+    const vehicle = await Vehicle.findOne({ number_plate: number_plate.toUpperCase() });
 
     if (!vehicle) {
       return NextResponse.json(

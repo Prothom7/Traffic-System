@@ -1,12 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/dbConnection/dbConnection";
 import Vehicle from "@/models/vehicleModel";
+import User from "@/models/userModel";
+import { decodeJWTToken } from "@/helpers/jwtToken";
 
 export async function POST(req: NextRequest) {
   try {
     await connect();
+
+    // Verify user is authenticated
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const token = authHeader.slice(7);
+    const decoded = decodeJWTToken(token);
+    if (!decoded) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+
     const body = await req.json();
-    const { number_plate, owner_contact, owner_address, color } = body;
+    const { number_plate, color, contact, address } = body;
 
     if (!number_plate) {
       return NextResponse.json(
@@ -24,13 +39,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (owner_contact) vehicle.owner_contact = owner_contact;
-    if (owner_address) vehicle.owner_address = owner_address;
-    if (color) vehicle.color = color;
+    // Verify user owns this vehicle
+    if (vehicle.userId.toString() !== decoded.id) {
+      return NextResponse.json(
+        { success: false, error: "You do not own this vehicle" },
+        { status: 403 }
+      );
+    }
 
+    // Update vehicle details
+    if (color) vehicle.color = color;
     await vehicle.save();
 
-    return NextResponse.json({ success: true, data: vehicle });
+    // Update user contact and address
+    const user = await User.findById(decoded.id);
+    if (user) {
+      if (contact) user.contact = contact;
+      if (address) user.address = address;
+      await user.save();
+    }
+
+    return NextResponse.json({ success: true, data: { vehicle, user } });
   } catch (err) {
     console.error("Failed to update details:", err);
     return NextResponse.json(
@@ -38,4 +67,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+
