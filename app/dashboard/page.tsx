@@ -24,6 +24,13 @@ interface NotificationItem {
   createdAt: string;
 }
 
+interface DashboardStats {
+  myVehicles: number;
+  activeTickets: number;
+  paidTickets: number;
+  totalFines: number;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
 
@@ -35,6 +42,13 @@ export default function DashboardPage() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [notificationError, setNotificationError] = useState("");
+  const [stats, setStats] = useState<DashboardStats>({
+    myVehicles: 0,
+    activeTickets: 0,
+    paidTickets: 0,
+    totalFines: 0
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
 
   /* AUTH + USER */
   useEffect(() => {
@@ -51,6 +65,33 @@ export default function DashboardPage() {
     const decoded = decodeJWTClient(token);
     if (decoded?.name) setUserName(decoded.name);
   }, [router]);
+
+  /* FETCH DASHBOARD STATS */
+  useEffect(() => {
+    if (!authToken) return;
+
+    const fetchStats = async () => {
+      setStatsLoading(true);
+      try {
+        const response = await fetch("/api/dashboard/stats", {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          setStats(data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch dashboard stats:", err);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [authToken]);
 
   /* FETCH NOTIFICATIONS */
   useEffect(() => {
@@ -155,22 +196,22 @@ export default function DashboardPage() {
         <section className={styles.statsGrid}>
           <div className={styles.statCard}>
             <h3>My Vehicles</h3>
-            <p className={styles.statNumber}>3</p>
+            <p className={styles.statNumber}>{statsLoading ? "-" : stats.myVehicles}</p>
           </div>
 
           <div className={`${styles.statCard} ${styles.warning}`}>
             <h3>Active Tickets</h3>
-            <p className={styles.statNumber}>2</p>
+            <p className={styles.statNumber}>{statsLoading ? "-" : stats.activeTickets}</p>
           </div>
 
           <div className={`${styles.statCard} ${styles.success}`}>
             <h3>Paid Tickets</h3>
-            <p className={styles.statNumber}>5</p>
+            <p className={styles.statNumber}>{statsLoading ? "-" : stats.paidTickets}</p>
           </div>
 
           <div className={styles.statCard}>
             <h3>Total Fines</h3>
-            <p className={styles.statNumber}>$450</p>
+            <p className={styles.statNumber}>{statsLoading ? "-" : `$${stats.totalFines.toFixed(2)}`}</p>
           </div>
         </section>
 

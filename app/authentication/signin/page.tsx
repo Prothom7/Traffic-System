@@ -61,8 +61,15 @@ export default function LoginPage() {
           <h2 className={styles.title}>{loading ? "Signing in..." : "Sign in"}</h2>
           <form onSubmit={onLogin} className={styles.form}>
             <div className={styles.inputGroup}>
-              <div className={styles.labelWithIcon}>
-                <label>Email</label>
+              <div className={styles.inputWrapper}>
+                <input
+                  type="email"
+                  placeholder="your.email@example.com"
+                  value={user.email}
+                  onChange={(e) => setUser({ ...user, email: e.target.value })}
+                  className={styles.input}
+                  required
+                />
                 <span 
                   className={styles.infoIcon}
                   onMouseEnter={() => setShowTooltip("email")}
@@ -71,26 +78,25 @@ export default function LoginPage() {
                 >
                   ℹ️
                 </span>
-                {showTooltip === "email" && (
-                  <div className={styles.tooltip}>
-                    <p className={styles.tooltipText}>{tooltips.email.help}</p>
-                    <p className={styles.tooltipExample}>{tooltips.email.example}</p>
-                  </div>
-                )}
               </div>
-              <input
-                type="email"
-                placeholder="your.email@example.com"
-                value={user.email}
-                onChange={(e) => setUser({ ...user, email: e.target.value })}
-                className={styles.input}
-                required
-              />
+              {showTooltip === "email" && (
+                <div className={styles.tooltip}>
+                  <p className={styles.tooltipText}>{tooltips.email.help}</p>
+                  <p className={styles.tooltipExample}>{tooltips.email.example}</p>
+                </div>
+              )}
             </div>
 
             <div className={styles.inputGroup}>
-              <div className={styles.labelWithIcon}>
-                <label>Password</label>
+              <div className={styles.inputWrapper}>
+                <input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={user.password}
+                  onChange={(e) => setUser({ ...user, password: e.target.value })}
+                  className={styles.input}
+                  required
+                />
                 <span 
                   className={styles.infoIcon}
                   onMouseEnter={() => setShowTooltip("password")}
@@ -99,21 +105,13 @@ export default function LoginPage() {
                 >
                   ℹ️
                 </span>
-                {showTooltip === "password" && (
-                  <div className={styles.tooltip}>
-                    <p className={styles.tooltipText}>{tooltips.password.help}</p>
-                    <p className={styles.tooltipExample}>{tooltips.password.example}</p>
-                  </div>
-                )}
               </div>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                value={user.password}
-                onChange={(e) => setUser({ ...user, password: e.target.value })}
-                className={styles.input}
-                required
-              />
+              {showTooltip === "password" && (
+                <div className={styles.tooltip}>
+                  <p className={styles.tooltipText}>{tooltips.password.help}</p>
+                  <p className={styles.tooltipExample}>{tooltips.password.example}</p>
+                </div>
+              )}
             </div>
 
             <button

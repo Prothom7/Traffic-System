@@ -158,6 +158,85 @@
   box-shadow: 0 12px 22px rgba(15, 23, 42, 0.35);
 }
 
+.vehicleSelector {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 18px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(18px);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.selectLabel {
+  color: #cbd5e1;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.selectDropdown {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.selectDropdown:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.selectDropdown:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(0, 170, 255, 0.5);
+  box-shadow: 0 0 12px rgba(0, 170, 255, 0.2);
+}
+
+.statusLabel {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid;
+}
+
+.statusLabel.active {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+.statusLabel.stolen {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+.statusLabel.suspended {
+  background: rgba(234, 179, 8, 0.15);
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.3);
+}
+
+.statusLabel.expired {
+  background: rgba(107, 114, 128, 0.15);
+  color: #d1d5db;
+  border-color: rgba(209, 213, 219, 0.3);
+}
+
 .loading,
 .error {
   text-align: center;

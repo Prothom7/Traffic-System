@@ -66,8 +66,15 @@ export default function UserSignupPage() {
 
         <form onSubmit={onSignup} className={styles.form}>
           <div className={styles.inputGroup}>
-            <div className={styles.labelWithIcon}>
-              <label>Full Name</label>
+            <div className={styles.inputWrapper}>
+              <input
+                type="text"
+                placeholder="John Ahmed Khan"
+                value={user.owner_name}
+                onChange={(e) => setUser({ ...user, owner_name: e.target.value })}
+                className={styles.input}
+                required
+              />
               <span 
                 className={styles.infoIcon}
                 onMouseEnter={() => setShowTooltip("owner_name")}
@@ -76,26 +83,25 @@ export default function UserSignupPage() {
               >
                 ℹ️
               </span>
-              {showTooltip === "owner_name" && (
-                <div className={styles.tooltip}>
-                  <p className={styles.tooltipText}>{tooltips.owner_name.help}</p>
-                  <p className={styles.tooltipExample}>{tooltips.owner_name.example}</p>
-                </div>
-              )}
             </div>
-            <input
-              type="text"
-              placeholder="John Ahmed Khan"
-              value={user.owner_name}
-              onChange={(e) => setUser({ ...user, owner_name: e.target.value })}
-              className={styles.input}
-              required
-            />
+            {showTooltip === "owner_name" && (
+              <div className={styles.tooltip}>
+                <p className={styles.tooltipText}>{tooltips.owner_name.help}</p>
+                <p className={styles.tooltipExample}>{tooltips.owner_name.example}</p>
+              </div>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
-            <div className={styles.labelWithIcon}>
-              <label>Email</label>
+            <div className={styles.inputWrapper}>
+              <input
+                type="email"
+                placeholder="your.email@example.com"
+                value={user.email}
+                onChange={(e) => setUser({ ...user, email: e.target.value })}
+                className={styles.input}
+                required
+              />
               <span 
                 className={styles.infoIcon}
                 onMouseEnter={() => setShowTooltip("email")}
@@ -104,26 +110,25 @@ export default function UserSignupPage() {
               >
                 ℹ️
               </span>
-              {showTooltip === "email" && (
-                <div className={styles.tooltip}>
-                  <p className={styles.tooltipText}>{tooltips.email.help}</p>
-                  <p className={styles.tooltipExample}>{tooltips.email.example}</p>
-                </div>
-              )}
             </div>
-            <input
-              type="email"
-              placeholder="your.email@example.com"
-              value={user.email}
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
-              className={styles.input}
-              required
-            />
+            {showTooltip === "email" && (
+              <div className={styles.tooltip}>
+                <p className={styles.tooltipText}>{tooltips.email.help}</p>
+                <p className={styles.tooltipExample}>{tooltips.email.example}</p>
+              </div>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
-            <div className={styles.labelWithIcon}>
-              <label>Password</label>
+            <div className={styles.inputWrapper}>
+              <input
+                type="password"
+                placeholder="SecurePass@123"
+                value={user.password}
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                className={styles.input}
+                required
+              />
               <span 
                 className={styles.infoIcon}
                 onMouseEnter={() => setShowTooltip("password")}
@@ -132,26 +137,25 @@ export default function UserSignupPage() {
               >
                 ℹ️
               </span>
-              {showTooltip === "password" && (
-                <div className={styles.tooltip}>
-                  <p className={styles.tooltipText}>{tooltips.password.help}</p>
-                  <p className={styles.tooltipExample}>{tooltips.password.example}</p>
-                </div>
-              )}
             </div>
-            <input
-              type="password"
-              placeholder="SecurePass@123"
-              value={user.password}
-              onChange={(e) => setUser({ ...user, password: e.target.value })}
-              className={styles.input}
-              required
-            />
+            {showTooltip === "password" && (
+              <div className={styles.tooltip}>
+                <p className={styles.tooltipText}>{tooltips.password.help}</p>
+                <p className={styles.tooltipExample}>{tooltips.password.example}</p>
+              </div>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
-            <div className={styles.labelWithIcon}>
-              <label>Contact Number</label>
+            <div className={styles.inputWrapper}>
+              <input
+                type="text"
+                placeholder="+923001234567"
+                value={user.contact}
+                onChange={(e) => setUser({ ...user, contact: e.target.value })}
+                className={styles.input}
+                required
+              />
               <span 
                 className={styles.infoIcon}
                 onMouseEnter={() => setShowTooltip("contact")}
@@ -160,26 +164,25 @@ export default function UserSignupPage() {
               >
                 ℹ️
               </span>
-              {showTooltip === "contact" && (
-                <div className={styles.tooltip}>
-                  <p className={styles.tooltipText}>{tooltips.contact.help}</p>
-                  <p className={styles.tooltipExample}>{tooltips.contact.example}</p>
-                </div>
-              )}
             </div>
-            <input
-              type="text"
-              placeholder="+923001234567"
-              value={user.contact}
-              onChange={(e) => setUser({ ...user, contact: e.target.value })}
-              className={styles.input}
-              required
-            />
+            {showTooltip === "contact" && (
+              <div className={styles.tooltip}>
+                <p className={styles.tooltipText}>{tooltips.contact.help}</p>
+                <p className={styles.tooltipExample}>{tooltips.contact.example}</p>
+              </div>
+            )}
           </div>
 
           <div className={styles.inputGroup}>
-            <div className={styles.labelWithIcon}>
-              <label>Address</label>
+            <div className={styles.inputWrapper}>
+              <input
+                type="text"
+                placeholder="123 Main Street, Karachi, Pakistan"
+                value={user.address}
+                onChange={(e) => setUser({ ...user, address: e.target.value })}
+                className={styles.input}
+                required
+              />
               <span 
                 className={styles.infoIcon}
                 onMouseEnter={() => setShowTooltip("address")}
@@ -188,21 +191,13 @@ export default function UserSignupPage() {
               >
                 ℹ️
               </span>
-              {showTooltip === "address" && (
-                <div className={styles.tooltip}>
-                  <p className={styles.tooltipText}>{tooltips.address.help}</p>
-                  <p className={styles.tooltipExample}>{tooltips.address.example}</p>
-                </div>
-              )}
             </div>
-            <input
-              type="text"
-              placeholder="123 Main Street, Karachi, Pakistan"
-              value={user.address}
-              onChange={(e) => setUser({ ...user, address: e.target.value })}
-              className={styles.input}
-              required
-            />
+            {showTooltip === "address" && (
+              <div className={styles.tooltip}>
+                <p className={styles.tooltipText}>{tooltips.address.help}</p>
+                <p className={styles.tooltipExample}>{tooltips.address.example}</p>
+              </div>
+            )}
           </div>
 
           <button
