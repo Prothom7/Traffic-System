@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
+  const infoIconSrc = "/source/info.png";
   const [user, setUser] = useState({ email: "", password: "" });
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ export default function LoginPage() {
   };
 
   const tooltips = {
-    email: { label: "Email", example: "e.g., john.khan@gmail.com", help: "Enter the email address you registered with" },
+    email: { label: "Email", example: "e.g., nabil2107073@gmail.com", help: "Enter the email address you registered with" },
     password: { label: "Password", example: "e.g., SecurePass@123", help: "Your account password - case sensitive" },
   };
 
@@ -64,7 +65,7 @@ export default function LoginPage() {
               <div className={styles.inputWrapper}>
                 <input
                   type="email"
-                  placeholder="your.email@example.com"
+                  placeholder="Enter Your Email"
                   value={user.email}
                   onChange={(e) => setUser({ ...user, email: e.target.value })}
                   className={styles.input}
@@ -76,7 +77,7 @@ export default function LoginPage() {
                   onMouseLeave={() => setShowTooltip(null)}
                   title="Enter your registered email"
                 >
-                  ℹ️
+                  <img src={infoIconSrc} alt="Field info" className={styles.infoIconImage} />
                 </span>
               </div>
               {showTooltip === "email" && (
@@ -103,7 +104,7 @@ export default function LoginPage() {
                   onMouseLeave={() => setShowTooltip(null)}
                   title="Enter your password"
                 >
-                  ℹ️
+                  <img src={infoIconSrc} alt="Field info" className={styles.infoIconImage} />
                 </span>
               </div>
               {showTooltip === "password" && (

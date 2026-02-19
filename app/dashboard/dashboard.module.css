@@ -2,7 +2,11 @@
 
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  background-image: url('/source/explore.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   font-family: 'Poppins', "Inter", "Segoe UI", Arial, sans-serif;
   color: #e2e8f0;
   display: flex;
@@ -97,25 +101,43 @@
 
 /* ===== ANNOUNCEMENTS & CAROUSEL ===== */
 
-.announcements {
-  margin-top: 2.5rem;
-}
+/* ===== EXPLORE-LIKE TOP CAROUSEL ===== */
 
-.announcements h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1.25rem;
-  color: #ffffff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+.newsCarousel {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  margin-bottom: clamp(2.8rem, 5vw, 4.5rem);
 }
 
 .carousel {
   position: relative;
-  height: 360px;
+  width: 100%;
+  height: calc(100vh - 140px);
   overflow: hidden;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+}
+
+.carouselTitle {
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  text-align: center;
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  padding: 1.5rem 3rem;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .carouselSlide {
@@ -132,24 +154,24 @@
 
 .carouselImage {
   width: 100%;
-  height: 360px;
+  height: 100%;
   object-fit: cover;
 }
 
 .carouselCaption {
   position: absolute;
-  bottom: 1.75rem;
-  left: 1.75rem;
-  right: 1.75rem;
-  background: linear-gradient(
-    to top,
-    rgba(15, 23, 42, 0.95),
-    rgba(15, 23, 42, 0.85)
-  );
-  backdrop-filter: blur(8px);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: clamp(1.6rem, 3.5vw, 2.75rem);
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.35), transparent);
+  backdrop-filter: blur(4px);
   color: #ffffff;
-  padding: 1.25rem 1.5rem;
-  border-radius: 10px;
+}
+
+.carouselCaption h3,
+.carouselCaption p {
+  text-align: center;
 }
 
 .carouselCaption h3 {
@@ -164,11 +186,36 @@
   opacity: 0.95;
 }
 
+.carouselDots {
+  position: absolute;
+  bottom: 1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.6rem;
+  z-index: 2;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.dot.activeDot {
+  width: 28px;
+  background: #ffffff;
+}
+
 /* ===== MAIN CONTENT ===== */
 
 .main {
-  padding: 2.5rem 3rem 4rem;
-  max-width: 1400px;
+  width: 100%;
+  max-width: 1600px;
+  padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 3vw, 3rem) 4rem;
   margin: 0 auto;
   flex: 1;
 }
@@ -196,7 +243,7 @@
 
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
   margin-bottom: 3rem;
 }
@@ -261,7 +308,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.notificationControls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .notificationsHeader h2 {
@@ -282,6 +336,27 @@
   color: #0f172a;
 }
 
+.notificationToggleBtn {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 0.4rem 0.95rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.notificationToggleBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.notificationToggleBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .notificationsList {
   list-style: none;
   padding: 0;
@@ -291,10 +366,12 @@
 }
 
 .notificationItem {
-  background-color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
   padding: 1rem 1.1rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
 }
 
 .notificationTitle {
@@ -303,13 +380,13 @@
 }
 
 .notificationMeta {
-  color: #475569;
+  color: #cbd5e1;
   font-size: 0.88rem;
   margin-bottom: 0.35rem;
 }
 
 .notificationTime {
-  color: #94a3b8;
+  color: #bfdbfe;
   font-size: 0.8rem;
 }
 
@@ -320,8 +397,18 @@
 }
 
 .notificationEmpty {
-  color: #64748b;
+  color: #cbd5e1;
   font-size: 0.95rem;
+}
+
+.activeTicketsSection {
+  margin-bottom: 2.5rem;
+}
+
+.activeTicketsSection h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
 }
 
 /* ===== QUICK ACTIONS ===== */
@@ -398,6 +485,10 @@
 @media (max-width: 1024px) {
   .main {
     padding: 2rem 1.5rem;
+  }
+
+  .carousel {
+    height: 62vh;
   }
 
   .twoColumnLayout {

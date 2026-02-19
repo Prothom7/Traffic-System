@@ -67,3 +67,48 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Failed to fetch notifications" }, { status: 500 });
   }
 }
+
+export async function PATCH(req: NextRequest) {
+  try {
+    await connect();
+
+    const token = extractToken(req);
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const decoded = decodeJWTToken(token);
+    if (!decoded?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    if (typeof body?.notificationsEnabled !== "boolean") {
+      return NextResponse.json(
+        { error: "notificationsEnabled must be a boolean" },
+        { status: 400 }
+      );
+    }
+
+    const user = await User.findByIdAndUpdate(
+      decoded.id,
+      { notifications_enabled: body.notificationsEnabled },
+      { new: true }
+    ).select("notifications_enabled");
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      notificationsEnabled: user.notifications_enabled !== false,
+    });
+  } catch (err) {
+    console.error("Notifications update failed:", err);
+    return NextResponse.json(
+      { error: "Failed to update notification settings" },
+      { status: 500 }
+    );
+  }
+}

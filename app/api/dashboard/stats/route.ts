@@ -45,6 +45,14 @@ export async function GET(req: Request) {
     let activeTickets = 0;
     let paidTickets = 0;
     let totalFines = 0;
+    const activeTicketDetails: Array<{
+      _id: string;
+      number_plate: string;
+      violation_type: string;
+      fine_amount: number;
+      status: string;
+      timestamp: Date;
+    }> = [];
 
     trafficRecords.forEach((record: any) => {
       if (record.violation) {
@@ -53,6 +61,14 @@ export async function GET(req: Request) {
 
         if (status.toLowerCase() === "pending" || status.toLowerCase() === "active") {
           activeTickets++;
+          activeTicketDetails.push({
+            _id: record._id.toString(),
+            number_plate: record.number_plate || "Unknown Vehicle",
+            violation_type: record.violation.type || "Violation",
+            fine_amount: Number(fineAmount) || 0,
+            status,
+            timestamp: record.timestamp,
+          });
         } else if (status.toLowerCase() === "paid") {
           paidTickets++;
         }
@@ -68,7 +84,10 @@ export async function GET(req: Request) {
           myVehicles: vehicleCount,
           activeTickets,
           paidTickets,
-          totalFines
+          totalFines,
+          activeTicketDetails: activeTicketDetails
+            .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+            .slice(0, 8),
         }
       },
       { status: 200 }

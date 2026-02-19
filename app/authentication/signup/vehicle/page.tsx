@@ -9,6 +9,7 @@ import Link from "next/link";
 
 export default function UserSignupPage() {
   const router = useRouter();
+  const infoIconSrc = "/source/info.png";
 
   const [user, setUser] = useState({
     owner_name: "",
@@ -44,11 +45,11 @@ export default function UserSignupPage() {
   };
 
   const tooltips = {
-    owner_name: { label: "Full Name", example: "e.g., John Ahmed Khan", help: "Enter your complete first and last name" },
-    email: { label: "Email", example: "e.g., john.khan@gmail.com", help: "Use a valid email you can access" },
+    owner_name: { label: "Full Name", example: "e.g., Md. Rubayet Nabil", help: "Enter your complete first and last name" },
+    email: { label: "Email", example: "e.g., nabil2107073@gmail.com", help: "Use a valid email you can access" },
     password: { label: "Password", example: "e.g., SecurePass@123", help: "Min 8 chars: letters, numbers, special chars" },
-    contact: { label: "Contact Number", example: "e.g., +923001234567 or 0300-1234567", help: "Your phone number for communication" },
-    address: { label: "Address", example: "e.g., 123 Main Street, Karachi, Pakistan", help: "Your residential or business address" },
+    contact: { label: "Contact Number", example: "e.g., +8801521740000 or 01521750000", help: "Your phone number for communication" },
+    address: { label: "Address", example: "e.g., 123 Main Street, Fulbarigate, Khulna", help: "Your residential or business address" },
   };
 
   return (
@@ -69,7 +70,7 @@ export default function UserSignupPage() {
             <div className={styles.inputWrapper}>
               <input
                 type="text"
-                placeholder="John Ahmed Khan"
+                placeholder="Enter Your Full Name"
                 value={user.owner_name}
                 onChange={(e) => setUser({ ...user, owner_name: e.target.value })}
                 className={styles.input}
@@ -81,7 +82,7 @@ export default function UserSignupPage() {
                 onMouseLeave={() => setShowTooltip(null)}
                 title="Enter your complete name"
               >
-                ℹ️
+                <img src={infoIconSrc} alt="Field info" className={styles.infoIconImage} />
               </span>
             </div>
             {showTooltip === "owner_name" && (
@@ -96,7 +97,7 @@ export default function UserSignupPage() {
             <div className={styles.inputWrapper}>
               <input
                 type="email"
-                placeholder="your.email@example.com"
+                placeholder="Enter Your Email"
                 value={user.email}
                 onChange={(e) => setUser({ ...user, email: e.target.value })}
                 className={styles.input}
@@ -108,7 +109,7 @@ export default function UserSignupPage() {
                 onMouseLeave={() => setShowTooltip(null)}
                 title="Enter a valid email address"
               >
-                ℹ️
+                <img src={infoIconSrc} alt="Field info" className={styles.infoIconImage} />
               </span>
             </div>
             {showTooltip === "email" && (
@@ -123,7 +124,7 @@ export default function UserSignupPage() {
             <div className={styles.inputWrapper}>
               <input
                 type="password"
-                placeholder="SecurePass@123"
+                placeholder="Enter Your Password"
                 value={user.password}
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
                 className={styles.input}
@@ -135,7 +136,7 @@ export default function UserSignupPage() {
                 onMouseLeave={() => setShowTooltip(null)}
                 title="Create a strong password"
               >
-                ℹ️
+                <img src={infoIconSrc} alt="Field info" className={styles.infoIconImage} />
               </span>
             </div>
             {showTooltip === "password" && (
@@ -150,7 +151,7 @@ export default function UserSignupPage() {
             <div className={styles.inputWrapper}>
               <input
                 type="text"
-                placeholder="+923001234567"
+                placeholder="Enter Your Contact Number"
                 value={user.contact}
                 onChange={(e) => setUser({ ...user, contact: e.target.value })}
                 className={styles.input}
@@ -162,7 +163,7 @@ export default function UserSignupPage() {
                 onMouseLeave={() => setShowTooltip(null)}
                 title="Enter your contact number"
               >
-                ℹ️
+                <img src={infoIconSrc} alt="Field info" className={styles.infoIconImage} />
               </span>
             </div>
             {showTooltip === "contact" && (
@@ -177,7 +178,7 @@ export default function UserSignupPage() {
             <div className={styles.inputWrapper}>
               <input
                 type="text"
-                placeholder="123 Main Street, Karachi, Pakistan"
+                placeholder="Enter Your Address"
                 value={user.address}
                 onChange={(e) => setUser({ ...user, address: e.target.value })}
                 className={styles.input}
@@ -189,7 +190,7 @@ export default function UserSignupPage() {
                 onMouseLeave={() => setShowTooltip(null)}
                 title="Enter your complete address"
               >
-                ℹ️
+                <img src={infoIconSrc} alt="Field info" className={styles.infoIconImage} />
               </span>
             </div>
             {showTooltip === "address" && (

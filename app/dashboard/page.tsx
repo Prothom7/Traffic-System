@@ -29,6 +29,16 @@ interface DashboardStats {
   activeTickets: number;
   paidTickets: number;
   totalFines: number;
+  activeTicketDetails: ActiveTicketDetail[];
+}
+
+interface ActiveTicketDetail {
+  _id: string;
+  number_plate: string;
+  violation_type: string;
+  fine_amount: number;
+  status: string;
+  timestamp: string;
 }
 
 export default function DashboardPage() {
@@ -46,9 +56,11 @@ export default function DashboardPage() {
     myVehicles: 0,
     activeTickets: 0,
     paidTickets: 0,
-    totalFines: 0
+    totalFines: 0,
+    activeTicketDetails: [],
   });
   const [statsLoading, setStatsLoading] = useState(true);
+  const [notificationSaving, setNotificationSaving] = useState(false);
 
   /* AUTH + USER */
   useEffect(() => {
@@ -92,6 +104,39 @@ export default function DashboardPage() {
 
     fetchStats();
   }, [authToken]);
+
+  const handleNotificationToggle = async () => {
+    if (!authToken || notificationSaving) return;
+
+    const nextValue = !notificationsEnabled;
+    setNotificationSaving(true);
+    setNotificationError("");
+
+    try {
+      const res = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ notificationsEnabled: nextValue }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to update notification settings");
+      }
+
+      setNotificationsEnabled(data.notificationsEnabled);
+      if (!data.notificationsEnabled) {
+        setNotifications([]);
+      }
+    } catch (err: any) {
+      setNotificationError(err.message || "Failed to update notification settings");
+    } finally {
+      setNotificationSaving(false);
+    }
+  };
 
   /* FETCH NOTIFICATIONS */
   useEffect(() => {
@@ -186,6 +231,48 @@ export default function DashboardPage() {
       {/* HEADER */}
       <Header userName={userName} />
 
+      {/* TOP FULL-WIDTH ANNOUNCEMENT CAROUSEL */}
+      {carouselImages.length > 0 && (
+        <section className={styles.newsCarousel}>
+          <div className={styles.carousel}>
+            <h2 className={styles.carouselTitle}>Important Announcements</h2>
+
+            {carouselImages.map((item, index) => (
+              <div
+                key={item._id}
+                className={`${styles.carouselSlide} ${index === currentSlide ? styles.active : ""}`}
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={item.title || "Announcement"}
+                  className={styles.carouselImage}
+                />
+
+                <div className={styles.carouselCaption}>
+                  <h3>{item.title || "Traffic Update"}</h3>
+                  <p>
+                    {item.description ||
+                      "Stay updated with the latest traffic system announcements."}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            {carouselImages.length > 1 && (
+              <div className={styles.carouselDots}>
+                {carouselImages.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`${styles.dot} ${index === currentSlide ? styles.activeDot : ""}`}
+                    onClick={() => setCurrentSlide(index)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* MAIN */}
       <main className={styles.main}>
         <section className={styles.welcomeSection}>
@@ -218,9 +305,23 @@ export default function DashboardPage() {
         <section className={styles.notificationsSection}>
           <div className={styles.notificationsHeader}>
             <h2>Notifications</h2>
-            <span className={styles.notificationStatus}>
-              {notificationsEnabled ? "On" : "Off"}
-            </span>
+            <div className={styles.notificationControls}>
+              <span className={styles.notificationStatus}>
+                {notificationsEnabled ? "On" : "Off"}
+              </span>
+              <button
+                type="button"
+                className={styles.notificationToggleBtn}
+                onClick={handleNotificationToggle}
+                disabled={notificationSaving}
+              >
+                {notificationSaving
+                  ? "Saving..."
+                  : notificationsEnabled
+                  ? "Turn Off"
+                  : "Turn On"}
+              </button>
+            </div>
           </div>
 
           {notificationError && (
@@ -254,33 +355,33 @@ export default function DashboardPage() {
           )}
         </section>
 
-        {carouselImages.length > 0 && (
-          <section className={styles.announcements}>
-            <h2>Important Announcements</h2>
-            <div className={styles.carousel}>
-              {carouselImages.map((item, index) => (
-                <div
-                  key={item._id}
-                  className={`${styles.carouselSlide} ${
-                    index === currentSlide ? styles.active : ""
-                  }`}
-                >
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title || "Announcement"}
-                    className={styles.carouselImage}
-                  />
-                  {(item.title || item.description) && (
-                    <div className={styles.carouselCaption}>
-                      {item.title && <h3>{item.title}</h3>}
-                      {item.description && <p>{item.description}</p>}
-                    </div>
-                  )}
-                </div>
+        <section className={styles.activeTicketsSection}>
+          <h2>Active Tickets by Vehicle</h2>
+
+          {statsLoading && <p className={styles.notificationEmpty}>Loading active tickets...</p>}
+
+          {!statsLoading && stats.activeTicketDetails.length === 0 && (
+            <p className={styles.notificationEmpty}>No active tickets found.</p>
+          )}
+
+          {!statsLoading && stats.activeTicketDetails.length > 0 && (
+            <ul className={styles.notificationsList}>
+              {stats.activeTicketDetails.map((ticket) => (
+                <li key={ticket._id} className={styles.notificationItem}>
+                  <div className={styles.notificationTitle}>
+                    {ticket.violation_type} — {ticket.number_plate}
+                  </div>
+                  <div className={styles.notificationMeta}>
+                    Status: {ticket.status} | Fine: ${ticket.fine_amount.toFixed(2)}
+                  </div>
+                  <div className={styles.notificationTime}>
+                    {new Date(ticket.timestamp).toLocaleString()}
+                  </div>
+                </li>
               ))}
-            </div>
-          </section>
-        )}
+            </ul>
+          )}
+        </section>
       </main>
 
       {/* FOOTER */}

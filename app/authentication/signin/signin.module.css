@@ -140,18 +140,26 @@
   cursor: help;
   position: absolute;
   right: 12px;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: rgba(0, 170, 255, 0.2);
-  border: 1px solid rgba(0, 170, 255, 0.4);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   transition: all 0.3s ease;
   z-index: 10;
 }
 
+.infoIconImage {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+}
+
 .infoIcon:hover {
-  background: rgba(0, 170, 255, 0.3);
-  border-color: rgba(0, 170, 255, 0.6);
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(255, 255, 255, 0.75);
   transform: scale(1.15);
 }
 
@@ -160,8 +168,8 @@
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  background: linear-gradient(135deg, rgba(0, 170, 255, 0.95), rgba(0, 136, 204, 0.95));
-  color: white;
+  background: rgba(15, 23, 42, 0.45);
+  color: #f8fafc;
   padding: 12px 16px;
   border-radius: 8px;
   font-size: 12px;
@@ -169,6 +177,8 @@
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   animation: slideIn 0.2s ease;
 }
 
@@ -193,7 +203,7 @@
 .tooltipExample {
   margin: 0;
   font-size: 11px;
-  color: #e0e0e0;
+  color: #dbeafe;
   font-style: italic;
 }
 
