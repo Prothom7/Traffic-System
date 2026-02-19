@@ -325,9 +325,9 @@
 }
 
 .addVehicleBtn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: rgba(255, 255, 255, 0.08);
   color: white;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   padding: 0.8rem 1.8rem;
   border-radius: 8px;
   font-size: 1rem;
@@ -339,7 +339,9 @@
 
 .addVehicleBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
 }
 
 .vehicleForm {
