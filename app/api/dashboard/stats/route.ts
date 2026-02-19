@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { connect } from "@/dbConnection/dbConnection";
+import User from "@/models/userModel";
 import Vehicle from "@/models/vehicleModel";
 import TrafficRecord from "@/models/trafficRecordModel";
 import { decodeJWTToken } from "@/helpers/jwtToken";
@@ -29,12 +30,36 @@ export async function GET(req: Request) {
 
     const userId = decoded.id;
 
+    // Get user credit score
+    const user = await User.findById(userId).select("credit_score");
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    const creditScore = user.credit_score || 100;
+
     // Get all vehicles for this user
     const vehicles = await Vehicle.find({ userId });
     const vehicleIds = vehicles.map((v: any) => v._id);
 
     // Get vehicle count
     const vehicleCount = vehicles.length;
+
+    // Check registration status
+    const now = new Date();
+    const expiredRegistrations = vehicles.filter(
+      (v: any) => new Date(v.registration_expiry) < now
+    );
+    const expiringRegistrations = vehicles.filter(
+      (v: any) => {
+        const expiry = new Date(v.registration_expiry);
+        const daysUntilExpiry = (expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+        return daysUntilExpiry > 0 && daysUntilExpiry <= 30;
+      }
+    );
 
     // Get traffic records for all user's vehicles
     const trafficRecords = await TrafficRecord.find({
@@ -77,6 +102,25 @@ export async function GET(req: Request) {
       }
     });
 
+    // Determine carousel category based on user status (priority order)
+    let carouselCategory = "general";
+
+    if (expiredRegistrations.length > 0) {
+      carouselCategory = "expired_registration";
+    } else if (expiringRegistrations.length > 0) {
+      carouselCategory = "expiring_soon";
+    } else if (activeTickets > 0) {
+      carouselCategory = "pending_tickets";
+    } else if (creditScore >= 95) {
+      carouselCategory = "perfect_credit";
+    } else if (creditScore >= 70) {
+      carouselCategory = "good_credit";
+    } else if (creditScore >= 50) {
+      carouselCategory = "fair_credit";
+    } else {
+      carouselCategory = "low_credit";
+    }
+
     return NextResponse.json(
       {
         success: true,
@@ -88,7 +132,13 @@ export async function GET(req: Request) {
           activeTicketDetails: activeTicketDetails
             .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
             .slice(0, 8),
-        }
+          userStatus: {
+            creditScore,
+            expiredRegistrations: expiredRegistrations.length,
+            expiringRegistrations: expiringRegistrations.length,
+            carouselCategory,
+          },
+        },
       },
       { status: 200 }
     );

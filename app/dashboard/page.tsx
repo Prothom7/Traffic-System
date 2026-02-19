@@ -24,12 +24,20 @@ interface NotificationItem {
   createdAt: string;
 }
 
+interface UserStatus {
+  creditScore: number;
+  expiredRegistrations: number;
+  expiringRegistrations: number;
+  carouselCategory: string;
+}
+
 interface DashboardStats {
   myVehicles: number;
   activeTickets: number;
   paidTickets: number;
   totalFines: number;
   activeTicketDetails: ActiveTicketDetail[];
+  userStatus?: UserStatus;
 }
 
 interface ActiveTicketDetail {
@@ -58,9 +66,11 @@ export default function DashboardPage() {
     paidTickets: 0,
     totalFines: 0,
     activeTicketDetails: [],
+    userStatus: undefined,
   });
   const [statsLoading, setStatsLoading] = useState(true);
   const [notificationSaving, setNotificationSaving] = useState(false);
+  const [carouselLoading, setCarouselLoading] = useState(true);
 
   /* AUTH + USER */
   useEffect(() => {
@@ -195,21 +205,27 @@ export default function DashboardPage() {
     };
   }, [authToken, notificationsEnabled]);
 
-  /* FETCH CAROUSEL */
+  /* FETCH CAROUSEL BASED ON USER CATEGORY */
   useEffect(() => {
+    if (!stats.userStatus) return;
+
     const fetchCarousel = async () => {
+      setCarouselLoading(true);
       try {
-        const res = await fetch("/api/dashboard/carousel");
+        const category = stats.userStatus?.carouselCategory || "general";
+        const res = await fetch(`/api/dashboard/carousel-by-category?category=${encodeURIComponent(category)}`);
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           setCarouselImages(data.data);
         }
       } catch (err) {
         console.error("Carousel fetch failed", err);
+      } finally {
+        setCarouselLoading(false);
       }
     };
     fetchCarousel();
-  }, []);
+  }, [stats.userStatus]);
 
   /* AUTO SLIDE */
   useEffect(() => {
