@@ -15,7 +15,7 @@
 }
 
 .main {
-  max-width: 1100px;
+  width: min(1500px, 96vw);
   margin: 0 auto;
   padding: 3rem 2rem 4rem;
   flex: 1;
@@ -59,6 +59,7 @@
   background: rgba(15, 23, 42, 0.6);
   border-radius: 18px;
   padding: 2rem;
+  width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(18px);
@@ -91,7 +92,7 @@
 
 .infoGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
@@ -251,7 +252,8 @@
 
 @media (max-width: 768px) {
   .main {
-    padding: 2rem 1.2rem 3rem;
+    width: min(1500px, 100vw);
+    padding: 2rem 1rem 3rem;
   }
 
   .card {

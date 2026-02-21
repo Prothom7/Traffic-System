@@ -205,27 +205,34 @@ export default function DashboardPage() {
     };
   }, [authToken, notificationsEnabled]);
 
-  /* FETCH CAROUSEL BASED ON USER CATEGORY */
+  /* FETCH PERSONALIZED CAROUSEL */
   useEffect(() => {
-    if (!stats.userStatus) return;
+    if (!authToken) return;
 
     const fetchCarousel = async () => {
       setCarouselLoading(true);
       try {
-        const category = stats.userStatus?.carouselCategory || "general";
-        const res = await fetch(`/api/dashboard/carousel-by-category?category=${encodeURIComponent(category)}`);
+        const res = await fetch("/api/dashboard/carousel-by-category", {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           setCarouselImages(data.data);
+          setCurrentSlide(0);
+        } else {
+          setCarouselImages([]);
         }
       } catch (err) {
         console.error("Carousel fetch failed", err);
+        setCarouselImages([]);
       } finally {
         setCarouselLoading(false);
       }
     };
     fetchCarousel();
-  }, [stats.userStatus]);
+  }, [authToken]);
 
   /* AUTO SLIDE */
   useEffect(() => {

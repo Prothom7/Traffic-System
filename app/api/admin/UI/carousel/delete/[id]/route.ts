@@ -2,10 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/dbConnection/dbConnection";
 import Carousel from "@/models/carouselModel";
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } | Promise<{ id: string }> }
+) {
   try {
     await connect();
-    const { id } = params;
+    const resolvedParams = await Promise.resolve(params);
+    const id = resolvedParams?.id;
+
+    if (!id) {
+      return NextResponse.json({ success: false, error: "Image id is required" }, { status: 400 });
+    }
 
     const deleted = await Carousel.findByIdAndDelete(id);
 

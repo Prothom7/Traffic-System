@@ -10,7 +10,23 @@ interface CarouselImage {
   imageUrl: string;
   title?: string;
   description?: string;
+  category: string;
 }
+
+const CAROUSEL_CATEGORIES = [
+  "general",
+  "perfect_credit",
+  "good_credit",
+  "fair_credit",
+  "low_credit",
+  "expired_registration",
+  "expiring_soon",
+  "pending_tickets",
+  "active_violations",
+  "paid_tickets",
+  "clean_record",
+  "good_standing",
+] as const;
 
 export default function AdminCarouselPage() {
   const router = useRouter();
@@ -18,7 +34,9 @@ export default function AdminCarouselPage() {
   const [imageUrl, setImageUrl] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState<(typeof CAROUSEL_CATEGORIES)[number]>("general");
   const [loading, setLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchImages = async () => {
     try {
@@ -41,12 +59,12 @@ export default function AdminCarouselPage() {
       const res = await fetch("/api/admin/UI/carousel/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl, title, description }),
+        body: JSON.stringify({ imageUrl, title, description, category }),
       });
       const data = await res.json();
       if (data.success) {
-        setImages([data.data, ...images]);
-        setImageUrl(""); setTitle(""); setDescription("");
+        setImages((prev) => [data.data, ...prev]);
+        setImageUrl(""); setTitle(""); setDescription(""); setCategory("general");
       } else {
         alert(data.error);
       }
@@ -59,16 +77,20 @@ export default function AdminCarouselPage() {
 
   const deleteImage = async (id: string) => {
     if (!confirm("Are you sure you want to delete this image?")) return;
+    setDeletingId(id);
     try {
-      const res = await fetch(`/api/admin/UI/carousel/delete/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/UI/carousel/delete/${encodeURIComponent(id)}`, { method: "DELETE" });
       const data = await res.json();
       if (data.success) {
-        setImages(images.filter((img) => img._id !== id));
+        setImages((prev) => prev.filter((img) => img._id !== id));
       } else {
-        alert(data.error);
+        alert(data.error || "Failed to delete image");
       }
     } catch (err) {
       console.error(err);
+      alert("Failed to delete image");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -97,7 +119,14 @@ export default function AdminCarouselPage() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <button onClick={addImage} disabled={loading}>
+        <select value={category} onChange={(e) => setCategory(e.target.value as (typeof CAROUSEL_CATEGORIES)[number])}>
+          {CAROUSEL_CATEGORIES.map((item) => (
+            <option key={item} value={item}>
+              {item}
+            </option>
+          ))}
+        </select>
+        <button className={styles.actionButton} onClick={addImage} disabled={loading}>
           {loading ? "Adding..." : "Add Image"}
         </button>
       </div>
@@ -109,7 +138,14 @@ export default function AdminCarouselPage() {
             <div className={styles.info}>
               <h3>{img.title}</h3>
               <p>{img.description}</p>
-              <button onClick={() => deleteImage(img._id)}>Delete</button>
+              <p>Category: {img.category || "general"}</p>
+              <button
+                className={styles.deleteButton}
+                onClick={() => deleteImage(img._id)}
+                disabled={deletingId === img._id}
+              >
+                {deletingId === img._id ? "Deleting..." : "Delete"}
+              </button>
             </div>
           </div>
         ))}
