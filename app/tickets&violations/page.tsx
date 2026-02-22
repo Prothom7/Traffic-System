@@ -8,7 +8,12 @@ import styles from "./tickets&violations.module.css";
 import { decodeJWTClient } from "@/helpers/jwtClient";
 
 interface VehicleData {
+  _id: string;
   number_plate: string;
+}
+
+interface UserData {
+  _id: string;
   credit_score: number;
 }
 
@@ -21,12 +26,14 @@ interface TrafficRecord {
   status?: string;
   date?: string;
   location_name?: string;
+  paid_at?: string;
+  payment_reference?: string;
 }
 
 export default function TicketsViolationsPage() {
   const router = useRouter();
   const [userName, setUserName] = useState("User");
-  const [vehicle, setVehicle] = useState<VehicleData | null>(null);
+  const [creditScore, setCreditScore] = useState<number | null>(null);
   const [records, setRecords] = useState<TrafficRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -53,14 +60,29 @@ export default function TicketsViolationsPage() {
           return;
         }
 
-        const vehicleData = profileData.data as VehicleData;
-        setVehicle(vehicleData);
+        const userData = profileData.data?.user as UserData | undefined;
+        const userVehicles = (profileData.data?.vehicles || []) as VehicleData[];
 
-        const recordRes = await fetch(
-          `/api/traffic-records?plate=${encodeURIComponent(vehicleData.number_plate)}`
+        setCreditScore(typeof userData?.credit_score === "number" ? userData.credit_score : null);
+        if (userVehicles.length === 0) {
+          setRecords([]);
+          setError("No vehicles found for this account.");
+          setLoading(false);
+          return;
+        }
+
+        const recordResponses = await Promise.all(
+          userVehicles.map((v) =>
+            fetch(`/api/traffic-records?plate=${encodeURIComponent(v.number_plate)}`)
+          )
         );
-        const recordData = await recordRes.json();
-        setRecords(Array.isArray(recordData) ? recordData : []);
+
+        const recordPayloads = await Promise.all(recordResponses.map((res) => res.json()));
+        const mergedRecords = recordPayloads
+          .flatMap((payload) => (Array.isArray(payload) ? payload : []))
+          .filter((item, index, self) => index === self.findIndex((r) => r._id === item._id));
+
+        setRecords(mergedRecords);
       } catch (err) {
         setError("An error occurred while loading ticket history");
       } finally {
@@ -94,6 +116,24 @@ export default function TicketsViolationsPage() {
     return new Date(value).toLocaleDateString();
   };
 
+  const handlePayNow = (ticket: TrafficRecord) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/authentication/signin");
+      return;
+    }
+
+    const params = new URLSearchParams({
+      amount: String(ticket.fine_amount ?? 0),
+      type: ticket.violation_type || "Violation",
+      status: ticket.status || "Pending",
+      date: ticket.date || "",
+      location: ticket.location_name || "Not recorded",
+    });
+
+    router.push(`/tickets&violation/payment/ticket/${ticket._id}?${params.toString()}`);
+  };
+
   return (
     <div className={styles.container}>
       <Header userName={userName} />
@@ -125,7 +165,7 @@ export default function TicketsViolationsPage() {
               </div>
               <div className={styles.statCard}>
                 <span>Credit Score</span>
-                <strong>{vehicle?.credit_score ?? "-"}</strong>
+                <strong>{creditScore ?? "-"}</strong>
               </div>
             </section>
 
@@ -149,6 +189,12 @@ export default function TicketsViolationsPage() {
                         <span>{formatDate(ticket.date)}</span>
                         <span className={styles.ticketStatus}>{ticket.status || "Pending"}</span>
                         <span className={styles.ticketFine}>Fine: {ticket.fine_amount ?? 0}</span>
+                        <button
+                          className={styles.payButton}
+                          onClick={() => handlePayNow(ticket)}
+                        >
+                          Pay Now
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -176,6 +222,7 @@ export default function TicketsViolationsPage() {
                         <span>{formatDate(ticket.date)}</span>
                         <span className={styles.ticketStatus}>{ticket.status || "Paid"}</span>
                         <span className={styles.ticketFine}>Fine: {ticket.fine_amount ?? 0}</span>
+                        <span className={styles.paidMeta}>Paid: {formatDate(ticket.paid_at || ticket.date)}</span>
                       </div>
                     </div>
                   ))}

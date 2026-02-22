@@ -30,6 +30,8 @@ export async function GET(req: Request) {
         severity: doc.violation?.severity,
         fine_amount: doc.violation?.fine_amount,
         status: doc.violation?.status,
+        paid_at: doc.violation?.paid_at,
+        payment_reference: doc.violation?.payment_reference,
         date: doc.timestamp,
         location_name: doc.location?.location_name,
         latitude: doc.location?.latitude,

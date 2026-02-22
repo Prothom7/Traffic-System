@@ -7,6 +7,11 @@ const ViolationSchema = new Schema({
   severity: { type: String },
   fine_amount: { type: Number, default: 0 },
   status: { type: String, default: "Pending" },
+  payment_method: { type: String },
+  payment_reference: { type: String },
+  gateway_transaction_id: { type: String },
+  gateway_status: { type: String },
+  paid_at: { type: Date },
   issued_by: { type: String },
   notes: { type: String },
 });

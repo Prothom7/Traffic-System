@@ -54,6 +54,21 @@
   text-transform: uppercase;
 }
 
+.alertCard {
+  margin-bottom: 1.2rem;
+  background: rgba(15, 23, 42, 0.65);
+  border-radius: 14px;
+  padding: 0.95rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #c7f9cc;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.alertCard p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -160,6 +175,36 @@
 .ticketFine {
   font-weight: 600;
   color: #fbbf24;
+}
+
+.payButton {
+  margin-top: 0.2rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.payButton:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.35);
+}
+
+.payButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.paidMeta {
+  color: #86efac;
+  font-size: 0.85rem;
 }
 
 .placeholder {
