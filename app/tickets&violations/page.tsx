@@ -2,10 +2,13 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import styles from "./tickets&violations.module.css";
 import { decodeJWTClient } from "@/helpers/jwtClient";
+
+const ViolationHistoryMap = dynamic(() => import("./ViolationHistoryMap"), { ssr: false });
 
 interface VehicleData {
   _id: string;
@@ -26,6 +29,8 @@ interface TrafficRecord {
   status?: string;
   date?: string;
   location_name?: string;
+  latitude?: number;
+  longitude?: number;
   paid_at?: string;
   payment_reference?: string;
 }
@@ -35,6 +40,7 @@ export default function TicketsViolationsPage() {
   const [userName, setUserName] = useState("User");
   const [creditScore, setCreditScore] = useState<number | null>(null);
   const [records, setRecords] = useState<TrafficRecord[]>([]);
+  const [mapMode, setMapMode] = useState<"markers" | "clusters" | "heatmap">("markers");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -110,6 +116,26 @@ export default function TicketsViolationsPage() {
       totalViolations: tickets.length,
     };
   }, [records]);
+
+  const violationLocationPoints = useMemo(
+    () =>
+      records
+        .filter(
+          (record) =>
+            !!record.violation_type &&
+            typeof record.latitude === "number" &&
+            typeof record.longitude === "number"
+        )
+        .map((record) => ({
+          _id: record._id,
+          violation_type: record.violation_type,
+          location_name: record.location_name,
+          latitude: record.latitude as number,
+          longitude: record.longitude as number,
+          date: record.date,
+        })),
+    [records]
+  );
 
   const formatDate = (value?: string) => {
     if (!value) return "-";
@@ -259,10 +285,58 @@ export default function TicketsViolationsPage() {
 
             <section className={styles.analyticsCard}>
               <h2>Analytics & Visual Insights</h2>
-              <p>Reserved space for charts and visual breakdowns.</p>
-              <div className={styles.analyticsPlaceholder}>
-                <span>Chart area</span>
+              <p>OpenStreetMap view of where your vehicle violations were recorded.</p>
+              <div className={styles.analyticsControls}>
+                <button
+                  type="button"
+                  className={`${styles.modeButton} ${mapMode === "markers" ? styles.modeButtonActive : ""}`}
+                  onClick={() => setMapMode("markers")}
+                >
+                  Markers
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.modeButton} ${mapMode === "clusters" ? styles.modeButtonActive : ""}`}
+                  onClick={() => setMapMode("clusters")}
+                >
+                  Clusters
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.modeButton} ${mapMode === "heatmap" ? styles.modeButtonActive : ""}`}
+                  onClick={() => setMapMode("heatmap")}
+                >
+                  Heatmap
+                </button>
               </div>
+              {violationLocationPoints.length === 0 ? (
+                <div className={styles.analyticsPlaceholder}>
+                  <span>No location coordinates available for your violation history.</span>
+                </div>
+              ) : (
+                <div className={styles.analyticsMapWrap}>
+                  <ViolationHistoryMap points={violationLocationPoints} mode={mapMode} />
+                </div>
+              )}
+              {violationLocationPoints.length > 0 && mapMode === "heatmap" && (
+                <div className={styles.legendWrap}>
+                  <span className={styles.legendTitle}>Heat Intensity</span>
+                  <div className={styles.legendItems}>
+                    <div className={styles.legendItem}>
+                      <span className={`${styles.legendDot} ${styles.legendLow}`} />
+                      <span>Low</span>
+                    </div>
+                    <div className={styles.legendItem}>
+                      <span className={`${styles.legendDot} ${styles.legendMedium}`} />
+                      <span>Medium</span>
+                    </div>
+                    <div className={styles.legendItem}>
+                      <span className={`${styles.legendDot} ${styles.legendHigh}`} />
+                      <span>High</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </section>
           </>
         )}

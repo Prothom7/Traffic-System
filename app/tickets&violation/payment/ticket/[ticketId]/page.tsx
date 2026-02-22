@@ -7,7 +7,7 @@ import Footer from "@/app/components/footer";
 import { decodeJWTClient } from "@/helpers/jwtClient";
 import styles from "./payment.module.css";
 
-const paymentMethods = ["Card", "Mobile Banking", "Bank Transfer", "Wallet"];
+const paymentMethods = ["Credit Card", "Bank Account"];
 
 export default function TicketPaymentPage() {
   const router = useRouter();
@@ -16,6 +16,7 @@ export default function TicketPaymentPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [method, setMethod] = useState(paymentMethods[0]);
+  const [paymentNumber, setPaymentNumber] = useState("");
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
@@ -54,6 +55,18 @@ export default function TicketPaymentPage() {
       return;
     }
 
+    const digitsOnly = paymentNumber.replace(/\D/g, "");
+    const minLength = method === "Credit Card" ? 12 : 8;
+    if (digitsOnly.length < minLength) {
+      setIsError(true);
+      setMessage(
+        method === "Credit Card"
+          ? "Please enter a valid credit card number."
+          : "Please enter a valid bank account number."
+      );
+      return;
+    }
+
     setSubmitting(true);
     setMessage("");
     setIsError(false);
@@ -68,6 +81,7 @@ export default function TicketPaymentPage() {
         body: JSON.stringify({
           recordId: ticketId,
           paymentMethod: method,
+          paymentNumber: digitsOnly,
         }),
       });
 
@@ -145,6 +159,20 @@ export default function TicketPaymentPage() {
                   </option>
                 ))}
               </select>
+
+              <label htmlFor="paymentNumber">
+                {method === "Credit Card" ? "Credit Card Number" : "Bank Account Number"}
+              </label>
+              <input
+                id="paymentNumber"
+                type="text"
+                value={paymentNumber}
+                onChange={(e) => setPaymentNumber(e.target.value)}
+                className={styles.input}
+                placeholder={method === "Credit Card" ? "Enter credit card number" : "Enter bank account number"}
+                inputMode="numeric"
+                autoComplete="off"
+              />
 
               <button type="submit" className={styles.payButton} disabled={submitting}>
                 {submitting ? "Processing..." : "Confirm Payment"}

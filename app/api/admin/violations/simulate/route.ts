@@ -52,6 +52,15 @@ export async function POST(req: NextRequest) {
       vehicle_id: vehicle._id,
       number_plate: plate,
       location_id: location?._id,
+      location: location
+        ? {
+            location_name: location.location_name,
+            latitude: location.latitude,
+            longitude: location.longitude,
+          }
+        : {
+            location_name: locationName,
+          },
       timestamp: new Date(),
       violation: {
         type: violation_type,
