@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import styles from "./profile.module.css";
-import { decodeJWTClient } from "@/helpers/jwtClient";
+import { decodeJWTClient, getValidAuthTokenClient } from "@/helpers/jwtClient";
 
 interface UserData {
   owner_name: string;
@@ -51,7 +51,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem("authToken");
+      const token = getValidAuthTokenClient();
       if (!token) {
         router.push("/authentication/signin");
         return;

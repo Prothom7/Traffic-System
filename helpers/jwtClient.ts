@@ -17,3 +17,18 @@ export function decodeJWTClient(token: string): JWTTokenPayload | null {
     return null;
   }
 }
+
+export function getValidAuthTokenClient(): string | null {
+  const token = localStorage.getItem("authToken");
+  if (!token) return null;
+
+  const decoded = decodeJWTClient(token);
+  const isExpired = typeof decoded?.exp === "number" && decoded.exp * 1000 <= Date.now();
+
+  if (!decoded || isExpired) {
+    localStorage.removeItem("authToken");
+    return null;
+  }
+
+  return token;
+}

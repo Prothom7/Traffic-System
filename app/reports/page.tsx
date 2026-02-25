@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import styles from "./reports.module.css";
-import { decodeJWTClient } from "@/helpers/jwtClient";
+import { decodeJWTClient, getValidAuthTokenClient } from "@/helpers/jwtClient";
 
 interface VehicleData {
   number_plate: string;
@@ -32,7 +32,7 @@ export default function ReportsPage() {
 
   useEffect(() => {
     const fetchReport = async () => {
-      const token = localStorage.getItem("authToken");
+      const token = getValidAuthTokenClient();
       if (!token) {
         router.push("/authentication/signin");
         return;

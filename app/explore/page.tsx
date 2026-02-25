@@ -5,7 +5,7 @@ import styles from "./explore.module.css";
 import { useRouter } from "next/navigation";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
-import { decodeJWTClient } from "@/helpers/jwtClient";
+import { decodeJWTClient, getValidAuthTokenClient } from "@/helpers/jwtClient";
 
 interface NewsItem {
   _id: string;
@@ -42,7 +42,7 @@ export default function ExplorePage() {
   useEffect(() => {
     setMounted(true);
 
-    const token = localStorage.getItem("authToken");
+    const token = getValidAuthTokenClient();
     if (!token) {
       router.push("/authentication/signin");
       return;
@@ -94,9 +94,9 @@ export default function ExplorePage() {
     setMessage("");
 
     try {
-      const token = localStorage.getItem("authToken");
+      const token = getValidAuthTokenClient();
       if (!token) {
-        setMessage("Authentication token not found");
+        router.push("/authentication/signin");
         setLoading(false);
         return;
       }
