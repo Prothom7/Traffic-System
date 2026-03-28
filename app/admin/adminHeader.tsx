@@ -38,6 +38,9 @@ export default function AdminHeader() {
         >
           Simulate Violation
         </button>
+        <button onClick={() => router.push("/admin/ml-predict")} className={styles.navButton}>
+          ML Predict
+        </button>
       </nav>
     </header>
   );

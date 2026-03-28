@@ -6,6 +6,34 @@ import { spawn } from "child_process";
 
 export const runtime = "nodejs";
 
+async function runFastApiPipeline(image: File): Promise<Record<string, unknown>> {
+  const endpoint = process.env.ALPR_FASTAPI_URL || "http://localhost:8000/predict";
+  const body = new FormData();
+  body.append("image", image, image.name || "upload.jpg");
+
+  let response: Response;
+  try {
+    response = await fetch(endpoint, {
+      method: "POST",
+      body,
+      cache: "no-store",
+    });
+  } catch (err) {
+    throw new Error(
+      `Unable to reach FastAPI service at ${endpoint}. Start the ML service and verify ALPR_FASTAPI_URL.`
+    );
+  }
+
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(
+      String(payload?.detail || payload?.error || `FastAPI returned status ${response.status}`)
+    );
+  }
+
+  return (payload || {}) as Record<string, unknown>;
+}
+
 function parseJsonFromOutput(output: string): Record<string, unknown> | null {
   const lines = output
     .split(/\r?\n/)
@@ -140,13 +168,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Only image files are allowed" }, { status: 400 });
     }
 
-    const imageBuffer = Buffer.from(await image.arrayBuffer());
-    const safeName = image.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    tempImagePath = path.join(os.tmpdir(), `plate_${Date.now()}_${safeName}`);
+    const useFastApi = process.env.ALPR_USE_FASTAPI === "true" || Boolean(process.env.ALPR_FASTAPI_URL);
+    let result: Record<string, unknown>;
 
-    await fs.writeFile(tempImagePath, imageBuffer);
+    if (useFastApi) {
+      result = await runFastApiPipeline(image);
+    } else {
+      const imageBuffer = Buffer.from(await image.arrayBuffer());
+      const safeName = image.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      tempImagePath = path.join(os.tmpdir(), `plate_${Date.now()}_${safeName}`);
+      await fs.writeFile(tempImagePath, imageBuffer);
+      result = await runPythonPipeline(tempImagePath);
+    }
 
-    const result = await runPythonPipeline(tempImagePath);
     const plate = String(result.plate || "").trim();
 
     if (!plate) {

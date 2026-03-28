@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import traceback
+from types import SimpleNamespace
 from typing import List
 
 import cv2
@@ -74,6 +75,17 @@ def parse_args() -> argparse.Namespace:
         help="Path to plain-text char labels file",
     )
     return parser.parse_args()
+
+
+def get_default_args() -> argparse.Namespace:
+    return SimpleNamespace(
+        image="",
+        models_dir=os.environ.get("ALPR_MODELS_DIR", "models"),
+        city_annotations=os.environ.get("ALPR_CITY_ANNOTATIONS", "annotations/city_final.json"),
+        char_annotations=os.environ.get("ALPR_CHAR_ANNOTATIONS", "annotations/ocr_char.json"),
+        city_label_file=os.environ.get("ALPR_CITY_LABEL_FILE", "label_city"),
+        char_label_file=os.environ.get("ALPR_CHAR_LABEL_FILE", "label_char"),
+    )
 
 
 class CRNN(nn.Module):
@@ -291,6 +303,13 @@ class PlatePipeline:
             "plate": plate,
             "segments": outputs,
         }
+
+
+def run_pipeline(image_path: str, args: argparse.Namespace | None = None) -> str:
+    pipeline_args = args if args is not None else get_default_args()
+    pipeline = PlatePipeline(pipeline_args)
+    result = pipeline.run(image_path)
+    return str(result.get("plate", "")).strip()
 
 
 def main():

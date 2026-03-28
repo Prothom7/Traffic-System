@@ -88,6 +88,11 @@ ALPR_CITY_LABEL_FILE=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipelin
 ALPR_CHAR_LABEL_FILE=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipeline\\label_char
 # Optional Windows fix for OpenMP duplicate runtime issue
 KMP_DUPLICATE_LIB_OK=TRUE
+
+# Optional: Use dedicated FastAPI ML server instead of spawning Python per request
+ALPR_USE_FASTAPI=true
+ALPR_FASTAPI_URL=http://localhost:8000/predict
+NEXT_PUBLIC_ALPR_FASTAPI_URL=http://localhost:8000/predict
 ```
 
 Install Python packages for the extraction pipeline:
@@ -112,6 +117,35 @@ Labels:
 ```text
 Option A (recommended): ALPR_CITY_LABEL_FILE + ALPR_CHAR_LABEL_FILE
 Option B: ALPR_CITY_ANNOTATIONS + ALPR_CHAR_ANNOTATIONS
+```
+
+### Optional Dedicated ML Server (FastAPI)
+
+Run a standalone Python inference server so models are loaded once at startup.
+
+```bash
+cd ml_service
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Available endpoints:
+
+```text
+GET  /health
+POST /predict   (multipart/form-data with image)
+```
+
+System flow:
+
+```text
+Next.js upload -> /api/admin/violations/extract-plate -> FastAPI /predict -> plate JSON -> UI
+```
+
+For direct frontend testing, open:
+
+```text
+/admin/ml-predict
 ```
 
 ### 4️⃣ Run Development Server
