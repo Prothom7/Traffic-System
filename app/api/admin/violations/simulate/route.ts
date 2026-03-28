@@ -6,6 +6,57 @@ import Notification from "@/models/notificationModel";
 import { eventBus } from "@/app/api/notifications/eventBus";
 import Location from "@/models/locationModel";
 
+const BN_TO_ASCII_DIGIT: Record<string, string> = {
+  "০": "0",
+  "১": "1",
+  "২": "2",
+  "৩": "3",
+  "৪": "4",
+  "৫": "5",
+  "৬": "6",
+  "৭": "7",
+  "৮": "8",
+  "৯": "9",
+};
+
+function toAsciiDigits(value: string): string {
+  return value.replace(/[০-৯]/g, (digit) => BN_TO_ASCII_DIGIT[digit] || digit);
+}
+
+function normalizePlate(value: string): string {
+  return toAsciiDigits(value)
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .replace(/\s*-\s*/g, "-")
+    .trim();
+}
+
+function getPlateCandidates(value: string): string[] {
+  const normalized = normalizePlate(value);
+  const noMetro = normalized
+    .replace(/\bMETRO\b|মেট্রো/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return Array.from(
+    new Set([
+      normalized,
+      normalized.replace(/-/g, ""),
+      normalized.replace(/\s+/g, ""),
+      noMetro,
+      noMetro.replace(/-/g, ""),
+      noMetro.replace(/\s+/g, ""),
+    ])
+  ).filter(Boolean);
+}
+
+function canonicalPlate(value: string): string {
+  return normalizePlate(value)
+    .replace(/\bMETRO\b|মেট্রো/gi, " ")
+    .replace(/[^A-Z0-9]/g, "")
+    .trim();
+}
+
 export async function POST(req: NextRequest) {
   try {
     await connect();
@@ -27,10 +78,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const plate = String(number_plate).trim().toUpperCase();
-    const vehicle = await Vehicle.findOne({
-      number_plate: { $regex: `^${plate}$`, $options: "i" },
+    const plate = String(number_plate || "").trim();
+    const normalizedCandidates = getPlateCandidates(plate);
+
+    let vehicle = await Vehicle.findOne({
+      number_plate: { $in: normalizedCandidates },
     });
+
+    if (!vehicle) {
+      const allVehicles = await Vehicle.find({}, "number_plate");
+      const targetCanonical = canonicalPlate(plate);
+
+      vehicle =
+        allVehicles.find((item) => canonicalPlate(String(item.number_plate || "")) === targetCanonical) ||
+        null;
+    }
 
     if (!vehicle) {
       return NextResponse.json({ error: "Vehicle not found" }, { status: 404 });
@@ -45,12 +107,14 @@ export async function POST(req: NextRequest) {
     const location = locationName
       ? await Location.findOne({
           location_name: { $regex: `^${locationName}$`, $options: "i" },
-        }).select("_id")
+        }).select("_id location_name latitude longitude")
       : null;
+
+    const persistedPlate = normalizePlate(String(vehicle.number_plate || plate));
 
     const record = await TrafficRecord.create({
       vehicle_id: vehicle._id,
-      number_plate: plate,
+      number_plate: persistedPlate,
       location_id: location?._id,
       location: location
         ? {
@@ -76,10 +140,10 @@ export async function POST(req: NextRequest) {
     let notificationPayload = null;
 
     if (notificationsEnabled) {
-      const message = `Violation reported for ${plate}: ${violation_type} at ${locationName}.`;
+      const message = `Violation reported for ${persistedPlate}: ${violation_type} at ${locationName}.`;
       const notification = await Notification.create({
         vehicle_id: vehicle._id,
-        number_plate: plate,
+        number_plate: persistedPlate,
         violation_type,
         cause,
         camera_location: locationName,

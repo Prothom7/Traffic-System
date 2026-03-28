@@ -76,6 +76,42 @@ Create `.env.local`
 DATABASE_URL=
 NEXTAUTH_SECRET=
 NEXTAUTH_URL=http://localhost:3000
+
+# Optional: AI plate extraction in admin simulation
+ALPR_PYTHON_EXECUTABLE=python
+ALPR_PYTHON_ARGS=
+ALPR_MODELS_DIR=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipeline\\models
+ALPR_CITY_ANNOTATIONS=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipeline\\annotations\\city_final.json
+ALPR_CHAR_ANNOTATIONS=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipeline\\annotations\\ocr_char.json
+# Optional label text files (preferred if your training exported label files)
+ALPR_CITY_LABEL_FILE=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipeline\\label_city
+ALPR_CHAR_LABEL_FILE=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipeline\\label_char
+# Optional Windows fix for OpenMP duplicate runtime issue
+KMP_DUPLICATE_LIB_OK=TRUE
+```
+
+Install Python packages for the extraction pipeline:
+
+```bash
+pip install torch torchvision ultralytics opencv-python pillow numpy
+```
+
+Model and label files are not committed to this repository. Keep them in your local Hybrid Pipeline folder (or any local folder) and point the ALPR_* env vars to those absolute paths.
+
+Required model files inside ALPR_MODELS_DIR:
+
+```text
+yolo_plate.pt
+classification_city.pth
+classification_char.pth
+ocr_digit.pth
+```
+
+Labels:
+
+```text
+Option A (recommended): ALPR_CITY_LABEL_FILE + ALPR_CHAR_LABEL_FILE
+Option B: ALPR_CITY_ANNOTATIONS + ALPR_CHAR_ANNOTATIONS
 ```
 
 ### 4️⃣ Run Development Server
