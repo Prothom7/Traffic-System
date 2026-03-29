@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import traceback
+from pathlib import Path
 from types import SimpleNamespace
 from typing import List
 
@@ -24,6 +25,81 @@ BN_DIGIT_MAP = {
     "8": "৮",
     "9": "৯",
 }
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+HYBRID_PIPELINE_DIR = ROOT_DIR / "Hybrid Pipeline"
+
+
+def _first_existing_path(candidates: List[Path]) -> str:
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+    return str(candidates[0])
+
+
+def default_models_dir() -> str:
+    env_value = os.environ.get("ALPR_MODELS_DIR")
+    if env_value:
+        return env_value
+
+    return _first_existing_path(
+        [
+            HYBRID_PIPELINE_DIR / "models",
+            ROOT_DIR / "models",
+        ]
+    )
+
+
+def default_city_annotations() -> str:
+    env_value = os.environ.get("ALPR_CITY_ANNOTATIONS")
+    if env_value:
+        return env_value
+
+    return _first_existing_path(
+        [
+            HYBRID_PIPELINE_DIR / "annotations" / "city_final.json",
+            ROOT_DIR / "annotations" / "city_final.json",
+        ]
+    )
+
+
+def default_char_annotations() -> str:
+    env_value = os.environ.get("ALPR_CHAR_ANNOTATIONS")
+    if env_value:
+        return env_value
+
+    return _first_existing_path(
+        [
+            HYBRID_PIPELINE_DIR / "annotations" / "ocr_char.json",
+            ROOT_DIR / "annotations" / "ocr_char.json",
+        ]
+    )
+
+
+def default_city_label_file() -> str:
+    env_value = os.environ.get("ALPR_CITY_LABEL_FILE")
+    if env_value:
+        return env_value
+
+    return _first_existing_path(
+        [
+            HYBRID_PIPELINE_DIR / "label_city",
+            ROOT_DIR / "label_city",
+        ]
+    )
+
+
+def default_char_label_file() -> str:
+    env_value = os.environ.get("ALPR_CHAR_LABEL_FILE")
+    if env_value:
+        return env_value
+
+    return _first_existing_path(
+        [
+            HYBRID_PIPELINE_DIR / "label_char",
+            ROOT_DIR / "label_char",
+        ]
+    )
 
 
 def load_labels_from_txt(path: str) -> List[str]:
@@ -51,27 +127,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--image", required=True, help="Path to input image")
     parser.add_argument(
         "--models-dir",
-        default=os.environ.get("ALPR_MODELS_DIR", "models"),
+        default=default_models_dir(),
         help="Directory containing model files",
     )
     parser.add_argument(
         "--city-annotations",
-        default=os.environ.get("ALPR_CITY_ANNOTATIONS", "annotations/city_final.json"),
+        default=default_city_annotations(),
         help="Path to city label annotations JSON",
     )
     parser.add_argument(
         "--char-annotations",
-        default=os.environ.get("ALPR_CHAR_ANNOTATIONS", "annotations/ocr_char.json"),
+        default=default_char_annotations(),
         help="Path to char label annotations JSON",
     )
     parser.add_argument(
         "--city-label-file",
-        default=os.environ.get("ALPR_CITY_LABEL_FILE", "label_city"),
+        default=default_city_label_file(),
         help="Path to plain-text city labels file",
     )
     parser.add_argument(
         "--char-label-file",
-        default=os.environ.get("ALPR_CHAR_LABEL_FILE", "label_char"),
+        default=default_char_label_file(),
         help="Path to plain-text char labels file",
     )
     return parser.parse_args()
@@ -80,11 +156,11 @@ def parse_args() -> argparse.Namespace:
 def get_default_args() -> argparse.Namespace:
     return SimpleNamespace(
         image="",
-        models_dir=os.environ.get("ALPR_MODELS_DIR", "models"),
-        city_annotations=os.environ.get("ALPR_CITY_ANNOTATIONS", "annotations/city_final.json"),
-        char_annotations=os.environ.get("ALPR_CHAR_ANNOTATIONS", "annotations/ocr_char.json"),
-        city_label_file=os.environ.get("ALPR_CITY_LABEL_FILE", "label_city"),
-        char_label_file=os.environ.get("ALPR_CHAR_LABEL_FILE", "label_char"),
+        models_dir=default_models_dir(),
+        city_annotations=default_city_annotations(),
+        char_annotations=default_char_annotations(),
+        city_label_file=default_city_label_file(),
+        char_label_file=default_char_label_file(),
     )
 
 

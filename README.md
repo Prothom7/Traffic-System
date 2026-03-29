@@ -80,12 +80,13 @@ NEXTAUTH_URL=http://localhost:3000
 # Optional: AI plate extraction in admin simulation
 ALPR_PYTHON_EXECUTABLE=python
 ALPR_PYTHON_ARGS=
-ALPR_MODELS_DIR=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipeline\\models
-ALPR_CITY_ANNOTATIONS=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipeline\\annotations\\city_final.json
-ALPR_CHAR_ANNOTATIONS=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipeline\\annotations\\ocr_char.json
-# Optional label text files (preferred if your training exported label files)
-ALPR_CITY_LABEL_FILE=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipeline\\label_city
-ALPR_CHAR_LABEL_FILE=D:\\Files\\Machine Learning\\System Project\\Hybrid Pipeline\\label_char
+# Optional: override defaults. If omitted, app auto-loads from ./Hybrid Pipeline/
+# ALPR_MODELS_DIR=Hybrid Pipeline\\models
+# ALPR_CITY_LABEL_FILE=Hybrid Pipeline\\label_city
+# ALPR_CHAR_LABEL_FILE=Hybrid Pipeline\\label_char
+# Optional JSON fallback if label files are not present
+# ALPR_CITY_ANNOTATIONS=Hybrid Pipeline\\annotations\\city_final.json
+# ALPR_CHAR_ANNOTATIONS=Hybrid Pipeline\\annotations\\ocr_char.json
 # Optional Windows fix for OpenMP duplicate runtime issue
 KMP_DUPLICATE_LIB_OK=TRUE
 
@@ -101,7 +102,7 @@ Install Python packages for the extraction pipeline:
 pip install torch torchvision ultralytics opencv-python pillow numpy
 ```
 
-Model and label files are not committed to this repository. Keep them in your local Hybrid Pipeline folder (or any local folder) and point the ALPR_* env vars to those absolute paths.
+The project now auto-resolves model and label files from `Hybrid Pipeline/` in this repository. You only need ALPR_* env vars if your files are stored elsewhere.
 
 Required model files inside ALPR_MODELS_DIR:
 
@@ -119,14 +120,34 @@ Option A (recommended): ALPR_CITY_LABEL_FILE + ALPR_CHAR_LABEL_FILE
 Option B: ALPR_CITY_ANNOTATIONS + ALPR_CHAR_ANNOTATIONS
 ```
 
-### Optional Dedicated ML Server (FastAPI)
+### Start Machine Learning Server (FastAPI)
 
-Run a standalone Python inference server so models are loaded once at startup.
+Run the standalone Python inference server so models are loaded once at startup.
 
-```bash
+From the project root (Windows Command Prompt / CMD):
+
+```bat
 cd ml_service
-pip install -r requirements.txt
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+python -m venv .venv
+.venv\Scripts\activate.bat
+python -m pip install -r requirements.txt
+python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+From the project root (Windows PowerShell):
+
+```powershell
+cd ml_service
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+Quick health check (new PowerShell terminal):
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/health
 ```
 
 Available endpoints:

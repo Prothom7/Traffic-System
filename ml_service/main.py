@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+from argparse import Namespace
 import os
 import sys
 import tempfile
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -38,7 +38,7 @@ def _load_local_env_file() -> None:
 
 _load_local_env_file()
 
-from scripts.extract_plate_pipeline import PlatePipeline
+from scripts.extract_plate_pipeline import PlatePipeline, get_default_args
 
 
 app = FastAPI(title="Traffic System ALPR Service", version="1.0.0")
@@ -55,15 +55,8 @@ app.add_middleware(
 _pipeline: Optional[PlatePipeline] = None
 
 
-def _build_args_from_env() -> SimpleNamespace:
-    return SimpleNamespace(
-        image="",
-        models_dir=os.environ.get("ALPR_MODELS_DIR", "models"),
-        city_annotations=os.environ.get("ALPR_CITY_ANNOTATIONS", "annotations/city_final.json"),
-        char_annotations=os.environ.get("ALPR_CHAR_ANNOTATIONS", "annotations/ocr_char.json"),
-        city_label_file=os.environ.get("ALPR_CITY_LABEL_FILE", "label_city"),
-        char_label_file=os.environ.get("ALPR_CHAR_LABEL_FILE", "label_char"),
-    )
+def _build_args_from_env() -> Namespace:
+    return get_default_args()
 
 
 @app.on_event("startup")
