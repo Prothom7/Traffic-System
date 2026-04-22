@@ -390,7 +390,7 @@ export default function ExplorePage() {
                 <img src="/source/service_status.jpg" alt="Check Status" />
               </div>
               <h3>Check Status</h3>
-              <p>View your vehicle's current registration status</p>
+              <p>View your vehicle&apos;s current registration status</p>
             </div>
 
             <div className={styles.serviceCard} onClick={() => router.push("/services/payment-history")}>

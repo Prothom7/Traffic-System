@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import styles from "./newsfeed.Module.css";
-import { useRouter } from "next/navigation";
 import AdminHeader from "../../adminHeader";
 
 interface NewsItem {
@@ -16,7 +15,6 @@ interface NewsItem {
 }
 
 export default function NewsFeedAdmin() {
-  const router = useRouter();
   const [newsFeed, setNewsFeed] = useState<NewsItem[]>([]);
   const [newItem, setNewItem] = useState<NewsItem>({
     title: "",
@@ -42,6 +40,8 @@ export default function NewsFeedAdmin() {
   };
 
   useEffect(() => {
+    // Data is fetched asynchronously; suppress this lint false-positive for initial load.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchNews();
   }, []);
 
