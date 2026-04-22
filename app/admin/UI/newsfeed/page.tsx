@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import styles from "./newsfeed.module.css";
+import styles from "./newsfeed.Module.css";
 import { useRouter } from "next/navigation";
 import AdminHeader from "../../adminHeader";
 
