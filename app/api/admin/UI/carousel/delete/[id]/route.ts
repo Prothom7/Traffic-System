@@ -3,13 +3,13 @@ import { connect } from "@/dbConnection/dbConnection";
 import Carousel from "@/models/carouselModel";
 
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  _req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connect();
 
-    const id = params.id;
+    const { id } = await context.params;
 
     if (!id) {
       return NextResponse.json(
