@@ -102,7 +102,7 @@ export default function NewsFeedAdmin() {
       console.error(err);
     }
   };
-
+/* */
   return (
     <div className={styles.fullpage}>
       <AdminHeader />
