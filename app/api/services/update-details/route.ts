@@ -2,22 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/dbConnection/dbConnection";
 import Vehicle from "@/models/vehicleModel";
 import User from "@/models/userModel";
-import { decodeJWTToken } from "@/helpers/jwtToken";
+import { getAuthContext } from "@/app/api/_utils/serviceAuth";
+import { normalizePlate } from "@/app/api/_utils/serviceRules";
 
 export async function POST(req: NextRequest) {
   try {
     await connect();
 
-    // Verify user is authenticated
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const token = authHeader.slice(7);
-    const decoded = decodeJWTToken(token);
-    if (!decoded) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    const auth = await getAuthContext(req);
+    if (auth.error || !auth.context) {
+      return auth.error!;
     }
 
     const body = await req.json();
@@ -30,19 +24,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const vehicle = await Vehicle.findOne({ number_plate: number_plate.toUpperCase() });
+    const vehicle = await Vehicle.findOne({
+      userId: auth.context.userId,
+      number_plate: normalizePlate(number_plate),
+    });
 
     if (!vehicle) {
       return NextResponse.json(
-        { success: false, error: "Vehicle not found" },
-        { status: 404 }
-      );
-    }
-
-    // Verify user owns this vehicle
-    if (vehicle.userId.toString() !== decoded.id) {
-      return NextResponse.json(
-        { success: false, error: "You do not own this vehicle" },
+        { success: false, error: "Vehicle not found or not owned by user" },
         { status: 403 }
       );
     }
@@ -52,7 +41,7 @@ export async function POST(req: NextRequest) {
     await vehicle.save();
 
     // Update user contact and address
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(auth.context.userId);
     if (user) {
       if (contact) user.contact = contact;
       if (address) user.address = address;
@@ -68,3 +57,4 @@ export async function POST(req: NextRequest) {
     );
   }
 
+}

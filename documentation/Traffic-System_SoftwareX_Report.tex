@@ -1,0 +1,255 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black
+}
+
+\setlength{\parindent}{0.25in}
+\setlength{\parskip}{0pt}
+\doublespacing
+
+\titleformat{\section}{\normalfont\bfseries\fontsize{14}{16}\selectfont}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalfont\bfseries\fontsize{12}{14}\selectfont}{\thesubsection}{0.5em}{}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+{\LARGE \textbf{Traffic-System: A Next.js-Based Smart Traffic Enforcement Platform}\\[0.6cm]}
+{\large SoftwareX-Style Seminar Paper Report\\[1.2cm]}
+{\normalsize Prepared for academic documentation and system presentation\\Generated from the current Traffic-System codebase\\[1.2cm]}
+
+\vfill
+
+\begin{tabular}{ll}
+Workspace: & Traffic-System \\
+Platform: & Next.js, React, MongoDB, FastAPI, PyTorch \\
+Scope: & Citizen services, administrative enforcement, ALPR integration \\
+Document type: & Detailed seminar paper / technical report \\
+Date: & April 22, 2026 \\
+\end{tabular}
+
+\vfill
+\end{titlepage}
+
+\begin{center}
+{\Large \textbf{Traffic-System: An Integrated Next.js Web Platform with ALPR-Enabled Enforcement Automation for Smart-City Traffic Administration}}
+\end{center}
+
+\vspace{0.5cm}
+\noindent\textbf{Abstract}\\
+Traffic-System is a full-stack smart-city web platform that unifies citizen vehicle services, administrative enforcement tools, and automated traffic violation workflows in a single browser-based environment. The application is implemented with Next.js and React on the frontend, MongoDB and Mongoose for persistent data management, and a Python-based ALPR service for number plate extraction.
+
+The system is designed to approximate the behavior of a digital traffic authority. Citizens can register vehicles, renew registration, update details, report theft, inspect violation history, and track payment status. Administrators can manage camera nodes, inspect traffic records, simulate violations, visualize camera networks, and run machine-learning plate prediction tests.
+
+A distinguishing aspect of the project is layered ALPR integration. The repository supports both a standalone FastAPI inference server and a local Python fallback path. Plate normalization also handles regional formatting details such as Bengali digits and spacing differences.
+
+\noindent\textbf{Keywords:} automatic license plate recognition, traffic enforcement, Next.js, MongoDB, FastAPI, smart city, vehicle registration, violation management
+
+\section{Introduction}
+Traffic enforcement systems involve high operational complexity, continuous data ingestion, and both manual and automated decision paths. Traffic-System addresses this by unifying registry operations, enforcement actions, notifications, and payments in one coherent platform.
+
+The architecture separates citizen and administrator workflows while keeping a shared data model. This enables end-to-end traceability from event detection to user notification and payment status updates.
+
+\section{System Architecture}
+The platform has three interacting layers:
+\begin{enumerate}[leftmargin=*]
+\item Next.js frontend pages for citizen and admin interfaces.
+\item Next.js API routes for orchestration, authentication, validation, and business logic.
+\item Data and inference layer with MongoDB/Mongoose and a Python ALPR service.
+\end{enumerate}
+
+This design keeps web workflows cohesive while allowing specialized machine-learning execution in Python.
+
+\section{Complete Feature Coverage}
+The project includes all major feature groups listed below.
+
+\subsection{Citizen Services}
+\begin{itemize}[leftmargin=*]
+\item Transfer vehicle ownership.
+\item Renew vehicle registration.
+\item Update vehicle and owner information.
+\item Report stolen vehicles.
+\item Check registration and enforcement status.
+\item Review payment history.
+\item Track tickets, payment state, and driving credit score.
+\item Track stolen vehicle status and sightings.
+\end{itemize}
+
+\subsection{Traffic Monitoring and Enforcement}
+\begin{itemize}[leftmargin=*]
+\item Live camera location map.
+\item Traffic and violation record search.
+\item Violation management and inspection.
+\item Accident and traffic news feed publication.
+\item Violation simulation for admin testing.
+\item ALPR-based plate extraction and normalization.
+\end{itemize}
+
+\subsection{Administrative Tools}
+\begin{itemize}[leftmargin=*]
+\item Vehicle registry management.
+\item Violation record management.
+\item Traffic analytics dashboard.
+\item Camera node and network-edge management.
+\item Newsfeed and carousel content management.
+\item ML prediction testing sandbox.
+\end{itemize}
+
+\section{Frontend Page Inventory (Complete)}
+\begin{longtable}{p{0.32\linewidth} p{0.63\linewidth}}
+\toprule
+\textbf{Route} & \textbf{Role} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Route} & \textbf{Role} \\
+\midrule
+\endhead
+/ & Landing entry point \\
+/home/landing & Public landing view \\
+/authentication/signin & Sign-in flow \\
+/authentication/signup/vehicle & Sign-up with vehicle registration \\
+/check-email & Verification follow-up \\
+/dashboard & Authenticated dashboard \\
+/profile & User profile \\
+/myvehicle & Vehicle detail screen \\
+/explore & Public exploration and information \\
+/reports & Reporting and analytics page \\
+/tickets\&violations & Violation history with map context \\
+/tickets\&violation/payment/ticket/[ticketId] & Ticket payment detail page \\
+/services/change-ownership & Ownership transfer \\
+/services/check-status & Status lookup \\
+/services/payment-history & Payment history \\
+/services/renew-registration & Registration renewal \\
+/services/report-stolen & Stolen vehicle reporting \\
+/services/update-details & Vehicle detail updates \\
+/admin & Admin dashboard \\
+/admin/addCamera & Add camera node \\
+/admin/analysis & Analytics and trends \\
+/admin/ml-predict & ALPR prediction test page \\
+/admin/simulate-violation & Violation simulation \\
+/admin/traffic-records & Traffic records browser \\
+/admin/UI & Admin content control area \\
+/admin/UI/carousel & Carousel manager \\
+/admin/UI/newsfeed & Newsfeed manager \\
+/admin/vehicles & Vehicle administration \\
+/admin/violations & Violation administration \\
+\bottomrule
+\end{longtable}
+
+\section{API Route Inventory (Complete)}
+\begin{longtable}{p{0.38\linewidth} p{0.12\linewidth} p{0.43\linewidth}}
+\toprule
+\textbf{Route} & \textbf{Method} & \textbf{Responsibility} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Route} & \textbf{Method} & \textbf{Responsibility} \\
+\midrule
+\endhead
+/api/authentication/signin & POST & Credential validation and JWT issuance \\
+/api/authentication/signup & POST & Account creation and registration checks \\
+/api/authentication/verifyemail & POST & Email verification flow \\
+/api/violations & GET & User-scoped violation history \\
+/api/vehicles & GET & Vehicle registry listing \\
+/api/traffic-records & GET & Traffic detection and violation records \\
+/api/dashboard/stats & GET & Dashboard summary metrics \\
+/api/dashboard/carousel & GET & Carousel content feed \\
+/api/dashboard/carousel-by-category & GET & Category-filtered carousel feed \\
+/api/dashboard/newsfeed & GET & Traffic and accident newsfeed \\
+/api/notifications & GET & Notification retrieval \\
+/api/notifications/stream & GET & Notification stream endpoint \\
+/api/profile & GET & User profile and linked records \\
+/api/payments/gateway & POST & Payment recording and violation status update \\
+/api/admin/camera & GET/POST/DELETE & Camera node management \\
+/api/admin/camera/[id] & PUT/DELETE & Single camera update/delete \\
+/api/admin/locations & GET & Location listing for map/graph \\
+/api/admin/edges & GET/POST & Road-network edge management \\
+/api/admin/analysis & GET & Traffic trend aggregation \\
+/api/admin/violations/simulate & POST & Synthetic violation generation \\
+/api/admin/violations/extract-plate & POST & ALPR extraction via FastAPI or fallback \\
+/api/admin/UI/newsfeed & GET/POST & Admin newsfeed CRUD operations \\
+/api/admin/UI/carousel/add & POST & Add carousel item \\
+/api/admin/UI/carousel/delete/[id] & DELETE & Delete carousel item \\
+/api/services/add-vehicle & POST & Add citizen vehicle record \\
+/api/services/change-ownership & POST & Ownership transfer workflow \\
+/api/services/check-status & GET & Registration/compliance status check \\
+/api/services/renew-registration & POST & Registration renewal update \\
+/api/services/report-stolen & POST & Stolen flag propagation \\
+/api/services/update-details & POST & Vehicle detail updates \\
+\bottomrule
+\end{longtable}
+
+\section{Data Models (Complete)}
+\begin{longtable}{p{0.20\linewidth} p{0.34\linewidth} p{0.40\linewidth}}
+\toprule
+\textbf{Model} & \textbf{Primary Purpose} & \textbf{Representative Fields} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Model} & \textbf{Primary Purpose} & \textbf{Representative Fields} \\
+\midrule
+\endhead
+User & Authentication and account identity & email, password hash, role, verification, credit score \\
+Vehicle & Registry and ownership & number plate, owner, status, registration dates \\
+TrafficRecord & Violation/detection events & vehicle, plate, location, timestamp, fine, status \\
+Notification & User alerts & message, read state, linked violation \\
+Location & Monitoring node & name, latitude, longitude \\
+Edge & Weighted graph edge & from, to, distance, travel time, direction \\
+Carousel & Dashboard/public content & image, title, description, category \\
+NewsFeed & Traffic information entries & headline, content, timestamp, category \\
+\bottomrule
+\end{longtable}
+
+\section{Machine Learning Integration}
+The ALPR subsystem is implemented in Python and integrates with the Next.js admin workflow. The backend supports two execution modes:
+\begin{itemize}[leftmargin=*]
+\item FastAPI server mode for persistent model loading and lower repeated startup cost.
+\item Local fallback mode for direct subprocess invocation during development/testing.
+\end{itemize}
+
+Core artifacts include:
+\begin{itemize}[leftmargin=*]
+\item Hybrid Pipeline/hybrid_pipeline.py
+\item scripts/extract_plate_pipeline.py
+\item ml_service/main.py
+\item Hybrid Pipeline/models/*.pth and yolo\_plate.pt
+\end{itemize}
+
+Operational endpoints include \texttt{GET /health} and \texttt{POST /predict} on the FastAPI service.
+
+\section{Security, Reliability, and Limitations}
+The platform uses JWT-based authentication and role-separated route families. Current implementation strengths include clear route boundaries and modular service separation, while limitations include prototype-level payment integration, localStorage token trade-offs, and expected ALPR uncertainty under difficult image conditions.
+
+\section{Conclusion}
+Traffic-System provides a complete applied prototype of smart-city traffic administration with citizen services, administrative enforcement, and ALPR integration. The software is suitable for SoftwareX-style academic reporting because it is modular, reproducible, and broad in operational coverage.
+
+\appendix
+\section{Formatting Compliance Note}
+This LaTeX document follows the same report style goals used in the prior template: title page, abstract, structured technical sections, explicit feature inventories, and appendices. It uses 12pt Times-style typography, 1-inch margins, and double spacing to match the original seminar-report formatting intent.
+
+\section{Environment Variables Summary}
+\begin{itemize}[leftmargin=*]
+\item DATABASE\_URL / MONGO\_URL
+\item NEXTAUTH\_SECRET, NEXTAUTH\_URL
+\item ALPR\_USE\_FASTAPI, ALPR\_FASTAPI\_URL
+\item ALPR\_MODELS\_DIR, ALPR\_CITY\_LABEL\_FILE, ALPR\_CHAR\_LABEL\_FILE
+\item KMP\_DUPLICATE\_LIB\_OK
+\end{itemize}
+
+\end{document}

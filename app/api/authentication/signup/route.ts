@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       email: email,
       emailType: "VERIFY",
       token: plainToken,
-      userId: newUser._id.toString(),
+      vehicleId: newUser._id.toString(),
     });
 
     return NextResponse.json({ success: true, message: "User registered and verification email sent." });

@@ -19,6 +19,31 @@
   z-index: 1000; /* stay above all content */
 }
 
+.dashboardButton {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dashboardButton:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+@media (max-width: 768px) {
+  .dashboardButton {
+    position: static;
+    margin-bottom: 8px;
+  }
+}
+
 .title {
   width: 100%;
   text-align: center;

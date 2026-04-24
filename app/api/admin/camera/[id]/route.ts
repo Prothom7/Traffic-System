@@ -29,12 +29,13 @@ function calculateDistanceKm(
 }
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connect();
-    const location = await Location.findById(params.id);
+    const { id } = await context.params;
+    const location = await Location.findById(id);
 
     if (!location) {
       return NextResponse.json(
@@ -55,14 +56,15 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connect();
+    const { id } = await context.params;
     const body = await request.json();
 
     const location = await Location.findByIdAndUpdate(
-      params.id,
+      id,
       {
         location_name: body.location_name,
         latitude: body.latitude,
@@ -123,12 +125,13 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connect();
-    const location = await Location.findByIdAndDelete(params.id);
+    const { id } = await context.params;
+    const location = await Location.findByIdAndDelete(id);
 
     if (!location) {
       return NextResponse.json(
@@ -139,8 +142,8 @@ export async function DELETE(
 
     await Edge.deleteMany({
       $or: [
-        { from_location_id: params.id },
-        { to_location_id: params.id },
+        { from_location_id: id },
+        { to_location_id: id },
       ],
     });
 

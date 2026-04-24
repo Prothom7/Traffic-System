@@ -1,0 +1,136 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+.container {
+  min-height: 100vh;
+  background-image: url("/source/explore.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  color: #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  padding-top: 140px;
+}
+
+.main {
+  width: min(920px, 94vw);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3.5rem;
+  flex: 1;
+}
+
+.card {
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 16px 36px rgba(2, 6, 23, 0.45);
+  padding: clamp(1.4rem, 3vw, 2.4rem);
+}
+
+.card h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+}
+
+.card p {
+  margin: 0.7rem 0 1.3rem;
+  color: #cbd5e1;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+  margin: 1rem 0 1.4rem;
+}
+
+.summaryGrid div {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.summaryGrid span {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #94a3b8;
+}
+
+.summaryGrid strong {
+  color: #ffffff;
+}
+
+.info,
+.error {
+  border-radius: 12px;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 1rem;
+}
+
+.info {
+  background: rgba(59, 130, 246, 0.2);
+  color: #dbeafe;
+  border-color: rgba(147, 197, 253, 0.4);
+}
+
+.error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fecaca;
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.successButton,
+.failButton,
+.cancelButton {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  padding: 0.75rem 1.2rem;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.successButton {
+  background: linear-gradient(135deg, #16a34a, #166534);
+}
+
+.failButton {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+}
+
+.cancelButton {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.successButton:hover,
+.failButton:hover,
+.cancelButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.38);
+}
+
+.successButton:disabled,
+.failButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

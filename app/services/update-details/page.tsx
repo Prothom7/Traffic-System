@@ -5,23 +5,30 @@ import { useRouter } from "next/navigation";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import styles from "../services.module.css";
-import { decodeJWTClient } from "@/helpers/jwtClient";
+import { decodeJWTClient, getValidAuthTokenClient } from "@/helpers/jwtClient";
+
+type VehicleOption = {
+  _id: string;
+  number_plate: string;
+  model: string;
+};
 
 export default function UpdateDetailsPage() {
   const router = useRouter();
   const [userName, setUserName] = useState("User");
-  const [vehicleId, setVehicleId] = useState("");
+  const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
+  const [selectedPlate, setSelectedPlate] = useState("");
   const [formData, setFormData] = useState({
-    number_plate: "",
     owner_contact: "",
     owner_address: "",
     color: "",
   });
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+    const token = getValidAuthTokenClient();
     if (!token) {
       router.push("/authentication/signin");
       return;
@@ -29,7 +36,27 @@ export default function UpdateDetailsPage() {
 
     const decoded = decodeJWTClient(token);
     if (decoded?.name) setUserName(decoded.name);
-    if (decoded?.id) setVehicleId(decoded.id);
+
+    const loadVehicles = async () => {
+      try {
+        const response = await fetch("/api/services/my-vehicles", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        if (data.success) {
+          setVehicles(data.data || []);
+          if (data.data?.[0]?.number_plate) {
+            setSelectedPlate(data.data[0].number_plate);
+          }
+        }
+      } catch (error) {
+        setMessage("Failed to load your vehicles");
+      } finally {
+        setPageLoading(false);
+      }
+    };
+
+    loadVehicles();
   }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,10 +65,24 @@ export default function UpdateDetailsPage() {
     setMessage("");
 
     try {
+      const token = getValidAuthTokenClient();
+      if (!token) {
+        router.push("/authentication/signin");
+        return;
+      }
+
       const response = await fetch(`/api/services/update-details`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, vehicleId }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          number_plate: selectedPlate,
+          contact: formData.owner_contact,
+          address: formData.owner_address,
+          color: formData.color,
+        }),
       });
 
       const data = await response.json();
@@ -69,14 +110,20 @@ export default function UpdateDetailsPage() {
 
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formGroup}>
-              <label>Number Plate</label>
-              <input
-                type="text"
-                value={formData.number_plate}
-                onChange={(e) => setFormData({ ...formData, number_plate: e.target.value.toUpperCase() })}
-                placeholder="e.g., ABC-1234"
+              <label>Select Your Vehicle</label>
+              <select
+                value={selectedPlate}
+                onChange={(e) => setSelectedPlate(e.target.value)}
+                disabled={pageLoading}
                 required
-              />
+              >
+                <option value="">Choose a vehicle</option>
+                {vehicles.map((vehicle) => (
+                  <option key={vehicle._id} value={vehicle.number_plate}>
+                    {vehicle.number_plate} ({vehicle.model})
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className={styles.formGroup}>
@@ -116,7 +163,7 @@ export default function UpdateDetailsPage() {
             )}
 
             <div className={styles.buttonGroup}>
-              <button type="submit" className={styles.submitButton} disabled={loading}>
+              <button type="submit" className={styles.submitButton} disabled={loading || !selectedPlate}>
                 {loading ? "Processing..." : "Update Details"}
               </button>
               <button type="button" className={styles.cancelButton} onClick={() => router.push("/explore")}>

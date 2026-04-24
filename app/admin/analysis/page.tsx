@@ -45,8 +45,11 @@ export default function AnalysisPage() {
         if (!res.ok) throw new Error("Failed to load analysis data.");
         const json: AnalysisResponse = await res.json();
         if (mounted) setData(json.records || []);
-      } catch (e: any) {
-        if (mounted) setError(e?.message || "Unknown error");
+      } catch (e: unknown) {
+        if (mounted) {
+          const message = e instanceof Error ? e.message : "Unknown error";
+          setError(message);
+        }
       } finally {
         if (mounted) setLoading(false);
       }
