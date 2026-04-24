@@ -231,7 +231,7 @@ export default function ExplorePage() {
                       name="number_plate"
                       value={formData.number_plate}
                       onChange={handleInputChange}
-                      placeholder="e.g., ABC-123"
+                      placeholder="ঢাকা মেট্রো-গ ১২-৩৪৫৬"
                       required
                     />
                   </div>
