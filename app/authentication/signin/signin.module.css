@@ -8,7 +8,9 @@
   flex-direction: column;
   margin: 0;
   font-family: 'Montserrat', sans-serif; /* modern clean font */
-  background-image: url('/source/login.png');
+    background-image:
+    linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+    url('/source/login.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
