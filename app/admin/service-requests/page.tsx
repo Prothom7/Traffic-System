@@ -43,16 +43,28 @@ type StolenReport = {
   vehicleId?: { number_plate?: string; model?: string };
 };
 
+type FrozenAccount = {
+  _id: string;
+  owner_name?: string;
+  email?: string;
+  contact?: string;
+  credit_score?: number;
+  freeze_reason?: string;
+  createdAt?: string;
+  vehicle_count?: number;
+};
+
 export default function AdminServiceRequestsPage() {
   const router = useRouter();
   const [renewals, setRenewals] = useState<RenewalRequest[]>([]);
   const [ownership, setOwnership] = useState<OwnershipRequest[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stolenReports, setStolenReports] = useState<StolenReport[]>([]);
+  const [frozenAccounts, setFrozenAccounts] = useState<FrozenAccount[]>([]);
   const [message, setMessage] = useState("");
 
   const loadData = async (token: string) => {
-    const [renewalRes, ownershipRes, paymentRes, stolenRes] = await Promise.all([
+    const [renewalRes, ownershipRes, paymentRes, stolenRes, frozenRes] = await Promise.all([
       fetch("/api/admin/services/renewals", {
         headers: { Authorization: `Bearer ${token}` },
       }),
@@ -65,17 +77,22 @@ export default function AdminServiceRequestsPage() {
       fetch("/api/admin/services/stolen-reports", {
         headers: { Authorization: `Bearer ${token}` },
       }),
+      fetch("/api/admin/credits/recover", {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
     ]);
 
     const renewalData = await renewalRes.json();
     const ownershipData = await ownershipRes.json();
     const paymentData = await paymentRes.json();
     const stolenData = await stolenRes.json();
+    const frozenData = await frozenRes.json();
 
     if (renewalData.success) setRenewals(renewalData.data || []);
     if (ownershipData.success) setOwnership(ownershipData.data || []);
     if (paymentData.success) setPayments(paymentData.data || []);
     if (stolenData.success) setStolenReports(stolenData.data || []);
+    if (frozenData.success) setFrozenAccounts(frozenData.data || []);
   };
 
   useEffect(() => {
@@ -162,6 +179,29 @@ export default function AdminServiceRequestsPage() {
     await loadData(token);
   };
 
+  const unfreezeAccount = async (userId: string) => {
+    const token = getValidAuthTokenClient();
+    if (!token) return;
+
+    const res = await fetch("/api/admin/credits/recover", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ user_id: userId }),
+    });
+
+    const data = await res.json();
+    if (!data.success) {
+      setMessage(data.error || "Failed to unfreeze account");
+      return;
+    }
+
+    setMessage("Account unfrozen and credit reset to 50.");
+    await loadData(token);
+  };
+
   return (
     <div className={styles.fullpage}>
       <AdminHeader />
@@ -231,6 +271,31 @@ export default function AdminServiceRequestsPage() {
                 </div>
               ))}
               {stolenReports.length === 0 && <div className={styles.item}>No stolen reports found.</div>}
+            </div>
+          </div>
+
+          <div className={styles.panel}>
+            <h2>Frozen Accounts</h2>
+            <div className={styles.list}>
+              {frozenAccounts.map((account) => (
+                <div key={account._id} className={styles.item}>
+                  <strong>{account.owner_name || "User"}</strong>
+                  <span>Email: {account.email || "N/A"}</span>
+                  <span>Contact: {account.contact || "N/A"}</span>
+                  <span>Credit Score: {account.credit_score ?? 0}</span>
+                  <span>Vehicles: {account.vehicle_count ?? 0}</span>
+                  <span>Reason: {account.freeze_reason || "Credit reached zero"}</span>
+                  <div className={styles.actions}>
+                    <button
+                      className={`${styles.button} ${styles.approve}`}
+                      onClick={() => unfreezeAccount(account._id)}
+                    >
+                      Unfreeze to 50
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {frozenAccounts.length === 0 && <div className={styles.item}>No frozen accounts found.</div>}
             </div>
           </div>
         </section>

@@ -239,3 +239,98 @@
     padding: 28px;
   }
 }
+
+
+.plateEditRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.plateInput {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.plateInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.editPlateButton,
+.clearPlateButton {
+  padding: 8px 12px;
+  background: #2f62ca;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.editPlateButton:hover {
+  background: #224791;
+  border-color: #3b82f6;
+}
+
+.clearPlateButton {
+  margin-left: 10px;
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.clearPlateButton:hover {
+  background: #fecaca;
+}
+
+.extractedPreview {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.modalButtonPrimary {
+  padding: 8px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.modalButtonPrimary:hover {
+  background: #2563eb;
+}
+
+.modalButtonSecondary {
+  padding: 8px 20px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.modalButtonSecondary:hover {
+  background: #0c1526;
+}

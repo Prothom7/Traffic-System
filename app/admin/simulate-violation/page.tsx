@@ -152,6 +152,12 @@ export default function SimulateViolationPage() {
     }
   };
 
+  const handleEditPlate = (newPlate: string) => {
+    setForm((prev) => ({ ...prev, number_plate: newPlate }));
+    setLastExtractedPlate(newPlate);
+    setSuccess(`Plate updated to: ${newPlate}`);
+  };
+
   return (
     <div className={styles.fullpage}>
       <AdminHeader />
@@ -183,9 +189,48 @@ export default function SimulateViolationPage() {
                   {extractingPlate ? "Extracting..." : "Extract Plate"}
                 </button>
               </div>
+            </div>
+
+            <div className={`${styles.inputGroup} ${styles.fullRow}`}>
+              <label className={styles.label} htmlFor="number_plate">
+                License Plate Number (Editable)
+              </label>
+              <div className={styles.plateEditRow}>
+                <input
+                  id="number_plate"
+                  name="number_plate"
+                  type="text"
+                  value={form.number_plate}
+                  onChange={handleChange}
+                  className={styles.plateInput}
+                  placeholder="Extracted plate will appear here"
+                />
+                {form.number_plate && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newPlate = prompt("Edit license plate number:", form.number_plate);
+                      if (newPlate && newPlate.trim()) {
+                        handleEditPlate(newPlate.trim());
+                      }
+                    }}
+                    className={styles.editPlateButton}
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
               {form.number_plate && (
                 <p className={styles.extractedPreview}>
-                  Extracted plate: <strong>{form.number_plate}</strong>
+                  Current plate: <strong>{form.number_plate}</strong>
+                  <button
+                    type="button"
+                    onClick={() => handleEditPlate("")}
+                    className={styles.clearPlateButton}
+                    aria-label="Clear plate"
+                  >
+                    ✖ Clear
+                  </button>
                 </p>
               )}
             </div>
@@ -228,22 +273,7 @@ export default function SimulateViolationPage() {
               </select>
             </div>
 
-            <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="fine_amount">
-                Fine Amount (optional)
-              </label>
-              <input
-                id="fine_amount"
-                name="fine_amount"
-                type="number"
-                min={0}
-                step={1}
-                value={form.fine_amount}
-                onChange={handleChange}
-                className={styles.input}
-                placeholder="0"
-              />
-            </div>
+
 
             <div className={styles.inputGroup}>
               <label className={styles.label} htmlFor="camera_location">
@@ -300,13 +330,28 @@ export default function SimulateViolationPage() {
           <div className={styles.modalCard}>
             <h3 className={styles.modalTitle}>License Plate Extracted</h3>
             <p className={styles.modalPlate}>{lastExtractedPlate}</p>
-            <button
-              type="button"
-              className={styles.modalButton}
-              onClick={() => setShowPlatePopup(false)}
-            >
-              OK
-            </button>
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.modalButtonPrimary}
+                onClick={() => {
+                  const newPlate = prompt("Edit plate number:", lastExtractedPlate);
+                  if (newPlate && newPlate.trim()) {
+                    handleEditPlate(newPlate.trim());
+                  }
+                  setShowPlatePopup(false);
+                }}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                className={styles.modalButtonSecondary}
+                onClick={() => setShowPlatePopup(false)}
+              >
+                OK
+              </button>
+            </div>
           </div>
         </div>
       )}
