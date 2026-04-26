@@ -321,7 +321,7 @@ export default function DashboardPage() {
 
           <div className={styles.statCard}>
             <h3>Total Fines</h3>
-            <p className={styles.statNumber}>{statsLoading ? "-" : `$${stats.totalFines.toFixed(2)}`}</p>
+            <p className={styles.statNumber}>{statsLoading ? "-" : `৳${stats.totalFines.toFixed(2)}`}</p>
           </div>
         </section>
 

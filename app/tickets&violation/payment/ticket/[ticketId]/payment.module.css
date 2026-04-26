@@ -2,7 +2,9 @@
 
 .container {
   min-height: 100vh;
-  background-image: url("/source/explore.jpg");
+  background-image:
+    linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+    url('/source/explore.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

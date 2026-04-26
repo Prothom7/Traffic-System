@@ -24,7 +24,7 @@ export default function CheckEmailPage() {
             </div>
             <div>
               <span>2</span>
-              <p>Find the "Verify your vehicle registration" email</p>
+              <p>Find the &quot;Verify your vehicle registration&quot; email</p>
             </div>
             <div>
               <span>3</span>

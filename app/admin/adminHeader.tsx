@@ -9,6 +9,9 @@ export default function AdminHeader() {
 
   return (
     <header className={styles.header}>
+      <button className={styles.dashboardButton} onClick={() => router.push("/dashboard")}>
+        Back to Dashboard
+      </button>
       <h1 className={styles.title}>Admin Dashboard</h1>
       <nav className={styles.nav}>
         <button onClick={() => router.push("/admin")} className={styles.navButton}>
@@ -19,6 +22,9 @@ export default function AdminHeader() {
         </button>
         <button onClick={() => router.push("/admin/vehicles")} className={styles.navButton}>
           Vehicles
+        </button>
+        <button onClick={() => router.push("/admin/service-requests")} className={styles.navButton}>
+          Service Requests
         </button>
         <button
           onClick={() => router.push("/admin/traffic-records")}

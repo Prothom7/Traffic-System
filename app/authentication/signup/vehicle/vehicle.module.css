@@ -9,7 +9,9 @@
   align-items: center;       /* center vertically */
   margin: 0;
   font-family: 'Montserrat', sans-serif; /* modern clean font */
-  background-image: url('/source/signup.jpg');
+      background-image:
+    linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+    url('/source/signup.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

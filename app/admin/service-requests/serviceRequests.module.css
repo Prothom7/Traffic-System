@@ -1,0 +1,112 @@
+.fullpage {
+  min-height: 100vh;
+  background-image: url('/source/admin_addcamera.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #e5e7eb;
+  padding-top: 180px;
+}
+
+.container {
+  max-width: min(1400px, 92vw);
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 48px);
+  min-height: min(600px, 85vh);
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.title {
+  margin: 0 0 1rem;
+  font-size: 2rem;
+}
+
+.message {
+  margin-bottom: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.panel {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.8rem;
+  font-size: 1.2rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.item {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  display: grid;
+  gap: 0.35rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+.approve {
+  background: #16a34a;
+}
+
+.reject {
+  background: #dc2626;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+}
+
+.table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: left;
+}
+
+.table th {
+  background: rgba(255, 255, 255, 0.05);
+}

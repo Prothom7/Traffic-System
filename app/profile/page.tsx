@@ -233,6 +233,14 @@ export default function ProfilePage() {
         )}
 
         <div className={styles.actions}>
+          {userData.isAdmin && (
+            <button
+              className={styles.editButton}
+              onClick={() => router.push("/admin")}
+            >
+              Go to Admin Panel
+            </button>
+          )}
           <button
             className={styles.editButton}
             onClick={() => router.push("/services/update-details")}

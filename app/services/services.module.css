@@ -1,284 +1,267 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-
-/* ===== GLOBAL LAYOUT ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-  font-family: 'Poppins', 'Inter', sans-serif;
-  color: #e2e8f0;
+  width: 100vw;
   display: flex;
   flex-direction: column;
-  padding-top: 140px; /* Space for fixed header */
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  background-image: url('/source/admin_addcamera.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .main {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 3rem 2rem;
-  min-height: calc(100vh - 200px);
-  flex: 1;
+  width: 100%;
+  max-width: min(1400px, 92vw);
+  margin: clamp(120px, 15vh, 160px) auto 40px;
+  padding: clamp(24px, 4vw, 48px);
+  min-height: min(600px, 85vh);
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  color: #fff;
+  box-sizing: border-box;
 }
 
-/* ===== FORM CARD ===== */
-
 .formCard {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  padding: 3rem 2.5rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  width: 100%;
 }
 
 .formCard h1 {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #ffffff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 700;
+  margin-bottom: 12px;
+  text-align: center;
+  letter-spacing: 1px;
 }
 
 .subtitle {
-  font-size: 1rem;
-  color: #94a3b8;
-  margin-bottom: 2rem;
-  line-height: 1.6;
+  font-size: clamp(14px, 1.6vw, 16px);
+  color: rgba(255, 255, 255, 0.86);
+  margin-bottom: 22px;
+  text-align: center;
 }
-
-/* ===== FORM ===== */
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: clamp(12px, 2vw, 18px);
+  margin-bottom: 24px;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .formGroup label {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #cbd5e1;
+  font-size: clamp(14px, 1.5vw, 16px);
+  font-weight: 600;
 }
 
 .formGroup input,
 .formGroup textarea,
 .formGroup select {
-  padding: 0.75rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  font-size: 0.95rem;
+  padding: clamp(10px, 1.5vw, 14px);
+  font-size: clamp(14px, 1.5vw, 16px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
   font-family: inherit;
-  color: #ffffff;
-  transition: all 0.2s ease;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px);
+}
+
+.formGroup input::placeholder,
+.formGroup textarea::placeholder {
+  color: rgba(255, 255, 255, 0.66);
 }
 
 .formGroup input:focus,
 .formGroup textarea:focus,
 .formGroup select:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.formGroup input::placeholder,
-.formGroup textarea::placeholder {
-  color: #64748b;
+  border-color: #00aaff;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .formGroup textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 88px;
 }
 
-/* ===== MESSAGES ===== */
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.submitButton,
+.cancelButton {
+  padding: clamp(10px, 1.5vw, 14px) clamp(20px, 3vw, 28px);
+  border-radius: 10px;
+  border: none;
+  font-size: clamp(14px, 1.5vw, 16px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submitButton {
+  background: #0070f3;
+  color: #fff;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #005bb5;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.cancelButton:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
 
 .successMessage,
 .errorMessage {
-  padding: 1rem;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  padding: 12px 14px;
+  border-radius: 10px;
   font-weight: 500;
   text-align: center;
 }
 
 .successMessage {
   background: rgba(34, 197, 94, 0.15);
-  color: #4ade80;
-  border: 1px solid rgba(74, 222, 128, 0.3);
+  color: #86efac;
+  border: 1px solid rgba(134, 239, 172, 0.35);
 }
 
 .errorMessage {
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: rgba(248, 113, 113, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(252, 165, 165, 0.35);
 }
-
-/* ===== BUTTONS ===== */
-
-.buttonGroup {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.submitButton,
-.cancelButton {
-  flex: 1;
-  padding: 0.875rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-}
-
-.submitButton {
-  background: linear-gradient(135deg, #3b82f6, #1e40af);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.submitButton:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2563eb, #1e3a8a);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-}
-
-.submitButton:disabled {
-  background: rgba(148, 163, 184, 0.3);
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.cancelButton {
-  background: rgba(255, 255, 255, 0.08);
-  color: #e2e8f0;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.cancelButton:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-/* ===== STATUS CARD ===== */
 
 .statusCard {
-  margin-top: 2rem;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.03);
+  margin-top: 22px;
+  padding: 20px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .statusCard h2 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: #ffffff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  margin: 0 0 14px;
+  font-size: 1.15rem;
 }
 
 .statusGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
 }
 
 .statusItem {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 3px;
 }
 
 .statusLabel {
-  font-size: 0.85rem;
-  color: #94a3b8;
-  font-weight: 500;
+  font-size: 0.86rem;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .statusValue {
-  font-size: 1rem;
-  color: #ffffff;
+  font-size: 0.98rem;
   font-weight: 600;
 }
 
 .statusValue.active {
-  color: #4ade80;
+  color: #86efac;
 }
 
 .statusValue.expired {
-  color: #f87171;
+  color: #fca5a5;
 }
 
 .statusValue.stolen {
-  color: #ef4444;
+  color: #f87171;
 }
 
 .statusValue.suspended {
-  color: #fb923c;
+  color: #fdba74;
 }
 
-/* ===== COMING SOON ===== */
+.listWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.listItem {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 112, 243, 0.3);
+  background: rgba(0, 112, 243, 0.1);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.92rem;
+}
+
+.table th {
+  color: #dbeafe;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+}
 
 .comingSoon {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 3rem 1rem;
 }
 
 .comingSoonIcon {
-  font-size: 5rem;
-  margin-bottom: 1.5rem;
-}
-
-.comingSoon h2 {
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: 4rem;
   margin-bottom: 1rem;
-  color: #ffffff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
-
-.comingSoon p {
-  font-size: 1rem;
-  color: #94a3b8;
-}
-
-.comingSoon p {
-  font-size: 1rem;
-  color: #64748b;
-  margin-bottom: 2rem;
-  line-height: 1.6;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* ===== RESPONSIVE ===== */
 
 @media (max-width: 768px) {
   .main {
-    padding: 2rem 1rem;
-  }
-
-  .formCard {
-    padding: 2rem 1.5rem;
-  }
-
-  .formCard h1 {
-    font-size: 1.6rem;
+    margin-top: 120px;
+    padding: 20px 14px;
   }
 
   .buttonGroup {
