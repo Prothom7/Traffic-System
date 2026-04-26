@@ -17,9 +17,10 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const includeAll = searchParams.get("all") === "true";
 
-    const query = includeAll && auth.context.isAdmin
-      ? {}
-      : { reported_by_user_id: auth.context.userId };
+    const query =
+      includeAll && auth.context.isAdmin
+        ? {}
+        : { reported_by_user_id: auth.context.userId };
 
     const reports = await StolenVehicle.find(query)
       .populate("vehicleId", "number_plate model vehicle_type status userId")
@@ -28,12 +29,15 @@ export async function GET(req: NextRequest) {
       .lean();
 
     const filteredReports = reports.filter((report: any) => {
-      const hasOwner = Boolean(report?.reported_by_user_id?._id || report?.reported_by_user_id);
+      const hasOwner = Boolean(
+        report?.reported_by_user_id?._id || report?.reported_by_user_id,
+      );
       const hasVehicle = Boolean(report?.vehicleId?._id);
       const linkedOwnerVehicle =
         hasOwner &&
         hasVehicle &&
-        String(report.vehicleId.userId || "") === String(report.reported_by_user_id._id || report.reported_by_user_id);
+        String(report.vehicleId.userId || "") ===
+          String(report.reported_by_user_id._id || report.reported_by_user_id);
 
       return hasOwner && hasVehicle && linkedOwnerVehicle;
     });
@@ -42,8 +46,11 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error("Failed to fetch stolen reports:", error);
     return NextResponse.json(
-      { success: false, error: error?.message || "Failed to fetch stolen reports" },
-      { status: 500 }
+      {
+        success: false,
+        error: error?.message || "Failed to fetch stolen reports",
+      },
+      { status: 500 },
     );
   }
 }
@@ -68,8 +75,12 @@ export async function POST(req: NextRequest) {
 
     if (!number_plate || !incident_date || !incident_location) {
       return NextResponse.json(
-        { success: false, error: "Number plate, incident date and incident location are required" },
-        { status: 400 }
+        {
+          success: false,
+          error:
+            "Number plate, incident date and incident location are required",
+        },
+        { status: 400 },
       );
     }
 
@@ -81,7 +92,7 @@ export async function POST(req: NextRequest) {
     if (!vehicle) {
       return NextResponse.json(
         { success: false, error: "Vehicle not found or not owned by user" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -91,8 +102,11 @@ export async function POST(req: NextRequest) {
     });
     if (existing) {
       return NextResponse.json(
-        { success: false, error: "This vehicle already has an active stolen report" },
-        { status: 409 }
+        {
+          success: false,
+          error: "This vehicle already has an active stolen report",
+        },
+        { status: 409 },
       );
     }
 
@@ -123,7 +137,7 @@ export async function POST(req: NextRequest) {
     console.error("Failed to report stolen vehicle:", err);
     return NextResponse.json(
       { success: false, error: "Failed to report stolen vehicle" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

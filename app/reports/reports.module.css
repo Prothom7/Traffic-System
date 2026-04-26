@@ -69,6 +69,24 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(18px);
+  transition: all 0.2s ease;
+}
+
+/* Responsive card adjustments for better legibility */
+@media (max-width: 768px) {
+  .card {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 1.2rem;
+  }
+  
+  .card p {
+    font-size: 0.9rem;
+  }
 }
 
 .cardHeader {
@@ -76,12 +94,28 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .cardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .cardHeader h2 {
   margin: 0;
   font-size: 1.35rem;
   color: #ffffff;
+  word-break: break-word;
+}
+
+@media (max-width: 480px) {
+  .cardHeader h2 {
+    font-size: 1.2rem;
+  }
 }
 
 .statusBadge {
@@ -92,6 +126,14 @@
   color: #93c5fd;
   font-size: 0.85rem;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .statusBadge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.7rem;
+  }
 }
 
 .statusAlert {
@@ -103,6 +145,7 @@
 .card p {
   color: #cbd5e1;
   line-height: 1.7;
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
 }
 
 .lastSeenGrid {
@@ -111,10 +154,18 @@
   gap: 1.2rem;
 }
 
+@media (max-width: 560px) {
+  .lastSeenGrid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+}
+
 .lastSeenGrid strong {
   display: block;
   margin-top: 0.4rem;
   color: #ffffff;
+  word-break: break-word;
 }
 
 .label {
@@ -155,6 +206,12 @@
   object-fit: cover;
 }
 
+@media (max-width: 480px) {
+  .captureImage {
+    max-width: 100%;
+  }
+}
+
 .trackButton {
   padding: 0.85rem 2.2rem;
   border-radius: 999px;
@@ -165,6 +222,14 @@
   color: #ffffff;
   box-shadow: 0 10px 22px rgba(37, 99, 235, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+}
+
+@media (max-width: 480px) {
+  .trackButton {
+    padding: 0.7rem 1.5rem;
+    width: 100%;
+  }
 }
 
 .trackButton:disabled {
@@ -184,6 +249,14 @@
   justify-content: space-between;
   gap: 0.8rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 560px) {
+  .filterRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 .filterSelect {
@@ -192,6 +265,13 @@
   background: rgba(15, 23, 42, 0.7);
   color: #e2e8f0;
   padding: 0.5rem 0.7rem;
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+}
+
+@media (max-width: 560px) {
+  .filterSelect {
+    width: 100%;
+  }
 }
 
 .reportHistoryList {
@@ -206,12 +286,27 @@
   background: rgba(2, 6, 23, 0.5);
 }
 
+@media (max-width: 480px) {
+  .reportHistoryItem {
+    padding: 0.7rem;
+  }
+}
+
 .reportHistoryHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.8rem;
   margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 560px) {
+  .reportHistoryHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
 }
 
 .historyToggle {
@@ -222,6 +317,13 @@
   background: rgba(59, 130, 246, 0.16);
   color: #bfdbfe;
   font-weight: 600;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+}
+
+@media (max-width: 560px) {
+  .historyToggle {
+    width: fit-content;
+  }
 }
 
 .reportHistoryEntry {
@@ -232,6 +334,13 @@
   border-radius: 10px;
   background: rgba(30, 41, 59, 0.55);
   margin-top: 0.7rem;
+}
+
+@media (max-width: 480px) {
+  .reportHistoryEntry {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
 }
 
 .loading,
@@ -246,13 +355,120 @@
   color: #f87171;
 }
 
+/* Improved typography for better readability on all devices */
+.card p, 
+.reportHistoryEntry p,
+.reportHistoryEntry span {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Ensure buttons and interactive elements are large enough on touch devices */
 @media (max-width: 768px) {
+  .trackButton,
+  .historyToggle,
+  .filterSelect {
+    min-height: 44px;
+  }
+  
+  .historyToggle {
+    min-height: 38px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding-top: 100px;
+  }
+  
   .main {
-    width: min(1500px, 100vw);
-    padding: 2rem 1rem 3rem;
+    padding: 1rem 0.75rem 2rem;
+  }
+  
+  .pageHeader {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+  }
+  
+  .grid {
+    gap: 1rem;
+  }
+}
+
+/* Improve general text spacing inside cards */
+.card p {
+  color: #cbd5e1;
+  line-height: 1.8;
+  margin-top: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+/* More breathing room under headings */
+.cardHeader {
+  margin-bottom: 1.8rem;
+}
+
+.cardHeader h2 {
+  line-height: 1.4;
+}
+
+/* Space label/value pairs more */
+.lastSeenGrid {
+  gap: 1.5rem;
+}
+
+.lastSeenGrid strong {
+  margin-top: 0.55rem;
+  line-height: 1.5;
+}
+
+.label {
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+/* Report items less cramped */
+.reportHistoryItem {
+  padding: 1.2rem;
+}
+
+.reportHistoryHeader {
+  margin-bottom: 1rem;
+}
+
+.reportHistoryEntry {
+  gap: 1rem;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.reportHistoryEntry p,
+.reportHistoryEntry span {
+  line-height: 1.6;
+}
+
+/* Add space between stacked elements in cards */
+.card > * + * {
+  margin-top: 1rem;
+}
+
+/* Better mobile spacing */
+@media (max-width: 480px) {
+  .card {
+    padding: 1.4rem;
   }
 
-  .card {
-    padding: 1.5rem;
+  .card p {
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+
+  .reportHistoryEntry {
+    gap: 0.8rem;
+  }
+
+  .lastSeenGrid {
+    gap: 1rem;
   }
 }
