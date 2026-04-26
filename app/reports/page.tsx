@@ -8,8 +8,31 @@ import styles from "./reports.module.css";
 import { decodeJWTClient, getValidAuthTokenClient } from "@/helpers/jwtClient";
 
 interface VehicleData {
+  _id?: string;
   number_plate: string;
   status: string;
+}
+
+interface ProfileData {
+  user?: {
+    owner_name?: string;
+    email?: string;
+  };
+  vehicles?: VehicleData[];
+}
+
+interface StolenReport {
+  _id: string;
+  status: "open" | "recovered";
+  incident_date?: string;
+  incident_location?: string;
+  createdAt?: string;
+  vehicleId?: {
+    _id?: string;
+    number_plate?: string;
+    model?: string;
+    status?: string;
+  };
 }
 
 interface TrafficRecord {
@@ -26,6 +49,7 @@ export default function ReportsPage() {
   const router = useRouter();
   const [userName, setUserName] = useState("User");
   const [vehicle, setVehicle] = useState<VehicleData | null>(null);
+  const [stolenReport, setStolenReport] = useState<StolenReport | null>(null);
   const [latestRecord, setLatestRecord] = useState<TrafficRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -42,25 +66,48 @@ export default function ReportsPage() {
       if (decoded?.name) setUserName(decoded.name);
 
       try {
-        const profileRes = await fetch("/api/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const [profileRes, stolenRes] = await Promise.all([
+          fetch("/api/profile", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("/api/services/report-stolen", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
         const profileData = await profileRes.json();
+        const stolenData = await stolenRes.json();
+
         if (!profileData.success) {
           setError(profileData.error || "Failed to load report data");
           setLoading(false);
           return;
         }
 
-        const vehicleData = profileData.data as VehicleData;
-        setVehicle(vehicleData);
+        const profile = (profileData.data || {}) as ProfileData;
+        const vehicles = Array.isArray(profile.vehicles) ? profile.vehicles : [];
 
-        const recordRes = await fetch(
-          `/api/traffic-records?plate=${encodeURIComponent(vehicleData.number_plate)}`
-        );
-        const recordData = await recordRes.json();
-        if (Array.isArray(recordData) && recordData.length > 0) {
-          setLatestRecord(recordData[0]);
+        const reports = Array.isArray(stolenData.data)
+          ? (stolenData.data as StolenReport[])
+          : [];
+        const activeReport = reports.find((report) => report.status === "open") || null;
+        setStolenReport(activeReport);
+
+        const trackedPlate = activeReport?.vehicleId?.number_plate;
+        const selectedVehicle = trackedPlate
+          ? vehicles.find((v) => v.number_plate === trackedPlate) || null
+          : vehicles[0] || null;
+
+        setVehicle(selectedVehicle);
+
+        if (selectedVehicle?.number_plate) {
+          const recordRes = await fetch(
+            `/api/traffic-records?plate=${encodeURIComponent(selectedVehicle.number_plate)}`
+          );
+          const recordData = await recordRes.json();
+          if (Array.isArray(recordData) && recordData.length > 0) {
+            setLatestRecord(recordData[0]);
+          }
         }
       } catch (err) {
         setError("An error occurred while loading report data");
@@ -77,7 +124,7 @@ export default function ReportsPage() {
     return new Date(value).toLocaleString();
   };
 
-  const isStolen = vehicle?.status === "Stolen";
+  const isStolen = Boolean(stolenReport && stolenReport.status === "open");
 
   return (
     <div className={styles.container}>
@@ -107,6 +154,11 @@ export default function ReportsPage() {
                   ? "Your vehicle has been marked as stolen. Authorities are monitoring recent sightings."
                   : "No active stolen vehicle report is on record."}
               </p>
+              {isStolen && stolenReport && (
+                <p>
+                  Reported vehicle: {stolenReport.vehicleId?.number_plate || "Unknown"} at {stolenReport.incident_location || "Unknown location"}
+                </p>
+              )}
             </section>
 
             <section className={styles.card}>

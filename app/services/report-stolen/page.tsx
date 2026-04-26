@@ -65,7 +65,10 @@ export default function ReportStolenPage() {
         const reportData = await reportRes.json();
 
         if (vehicleData.success) {
-          const available = (vehicleData.data || []).filter((v: any) => v.status !== "Stolen");
+          const vehicleList = Array.isArray(vehicleData.data?.vehicles)
+            ? vehicleData.data.vehicles
+            : [];
+          const available = vehicleList.filter((v: any) => v.status !== "Stolen");
           setVehicles(available);
           if (available?.[0]?.number_plate) {
             setSelectedPlate(available[0].number_plate);
@@ -109,6 +112,14 @@ export default function ReportStolenPage() {
       const data = await response.json();
       if (data.success) {
         setMessage("Vehicle reported as stolen successfully.");
+
+        // Remove the reported vehicle from selectable options right away.
+        setVehicles((prev) => {
+          const remaining = prev.filter((v) => v.number_plate !== selectedPlate);
+          setSelectedPlate(remaining[0]?.number_plate || "");
+          return remaining;
+        });
+
         const reportRes = await fetch("/api/services/report-stolen", {
           headers: { Authorization: `Bearer ${token}` },
         });

@@ -32,15 +32,27 @@ type Payment = {
   vehicle?: { number_plate?: string; model?: string };
 };
 
+type StolenReport = {
+  _id: string;
+  status: "open" | "recovered";
+  incident_date?: string;
+  incident_location?: string;
+  police_report_number?: string;
+  createdAt: string;
+  reported_by_user_id?: { owner_name?: string; email?: string };
+  vehicleId?: { number_plate?: string; model?: string };
+};
+
 export default function AdminServiceRequestsPage() {
   const router = useRouter();
   const [renewals, setRenewals] = useState<RenewalRequest[]>([]);
   const [ownership, setOwnership] = useState<OwnershipRequest[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [stolenReports, setStolenReports] = useState<StolenReport[]>([]);
   const [message, setMessage] = useState("");
 
   const loadData = async (token: string) => {
-    const [renewalRes, ownershipRes, paymentRes] = await Promise.all([
+    const [renewalRes, ownershipRes, paymentRes, stolenRes] = await Promise.all([
       fetch("/api/admin/services/renewals", {
         headers: { Authorization: `Bearer ${token}` },
       }),
@@ -50,15 +62,20 @@ export default function AdminServiceRequestsPage() {
       fetch("/api/payments/history?all=true", {
         headers: { Authorization: `Bearer ${token}` },
       }),
+      fetch("/api/admin/services/stolen-reports", {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
     ]);
 
     const renewalData = await renewalRes.json();
     const ownershipData = await ownershipRes.json();
     const paymentData = await paymentRes.json();
+    const stolenData = await stolenRes.json();
 
     if (renewalData.success) setRenewals(renewalData.data || []);
     if (ownershipData.success) setOwnership(ownershipData.data || []);
     if (paymentData.success) setPayments(paymentData.data || []);
+    if (stolenData.success) setStolenReports(stolenData.data || []);
   };
 
   useEffect(() => {
@@ -123,6 +140,28 @@ export default function AdminServiceRequestsPage() {
     await loadData(token);
   };
 
+  const updateStolenReport = async (requestId: string, status: "open" | "recovered") => {
+    const token = getValidAuthTokenClient();
+    if (!token) return;
+
+    const res = await fetch("/api/admin/services/stolen-reports", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ request_id: requestId, status }),
+    });
+
+    const data = await res.json();
+    if (!data.success) {
+      setMessage(data.error || "Failed to update stolen report");
+      return;
+    }
+
+    await loadData(token);
+  };
+
   return (
     <div className={styles.fullpage}>
       <AdminHeader />
@@ -168,6 +207,30 @@ export default function AdminServiceRequestsPage() {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className={styles.panel}>
+            <h2>Stolen Vehicle Reports</h2>
+            <div className={styles.list}>
+              {stolenReports.map((item) => (
+                <div key={item._id} className={styles.item}>
+                  <strong>{item.vehicleId?.number_plate || "Vehicle"}</strong>
+                  <span>Owner: {item.reported_by_user_id?.owner_name || "N/A"}</span>
+                  <span>Incident Date: {item.incident_date ? new Date(item.incident_date).toLocaleDateString() : "N/A"}</span>
+                  <span>Location: {item.incident_location || "N/A"}</span>
+                  <span>Status: {item.status}</span>
+                  <span>Reported: {new Date(item.createdAt).toLocaleString()}</span>
+                  <div className={styles.actions}>
+                    {item.status === "open" ? (
+                      <button className={`${styles.button} ${styles.approve}`} onClick={() => updateStolenReport(item._id, "recovered")}>Mark Recovered</button>
+                    ) : (
+                      <button className={`${styles.button} ${styles.reject}`} onClick={() => updateStolenReport(item._id, "open")}>Re-open Report</button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {stolenReports.length === 0 && <div className={styles.item}>No stolen reports found.</div>}
             </div>
           </div>
         </section>
