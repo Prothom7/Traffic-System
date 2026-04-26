@@ -1,0 +1,65 @@
+erDiagram
+    USERS {
+        string user_id PK
+        string name
+        string email
+        string phone
+        string role
+        datetime created_at
+    }
+
+    VEHICLES {
+        string vehicle_id PK
+        string plate_number
+        string model
+        string owner_id FK
+        datetime registration_date
+        string status
+    }
+
+    VIOLATIONS {
+        string violation_id PK
+        string vehicle_id FK
+        string officer_id FK
+        datetime timestamp
+        string type
+        float speed_recorded
+        float speed_limit
+        float fine_amount
+        string status
+    }
+
+    SIGNALS {
+        string signal_id PK
+        string location
+        string current_state
+        datetime last_updated
+    }
+
+    PAYMENTS {
+        string payment_id PK
+        string violation_id FK
+        string payer_id FK
+        float amount
+        string method
+        string status
+        datetime paid_at
+    }
+
+    NOTIFICATIONS {
+        string notification_id PK
+        string user_id FK
+        string violation_id FK
+        string message
+        string channel
+        datetime sent_at
+    }
+
+    USERS ||--o{ VEHICLES : owns
+    USERS ||--o{ VIOLATIONS : records
+    USERS ||--o{ PAYMENTS : makes
+    USERS ||--o{ NOTIFICATIONS : receives
+    VEHICLES ||--o{ VIOLATIONS : involved_in
+    SIGNALS ||--o{ VIOLATIONS : monitors
+    VIOLATIONS ||--o| PAYMENTS : settled_by
+    VIOLATIONS ||--o{ NOTIFICATIONS : triggers

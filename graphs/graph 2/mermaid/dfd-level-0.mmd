@@ -1,0 +1,30 @@
+graph LR
+    A["Traffic Police"]
+    B["Admin"]
+    C["Drivers"]
+    CAM["Cameras"]
+    GW["Payment Gateway"]
+
+    SYSTEM{{"Traffic Management System"}}
+
+    DS1[("Vehicles")]
+    DS2[("Violations")]
+    DS3[("Users")]
+    DS4[("Signals")]
+    DS5[("Payments")]
+
+    A -->|Manual reports| SYSTEM
+    B -->|Configuration| SYSTEM
+    C -->|Vehicle info, payment requests| SYSTEM
+    CAM -->|Violation images| SYSTEM
+    GW -->|Payment status| SYSTEM
+
+    SYSTEM -->|Tickets, alerts| A
+    SYSTEM -->|Analytics| B
+    SYSTEM -->|Notifications| C
+
+    SYSTEM <-->|Read/Write| DS1
+    SYSTEM <-->|Read/Write| DS2
+    SYSTEM <-->|Read/Write| DS3
+    SYSTEM <-->|Read/Write| DS4
+    SYSTEM <-->|Read/Write| DS5

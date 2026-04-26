@@ -1,0 +1,84 @@
+classDiagram
+  class User {
+    +String id
+    +String name
+    +String email
+    +String role
+    +String phone
+    +login()
+    +updateProfile()
+  }
+
+  class Driver {
+    +String licenseNumber
+    +viewViolations()
+    +payFine()
+  }
+
+  class Admin {
+    +manageUsers()
+    +approveRequests()
+    +viewAnalytics()
+  }
+
+  class TrafficPolice {
+    +String badgeNo
+    +recordViolation()
+    +validateEvidence()
+  }
+
+  class Vehicle {
+    +String vehicleId
+    +String plateNumber
+    +String model
+    +String ownerId
+    +register()
+    +updateOwnership()
+  }
+
+  class Violation {
+    +String violationId
+    +DateTime time
+    +String location
+    +String type
+    +Double fineAmount
+    +String status
+    +generateFine()
+    +closeCase()
+  }
+
+  class Signal {
+    +String signalId
+    +String location
+    +String state
+    +updateState()
+  }
+
+  class Payment {
+    +String paymentId
+    +Double amount
+    +DateTime paidAt
+    +String method
+    +String status
+    +process()
+  }
+
+  class Notification {
+    +String notificationId
+    +String channel
+    +String message
+    +DateTime sentAt
+    +send()
+  }
+
+  User <|-- Driver
+  User <|-- Admin
+  User <|-- TrafficPolice
+
+  Driver "1" --> "0..*" Vehicle : owns
+  Vehicle "1" --> "0..*" Violation : involved in
+  TrafficPolice "1" --> "0..*" Violation : records
+  Violation "1" --> "0..1" Payment : settled by
+  Violation "1" --> "0..*" Notification : triggers
+  Signal "1" --> "0..*" Violation : context source
+  Admin "1" --> "0..*" User : manages

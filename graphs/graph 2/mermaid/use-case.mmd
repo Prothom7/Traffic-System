@@ -1,0 +1,34 @@
+graph TB
+    A["Traffic Police"]
+    B["Admin"]
+    C["Driver"]
+
+    subgraph SYS["Traffic Management System"]
+        UC1["Authenticate & Login"]
+        UC2["Record Violation Manually"]
+        UC3["Search Vehicle by Plate"]
+        UC4["View Analytics & Reports"]
+        UC5["Manage Users & Roles"]
+        UC6["Approve Service Requests"]
+        UC7["View Vehicle Profile"]
+        UC8["Pay Fine Online"]
+        UC9["Receive Notifications"]
+        UC10["View Payment History"]
+        UC11["Manage System Configuration"]
+    end
+
+    A --> UC1
+    A --> UC2
+    A --> UC3
+    A --> UC4
+    A --> UC7
+    B --> UC1
+    B --> UC4
+    B --> UC5
+    B --> UC6
+    B --> UC11
+    C --> UC1
+    C --> UC7
+    C --> UC8
+    C --> UC9
+    C --> UC10

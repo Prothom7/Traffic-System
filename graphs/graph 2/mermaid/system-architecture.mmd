@@ -1,0 +1,46 @@
+graph TB
+    subgraph Sensing["Sensing Layer"]
+        CAM["Roadside Cameras"]
+        SEN["Traffic Sensors"]
+        SIG["Smart Traffic Signals"]
+    end
+
+    subgraph Processing["Processing Layer"]
+        API["Next.js API Routes"]
+        ALPR["ALPR Engine"]
+        RULES["Violation Rule Engine"]
+        AUTH["Auth Service"]
+        NOTIFY["Notification Engine"]
+    end
+
+    subgraph Storage["Storage Layer"]
+        DB[("MongoDB Atlas")]
+    end
+
+    subgraph Users["User Layer"]
+        ADMIN["Admin Dashboard"]
+        DRIVER["Driver Portal"]
+        POLICE["Police App"]
+    end
+
+    subgraph External["External Services"]
+        PAYMENT["Payment Gateway"]
+        EMAIL["Email/SMS Service"]
+    end
+
+    CAM -->|Images| ALPR
+    SEN -->|Speed, Count| RULES
+    ALPR -->|Plate + Image| RULES
+    RULES -->|Violation Event| API
+    API -->|Query/Update| AUTH
+    API <-->|CRUD| DB
+    DB -->|Aggregated Data| ADMIN
+    DB -->|Real-time Events| NOTIFY
+    NOTIFY -->|SSE Stream| DRIVER
+    NOTIFY -->|SMS/Email| EMAIL
+    API -->|Redirect| PAYMENT
+    PAYMENT -->|Confirmation| API
+    API <-->|Queries| DRIVER
+    API <-->|Reports| POLICE
+    API <-->|Config| ADMIN
+    SIG -->|Signal Status| API

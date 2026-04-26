@@ -1,0 +1,9 @@
+flowchart LR
+  IN[Input Layer\nSensors, Cameras, Officer Reports]
+  PROC[Processing Layer\nAPI + Detection + Validation]
+  DATA[Data Layer\nMongoDB Collections]
+  APP[Application Layer\nDashboard + User Services]
+  OUT[Output Layer\nTickets, Notifications, Reports]
+
+  IN --> PROC --> DATA --> APP --> OUT
+  APP --> DATA

@@ -1,0 +1,27 @@
+flowchart LR
+  E1[Driver]
+  E2[Traffic Police]
+  E3[Admin]
+
+  P0((Traffic Monitoring and Violation Management System))
+
+  D1[(Vehicles Data)]
+  D2[(Violations Data)]
+  D3[(Users Data)]
+  D4[(Signals Data)]
+  D5[(Payments Data)]
+
+  E1 -->|Vehicle details, service requests, payments| P0
+  P0 -->|Notifications, status, payment receipts| E1
+
+  E2 -->|Violation reports, enforcement actions| P0
+  P0 -->|Violation records, alerts, analytics| E2
+
+  E3 -->|Configuration, approvals, management actions| P0
+  P0 -->|System reports, dashboards| E3
+
+  P0 <--> D1
+  P0 <--> D2
+  P0 <--> D3
+  P0 <--> D4
+  P0 <--> D5

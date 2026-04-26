@@ -1,0 +1,25 @@
+sequenceDiagram
+  autonumber
+  participant CAM as Camera
+  participant DET as Detection Service
+  participant POL as Traffic Police
+  participant SYS as Backend System
+  participant DB as Database
+  participant NOTI as Notification Service
+  participant DR as Driver
+
+  CAM->>DET: Capture vehicle event image/video
+  DET->>DET: Detect possible violation
+  DET->>POL: Send evidence for validation
+  POL->>SYS: Confirm violation
+
+  SYS->>DB: Create violation record
+  SYS->>SYS: Calculate fine amount
+  SYS->>DB: Store fine and due date
+
+  SYS->>NOTI: Trigger violation notification
+  NOTI->>DR: Send SMS/Email/App notice
+
+  DR->>SYS: Open notice and view fine
+  SYS->>DB: Fetch violation details
+  SYS-->>DR: Show ticket and payment link

@@ -1,0 +1,36 @@
+flowchart LR
+  %% Actors
+  A1[Admin]
+  A2[Traffic Police]
+  A3[Driver]
+
+  %% System boundary represented as a subgraph
+  subgraph SYS[Traffic System]
+    UC1((Manage Users))
+    UC2((Monitor Traffic Records))
+    UC3((Approve Service Requests))
+    UC4((Record Violation))
+    UC5((Validate Violation Evidence))
+    UC6((Generate Fine))
+    UC7((View Vehicle Profile))
+    UC8((Pay Fine))
+    UC9((Track Payment History))
+    UC10((Receive Notifications))
+    UC11((View Reports and Analytics))
+  end
+
+  A1 --- UC1
+  A1 --- UC2
+  A1 --- UC3
+  A1 --- UC11
+
+  A2 --- UC4
+  A2 --- UC5
+  A2 --- UC6
+  A2 --- UC7
+  A2 --- UC11
+
+  A3 --- UC8
+  A3 --- UC9
+  A3 --- UC10
+  A3 --- UC7

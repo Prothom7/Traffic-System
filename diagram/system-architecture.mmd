@@ -1,0 +1,60 @@
+flowchart LR
+  %% External actors
+  A[Traffic Police]
+  B[Admin]
+  C[Driver]
+
+  %% Field devices
+  subgraph Field Layer
+    S[Smart Traffic Sensors]
+    CAM[Roadside Cameras]
+    SIG[Smart Signals]
+  end
+
+  %% Backend
+  subgraph Backend Platform
+    API[Next.js API Routes]
+    AUTH[Authentication Service]
+    VIOL[Violation Processing Service]
+    PAY[Payment Service]
+    NOTI[Notification Service]
+    DASH[Admin Dashboard Service]
+  end
+
+  %% Data
+  subgraph Data Layer
+    DB[(MongoDB Database)]
+    ML[ML Service]
+    MAIL[Email/SMS Gateway]
+  end
+
+  %% Main flows
+  S --> API
+  CAM --> API
+  SIG --> API
+
+  API --> AUTH
+  API --> VIOL
+  API --> PAY
+  API --> NOTI
+  API --> DASH
+
+  VIOL --> ML
+  AUTH --> DB
+  VIOL --> DB
+  PAY --> DB
+  DASH --> DB
+  NOTI --> DB
+
+  NOTI --> MAIL
+
+  %% User interactions
+  B <--> DASH
+  A <--> DASH
+  C <--> API
+  C <--> PAY
+
+  %% Result communications
+  MAIL --> C
+  DASH --> A
+  DASH --> B
