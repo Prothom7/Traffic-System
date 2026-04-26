@@ -244,7 +244,7 @@ export default function SimulateViolationPage() {
                 name="violation_type"
                 value={form.violation_type}
                 onChange={handleChange}
-                className={styles.select}
+                className={styles.selectDropdown}
               >
                 {violationOptions.map((option) => (
                   <option key={option} value={option}>
@@ -263,7 +263,7 @@ export default function SimulateViolationPage() {
                 name="severity"
                 value={form.severity}
                 onChange={handleChange}
-                className={styles.select}
+                className={styles.selectDropdown}
               >
                 {severityOptions.map((option) => (
                   <option key={option} value={option}>

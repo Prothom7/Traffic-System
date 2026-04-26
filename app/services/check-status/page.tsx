@@ -88,7 +88,7 @@ export default function CheckStatusPage() {
                 type="text"
                 value={numberPlate}
                 onChange={(e) => setNumberPlate(e.target.value.toUpperCase())}
-                placeholder="e.g., ABC-1234"
+                placeholder="e.g., ঢাকা মেট্রো-গ ১২-৩৪৫৬"
                 required
               />
             </div>

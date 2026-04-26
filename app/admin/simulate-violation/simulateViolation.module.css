@@ -334,3 +334,50 @@
 .modalButtonSecondary:hover {
   background: #0c1526;
 }
+
+
+.selectDropdown {
+  flex: 1;
+  min-width: 200px;
+
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+
+  /* 🔥 readable dark background */
+  background: rgba(20, 20, 20, 0.88);
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  /* better appearance */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.selectDropdown:hover {
+  background: rgba(35, 35, 35, 0.95);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.selectDropdown:focus {
+  outline: none;
+
+  background: rgba(30, 30, 30, 0.98);
+
+  border-color: rgba(0, 170, 255, 0.8);
+
+  box-shadow: 0 0 0 3px rgba(0, 170, 255, 0.25);
+}
+
+.selectDropdown option {
+  background-color: #111827;
+  color: #ffffff;
+}

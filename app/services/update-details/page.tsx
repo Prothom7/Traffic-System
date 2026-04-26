@@ -112,6 +112,7 @@ export default function UpdateDetailsPage() {
             <div className={styles.formGroup}>
               <label>Select Your Vehicle</label>
               <select
+                className={styles.selectDropdown}
                 value={selectedPlate}
                 onChange={(e) => setSelectedPlate(e.target.value)}
                 disabled={pageLoading}
