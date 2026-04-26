@@ -10,9 +10,11 @@ function normalizePlate(plate: string) {
   return plate.trim().toUpperCase();
 }
 
-function buildGatewayReference(recordId: string) {
+function buildGatewayReference(recordId: string, paymentNumber?: string) {
   const random = Math.random().toString(36).slice(2, 8).toUpperCase();
-  return `PAY-${recordId.slice(-6).toUpperCase()}-${Date.now()}-${random}`;
+  const digitsOnly = String(paymentNumber || "").replace(/\D/g, "");
+  const suffix = digitsOnly ? digitsOnly.slice(-4) : recordId.slice(-6).toUpperCase();
+  return `PAY-${suffix}-${Date.now()}-${random}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -38,14 +40,23 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { recordId, paymentMethod } = body as {
+    const { recordId, paymentMethod, paymentNumber } = body as {
       recordId?: string;
       paymentMethod?: string;
+      paymentNumber?: string;
     };
 
     if (!recordId) {
       return NextResponse.json(
         { success: false, error: "Ticket record id is required" },
+        { status: 400 }
+      );
+    }
+
+    const digitsOnly = String(paymentNumber || "").replace(/\D/g, "");
+    if (!digitsOnly) {
+      return NextResponse.json(
+        { success: false, error: "Payment number is required for the simulated gateway" },
         { status: 400 }
       );
     }
@@ -66,19 +77,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const ownerVehicle = await Vehicle.findOne({
-      userId: decoded.id,
-      number_plate: normalizePlate(ticketRecord.number_plate || ""),
-    });
-
+    const ownerVehicle = await Vehicle.findById(ticketRecord.vehicle_id);
     if (!ownerVehicle) {
+      return NextResponse.json(
+        { success: false, error: "Ticket vehicle not found" },
+        { status: 404 }
+      );
+    }
+
+    if (String(ownerVehicle.userId) !== String(decoded.id)) {
       return NextResponse.json(
         { success: false, error: "You can only pay your own ticket" },
         { status: 403 }
       );
     }
 
-    const gatewayReference = buildGatewayReference(String(ticketRecord._id));
+    const gatewayReference = buildGatewayReference(String(ticketRecord._id), digitsOnly);
     const transactionId = `TXN-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
     const paidAt = new Date();
 

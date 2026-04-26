@@ -26,6 +26,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    if (user.isFrozen || Number(user.credit_score || 0) <= 0) {
+      return NextResponse.json(
+        {
+          error:
+            user.freeze_reason ||
+            "Your account is frozen because your credit score is too low. Vehicle registration is disabled.",
+        },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
 
     const {

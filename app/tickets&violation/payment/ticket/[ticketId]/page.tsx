@@ -56,13 +56,12 @@ export default function TicketPaymentPage() {
     }
 
     const digitsOnly = paymentNumber.replace(/\D/g, "");
-    const minLength = method === "Credit Card" ? 12 : 8;
-    if (digitsOnly.length < minLength) {
+    if (!digitsOnly) {
       setIsError(true);
       setMessage(
         method === "Credit Card"
-          ? "Please enter a valid credit card number."
-          : "Please enter a valid bank account number."
+          ? "Please enter a credit card number."
+          : "Please enter a bank account number."
       );
       return;
     }
