@@ -12,8 +12,20 @@
 .container {
   max-width: min(1400px, 92vw);
   margin: 0 auto;
+
+  /* push below fixed header */
+  margin-top: clamp(140px, 2vh, 220px);
+
   padding: clamp(24px, 4vw, 48px);
-  min-height: min(600px, 85vh);
+
+  /* 🔥 FIX: allow flexible shrinking instead of forcing height */
+  min-height: auto;
+  height: auto;
+
+  /* optional: prevents it from becoming too small on large screens */
+  max-height: calc(100vh - 180px);
+  overflow: visible;
+
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 18px;
   backdrop-filter: blur(10px);

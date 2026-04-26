@@ -7,12 +7,13 @@ import AdminHeader from "../adminHeader";
 type Vehicle = {
   _id: string;
   number_plate: string;
-  owner_name: string;
-  owner_email: string;
-  owner_contact: string;
   vehicle_type: string;
   model: string;
-  isVerified: boolean;
+
+  // 🔥 comes from backend (populated or joined)
+  owner_name?: string;
+  owner_email?: string;
+  owner_contact?: string;
 };
 
 export default function VehiclesPage() {
@@ -25,7 +26,10 @@ export default function VehiclesPage() {
       try {
         const res = await fetch("/api/vehicles");
         if (!res.ok) throw new Error("Failed to fetch vehicles");
-        const data: Vehicle[] = await res.json();
+
+        const data = await res.json();
+        console.log("API DATA:", data);
+
         setVehicles(data);
       } catch (err: any) {
         console.error(err);
@@ -76,18 +80,20 @@ export default function VehiclesPage() {
                 <th>Contact</th>
                 <th>Type</th>
                 <th>Model</th>
-                <th>Verified</th>
               </tr>
             </thead>
+
             <tbody>
-              {vehicles.map(v => (
+              {vehicles.map((v) => (
                 <tr key={v._id}>
-                  <td>{v.number_plate}</td>
-                  <td>{v.owner_name}</td>
-                  <td>{v.owner_contact}</td>
-                  <td>{v.vehicle_type}</td>
-                  <td>{v.model}</td>
-                  <td>{v.isVerified ? "Yes" : "No"}</td>
+                  <td>{v.number_plate || "-"}</td>
+
+                  {/* safe rendering */}
+                  <td>{v.owner_name ?? "Loading..."}</td>
+                  <td>{v.owner_contact ?? "Loading..."}</td>
+
+                  <td>{v.vehicle_type || "-"}</td>
+                  <td>{v.model || "-"}</td>
                 </tr>
               ))}
             </tbody>

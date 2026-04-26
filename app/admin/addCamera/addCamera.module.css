@@ -51,8 +51,12 @@
   width: 100%;
   max-width: min(1400px, 92vw);
   min-height: min(600px, 85vh);
+
   padding: clamp(24px, 4vw, 48px);
-  margin-top: clamp(120px, 15vh, 160px);
+
+  /* 🔥 PUSH IT LOWER (main fix) */
+  margin-top: clamp(180px, 18vh, 260px);
+
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 18px;
   backdrop-filter: blur(10px);

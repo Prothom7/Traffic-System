@@ -110,9 +110,12 @@
 /* Main content container */
 .container {
   width: 100%;
-  max-width: min(1400px, 92vw);     /* scales with screen */
-  min-height: min(600px, 85vh);     /* adapts vertically */
+  max-width: min(1400px, 92vw);     /* responsive width */
+  min-height: min(600px, 85vh);     /* responsive height */
   padding: clamp(24px, 4vw, 48px);
+
+  /* ✅ FINAL FIX — dynamic spacing from header */
+  margin-top: clamp(160px, 2vh, 240px);
 
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 18px;
