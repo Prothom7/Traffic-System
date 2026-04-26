@@ -75,12 +75,18 @@ export async function POST(req: NextRequest) {
     }
 
     const stolenRecord = await StolenVehicle.create({
+      vehicle_id: vehicle._id,
       vehicleId: vehicle._id,
+      number_plate: normalizePlate(number_plate),
+      chassis_number: vehicle.chassis_number,
       reported_by_user_id: auth.context.userId,
       incident_date: new Date(incident_date),
       incident_location,
+      last_seen_location: incident_location,
+      last_seen_time: new Date(incident_date),
       police_report_number,
       additional_info,
+      status: "Stolen",
     });
 
     vehicle.status = "Stolen";

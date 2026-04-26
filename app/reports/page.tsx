@@ -8,8 +8,30 @@ import styles from "./reports.module.css";
 import { decodeJWTClient, getValidAuthTokenClient } from "@/helpers/jwtClient";
 
 interface VehicleData {
+  _id?: string;
   number_plate: string;
   status: string;
+}
+
+interface UserData {
+  _id: string;
+  isAdmin?: boolean;
+}
+
+interface ReportItem {
+  _id: string;
+  reason: string;
+  status: "Pending" | "Investigating" | "Resolved";
+  createdAt: string;
+  user_id?: {
+    owner_name?: string;
+    email?: string;
+  };
+  vehicle_id?: {
+    number_plate?: string;
+    model?: string;
+    vehicle_type?: string;
+  };
 }
 
 interface TrafficRecord {
@@ -27,6 +49,8 @@ export default function ReportsPage() {
   const [userName, setUserName] = useState("User");
   const [vehicle, setVehicle] = useState<VehicleData | null>(null);
   const [latestRecord, setLatestRecord] = useState<TrafficRecord | null>(null);
+  const [reports, setReports] = useState<ReportItem[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -52,15 +76,32 @@ export default function ReportsPage() {
           return;
         }
 
-        const vehicleData = profileData.data as VehicleData;
+        const userData = profileData.data?.user as UserData | undefined;
+        const vehicles = (profileData.data?.vehicles || []) as VehicleData[];
+        const vehicleData = vehicles[0] || null;
+
+        setIsAdmin(Boolean(userData?.isAdmin));
         setVehicle(vehicleData);
 
-        const recordRes = await fetch(
-          `/api/traffic-records?plate=${encodeURIComponent(vehicleData.number_plate)}`
+        const reportsRes = await fetch(
+          `/api/reports?mine=${userData?.isAdmin ? "false" : "true"}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
         );
-        const recordData = await recordRes.json();
-        if (Array.isArray(recordData) && recordData.length > 0) {
-          setLatestRecord(recordData[0]);
+        const reportsData = await reportsRes.json();
+        if (reportsData?.success && Array.isArray(reportsData.data)) {
+          setReports(reportsData.data);
+        }
+
+        if (vehicleData?.number_plate) {
+          const recordRes = await fetch(
+            `/api/traffic-records?plate=${encodeURIComponent(vehicleData.number_plate)}`
+          );
+          const recordData = await recordRes.json();
+          if (Array.isArray(recordData) && recordData.length > 0) {
+            setLatestRecord(recordData[0]);
+          }
         }
       } catch (err) {
         setError("An error occurred while loading report data");
@@ -158,6 +199,35 @@ export default function ReportsPage() {
               <button className={styles.trackButton} disabled={!isStolen}>
                 {isStolen ? "Start Live Tracking" : "Tracking Disabled"}
               </button>
+            </section>
+
+            <section className={styles.card}>
+              <div className={styles.cardHeader}>
+                <h2>{isAdmin ? "All Reported Vehicles" : "My Reports"}</h2>
+                <span className={styles.statusBadge}>{reports.length} report(s)</span>
+              </div>
+              {reports.length === 0 ? (
+                <div className={styles.placeholder}>No reports found.</div>
+              ) : (
+                <div className={styles.lastSeenGrid}>
+                  {reports.slice(0, 8).map((report) => (
+                    <div key={report._id}>
+                      <span className={styles.label}>
+                        {report.vehicle_id?.number_plate || "Unknown plate"}
+                      </span>
+                      <strong>{report.reason}</strong>
+                      <div>
+                        <small>
+                          {report.status} | {formatDateTime(report.createdAt)}
+                          {isAdmin && report.user_id?.owner_name
+                            ? ` | ${report.user_id.owner_name}`
+                            : ""}
+                        </small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
           </div>
         )}

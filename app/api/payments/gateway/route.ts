@@ -3,6 +3,8 @@ import { connect } from "@/dbConnection/dbConnection";
 import { decodeJWTToken } from "@/helpers/jwtToken";
 import Vehicle from "@/models/vehicleModel";
 import TrafficRecord from "@/models/trafficRecordModel";
+import Notification from "@/models/notificationModel";
+import { eventBus } from "@/app/api/notifications/eventBus";
 
 function normalizePlate(plate: string) {
   return plate.trim().toUpperCase();
@@ -101,6 +103,35 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
+
+    eventBus.emit("traffic-record-created", {
+      userId: decoded.id,
+      recordId: String(updateResult._id),
+      number_plate: String(updateResult.number_plate || ""),
+      timestamp: new Date().toISOString(),
+    });
+
+    const paymentNotification = await Notification.create({
+      vehicle_id: ownerVehicle._id,
+      number_plate: ownerVehicle.number_plate,
+      violation_type: "Payment Success",
+      cause: `Ticket ${String(updateResult._id)} paid successfully`,
+      camera_location: updateResult.location?.location_name || "N/A",
+      message: `Payment received for ${ownerVehicle.number_plate}. Reference: ${gatewayReference}`,
+    });
+
+    eventBus.emit("violation", {
+      vehicleId: ownerVehicle._id.toString(),
+      notification: {
+        _id: paymentNotification._id.toString(),
+        number_plate: paymentNotification.number_plate,
+        violation_type: paymentNotification.violation_type,
+        cause: paymentNotification.cause,
+        camera_location: paymentNotification.camera_location,
+        message: paymentNotification.message,
+        createdAt: paymentNotification.createdAt.toISOString(),
+      },
+    });
 
     return NextResponse.json({
       success: true,

@@ -11,6 +11,8 @@ const userSchema = new mongoose.Schema(
     contact: { type: String, required: true, trim: true },
     address: { type: String, required: true, trim: true },
     credit_score: { type: Number, required: true, default: 100, min: 0 },
+    isFrozen: { type: Boolean, required: true, default: false },
+    freeze_reason: { type: String, trim: true },
     isVerified: { type: Boolean, required: true, default: false },
     isAdmin: { type: Boolean, required: true, default: false },
     notifications_enabled: { type: Boolean, required: true, default: true },
