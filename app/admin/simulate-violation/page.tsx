@@ -27,6 +27,10 @@ export default function SimulateViolationPage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [extractingPlate, setExtractingPlate] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [showPlatePopup, setShowPlatePopup] = useState(false);
+  const [lastExtractedPlate, setLastExtractedPlate] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
@@ -39,6 +43,12 @@ export default function SimulateViolationPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!form.number_plate.trim()) {
+      setError("Please upload an image and extract the license plate before simulating.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setSuccess("");
@@ -71,12 +81,74 @@ export default function SimulateViolationPage() {
         : "Notifications are disabled for this vehicle.";
 
       setSuccess(`Violation simulated. ${notice}`);
-      setForm((prev) => ({ ...prev, cause: "", camera_location: "", fine_amount: "" }));
+      setForm((prev) => ({
+        ...prev,
+        number_plate: "",
+        cause: "",
+        camera_location: "",
+        fine_amount: "",
+      }));
+      setSelectedImage(null);
+      setLastExtractedPlate("");
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    setSelectedImage(file);
+    if (file) {
+      setForm((prev) => ({ ...prev, number_plate: "" }));
+      setLastExtractedPlate("");
+    }
+  };
+
+  const handleExtractPlate = async () => {
+    if (!selectedImage) {
+      setError("Please choose an image first");
+      return;
+    }
+
+    setExtractingPlate(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const formData = new FormData();
+      formData.append("image", selectedImage);
+
+      const res = await fetch("/api/admin/violations/extract-plate", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to extract plate");
+      }
+
+      const extractedPlate = String(data?.plate || "").trim();
+      if (!extractedPlate) {
+        throw new Error("No plate text was detected in this image");
+      }
+
+      setForm((prev) => ({ ...prev, number_plate: extractedPlate }));
+      setLastExtractedPlate(extractedPlate);
+      setShowPlatePopup(true);
+      setSuccess(`Plate extracted: ${extractedPlate}`);
+    } catch (err: unknown) {
+      console.error(err);
+      if (err instanceof Error) {
+        setError(err.message || "Something went wrong while extracting plate");
+      } else {
+        setError("Something went wrong while extracting plate");
+      }
+    } finally {
+      setExtractingPlate(false);
     }
   };
 
@@ -89,20 +161,33 @@ export default function SimulateViolationPage() {
 
         <form onSubmit={handleSubmit}>
           <div className={styles.formGrid}>
-            <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="number_plate">
-                License Number
+            <div className={`${styles.inputGroup} ${styles.fullRow}`}>
+              <label className={styles.label} htmlFor="plate_image">
+                Upload Car Image (for auto plate extraction)
               </label>
-              <input
-                id="number_plate"
-                name="number_plate"
-                type="text"
-                required
-                value={form.number_plate}
-                onChange={handleChange}
-                className={styles.input}
-                placeholder="ABC-1234"
-              />
+              <div className={styles.uploadRow}>
+                <input
+                  id="plate_image"
+                  name="plate_image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className={styles.fileInput}
+                />
+                <button
+                  type="button"
+                  onClick={handleExtractPlate}
+                  disabled={extractingPlate || !selectedImage}
+                  className={styles.extractButton}
+                >
+                  {extractingPlate ? "Extracting..." : "Extract Plate"}
+                </button>
+              </div>
+              {form.number_plate && (
+                <p className={styles.extractedPreview}>
+                  Extracted plate: <strong>{form.number_plate}</strong>
+                </p>
+              )}
             </div>
 
             <div className={styles.inputGroup}>
@@ -193,7 +278,11 @@ export default function SimulateViolationPage() {
           </div>
 
           <div className={styles.actions}>
-            <button className={styles.submitButton} type="submit" disabled={loading}>
+            <button
+              className={styles.submitButton}
+              type="submit"
+              disabled={loading || !form.number_plate.trim()}
+            >
               {loading ? "Sending..." : "Simulate Event"}
             </button>
           </div>
@@ -205,6 +294,22 @@ export default function SimulateViolationPage() {
           </p>
         )}
       </main>
+
+      {showPlatePopup && (
+        <div className={styles.modalOverlay} role="dialog" aria-modal="true">
+          <div className={styles.modalCard}>
+            <h3 className={styles.modalTitle}>License Plate Extracted</h3>
+            <p className={styles.modalPlate}>{lastExtractedPlate}</p>
+            <button
+              type="button"
+              className={styles.modalButton}
+              onClick={() => setShowPlatePopup(false)}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -327,23 +327,23 @@
 }
 
 .addVehicleBtn {
-  background: rgba(255, 255, 255, 0.08);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 0.8rem 1.8rem;
-  border-radius: 8px;
-  font-size: 1rem;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.85rem 2rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
   font-weight: 600;
+  font-family: 'Poppins', sans-serif;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.25s ease, transform 0.2s ease, border-color 0.25s ease;
   margin-bottom: 1.5rem;
 }
 
 .addVehicleBtn:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.45);
-  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
 }
 
 .vehicleForm {
@@ -371,7 +371,7 @@
 
 .formGroup input,
 .formGroup select {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
   padding: 0.75rem;
@@ -384,9 +384,14 @@
 .formGroup input:focus,
 .formGroup select:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(15, 23, 42, 0.88);
   border-color: rgba(102, 126, 234, 0.5);
   box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+}
+
+.formGroup select option {
+  background: #0f172a;
+  color: #f8fafc;
 }
 
 .formGroup input::placeholder {
@@ -411,12 +416,15 @@
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
+  font-family: 'Poppins', sans-serif;
   cursor: pointer;
   width: 100%;
-  transition: all 0.3s ease;
+  transition: background-color 0.25s ease, transform 0.2s ease, border-color 0.25s ease;
 }
 
 .submitBtn:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(26, 26, 26, 0.4);
 }

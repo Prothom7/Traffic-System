@@ -76,6 +76,97 @@ Create `.env.local`
 DATABASE_URL=
 NEXTAUTH_SECRET=
 NEXTAUTH_URL=http://localhost:3000
+
+# Optional: AI plate extraction in admin simulation
+ALPR_PYTHON_EXECUTABLE=python
+ALPR_PYTHON_ARGS=
+# Optional: override defaults. If omitted, app auto-loads from ./Hybrid Pipeline/
+# ALPR_MODELS_DIR=Hybrid Pipeline\\models
+# ALPR_CITY_LABEL_FILE=Hybrid Pipeline\\label_city
+# ALPR_CHAR_LABEL_FILE=Hybrid Pipeline\\label_char
+# Optional JSON fallback if label files are not present
+# ALPR_CITY_ANNOTATIONS=Hybrid Pipeline\\annotations\\city_final.json
+# ALPR_CHAR_ANNOTATIONS=Hybrid Pipeline\\annotations\\ocr_char.json
+# Optional Windows fix for OpenMP duplicate runtime issue
+KMP_DUPLICATE_LIB_OK=TRUE
+
+# Optional: Use dedicated FastAPI ML server instead of spawning Python per request
+ALPR_USE_FASTAPI=true
+ALPR_FASTAPI_URL=http://localhost:8000/predict
+NEXT_PUBLIC_ALPR_FASTAPI_URL=http://localhost:8000/predict
+```
+
+Install Python packages for the extraction pipeline:
+
+```bash
+pip install torch torchvision ultralytics opencv-python pillow numpy
+```
+
+The project now auto-resolves model and label files from `Hybrid Pipeline/` in this repository. You only need ALPR_* env vars if your files are stored elsewhere.
+
+Required model files inside ALPR_MODELS_DIR:
+
+```text
+yolo_plate.pt
+classification_city.pth
+classification_char.pth
+ocr_digit.pth
+```
+
+Labels:
+
+```text
+Option A (recommended): ALPR_CITY_LABEL_FILE + ALPR_CHAR_LABEL_FILE
+Option B: ALPR_CITY_ANNOTATIONS + ALPR_CHAR_ANNOTATIONS
+```
+
+### Start Machine Learning Server (FastAPI)
+
+Run the standalone Python inference server so models are loaded once at startup.
+
+From the project root (Windows Command Prompt / CMD):
+
+```bat
+cd ml_service
+python -m venv .venv
+.venv\Scripts\activate.bat
+python -m pip install -r requirements.txt
+python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+From the project root (Windows PowerShell):
+
+```powershell
+cd ml_service
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+Quick health check (new PowerShell terminal):
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/health
+```
+
+Available endpoints:
+
+```text
+GET  /health
+POST /predict   (multipart/form-data with image)
+```
+
+System flow:
+
+```text
+Next.js upload -> /api/admin/violations/extract-plate -> FastAPI /predict -> plate JSON -> UI
+```
+
+For direct frontend testing, open:
+
+```text
+/admin/ml-predict
 ```
 
 ### 4️⃣ Run Development Server
