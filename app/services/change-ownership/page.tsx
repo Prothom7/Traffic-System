@@ -107,7 +107,9 @@ export default function ChangeOwnershipPage() {
 
       const data = await response.json();
       if (data.success) {
-        setMessage("Ownership transfer request submitted and pending admin approval.");
+        setMessage(
+          "Ownership transfer request submitted and pending admin approval.",
+        );
         const requestRes = await fetch("/api/services/change-ownership", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -128,11 +130,13 @@ export default function ChangeOwnershipPage() {
   return (
     <div className={styles.container}>
       <Header userName={userName} />
-      
+
       <main className={styles.main}>
         <div className={styles.formCard}>
           <h1>Change Vehicle Ownership</h1>
-          <p className={styles.subtitle}>Transfer your vehicle to a new owner</p>
+          <p className={styles.subtitle}>
+            Transfer your vehicle to a new owner
+          </p>
 
           {pageLoading ? (
             <p className={styles.subtitle}>Loading your vehicles...</p>
@@ -140,7 +144,12 @@ export default function ChangeOwnershipPage() {
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.formGroup}>
                 <label>Select Your Vehicle</label>
-                <select value={selectedPlate} onChange={(e) => setSelectedPlate(e.target.value)} required>
+                <select
+                  value={selectedPlate}
+                  onChange={(e) => setSelectedPlate(e.target.value)}
+                  required
+                  className={styles.selectDropdown}
+                >
                   <option value="">Choose a vehicle</option>
                   {vehicles.map((vehicle) => (
                     <option key={vehicle._id} value={vehicle.number_plate}>
@@ -155,7 +164,9 @@ export default function ChangeOwnershipPage() {
                 <input
                   type="text"
                   value={formData.new_owner_name}
-                  onChange={(e) => setFormData({ ...formData, new_owner_name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, new_owner_name: e.target.value })
+                  }
                   placeholder="Full name"
                   required
                 />
@@ -166,7 +177,12 @@ export default function ChangeOwnershipPage() {
                 <input
                   type="email"
                   value={formData.new_owner_email}
-                  onChange={(e) => setFormData({ ...formData, new_owner_email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      new_owner_email: e.target.value,
+                    })
+                  }
                   placeholder="email@example.com"
                   required
                 />
@@ -177,7 +193,12 @@ export default function ChangeOwnershipPage() {
                 <input
                   type="tel"
                   value={formData.new_owner_contact}
-                  onChange={(e) => setFormData({ ...formData, new_owner_contact: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      new_owner_contact: e.target.value,
+                    })
+                  }
                   placeholder="Phone number"
                   required
                 />
@@ -187,7 +208,12 @@ export default function ChangeOwnershipPage() {
                 <label>New Owner Address</label>
                 <textarea
                   value={formData.new_owner_address}
-                  onChange={(e) => setFormData({ ...formData, new_owner_address: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      new_owner_address: e.target.value,
+                    })
+                  }
                   placeholder="Full address"
                   rows={3}
                   required
@@ -195,16 +221,30 @@ export default function ChangeOwnershipPage() {
               </div>
 
               {message && (
-                <div className={message.includes("success") ? styles.successMessage : styles.errorMessage}>
+                <div
+                  className={
+                    message.includes("success")
+                      ? styles.successMessage
+                      : styles.errorMessage
+                  }
+                >
                   {message}
                 </div>
               )}
 
               <div className={styles.buttonGroup}>
-                <button type="submit" className={styles.submitButton} disabled={loading || !selectedPlate}>
+                <button
+                  type="submit"
+                  className={styles.submitButton}
+                  disabled={loading || !selectedPlate}
+                >
                   {loading ? "Processing..." : "Submit Transfer Request"}
                 </button>
-                <button type="button" className={styles.cancelButton} onClick={() => router.push("/explore")}>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={() => router.push("/explore")}
+                >
                   Cancel
                 </button>
               </div>
@@ -214,15 +254,22 @@ export default function ChangeOwnershipPage() {
           <div className={styles.statusCard}>
             <h2>Your Ownership Requests</h2>
             {requests.length === 0 ? (
-              <p className={styles.subtitle}>No ownership requests submitted yet.</p>
+              <p className={styles.subtitle}>
+                No ownership requests submitted yet.
+              </p>
             ) : (
               <div className={styles.listWrapper}>
                 {requests.map((request) => (
                   <div key={request._id} className={styles.listItem}>
-                    <strong>{request.vehicleId?.number_plate || "Vehicle"}</strong>
+                    <strong>
+                      {request.vehicleId?.number_plate || "Vehicle"}
+                    </strong>
                     <span>Status: {request.status}</span>
                     <span>New Owner: {request.new_owner_email}</span>
-                    <span>Requested at: {new Date(request.createdAt).toLocaleString()}</span>
+                    <span>
+                      Requested at:{" "}
+                      {new Date(request.createdAt).toLocaleString()}
+                    </span>
                   </div>
                 ))}
               </div>

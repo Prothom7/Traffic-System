@@ -65,10 +65,12 @@ export default function ReportStolenPage() {
         const reportData = await reportRes.json();
 
         if (vehicleData.success) {
-          const vehicleList = Array.isArray(vehicleData.data?.vehicles)
-            ? vehicleData.data.vehicles
+          const vehicleList = Array.isArray(vehicleData.data)
+            ? vehicleData.data
             : [];
-          const available = vehicleList.filter((v: any) => v.status !== "Stolen");
+          const available = vehicleList.filter(
+            (v: any) => String(v.status || "").toLowerCase() !== "stolen",
+          );
           setVehicles(available);
           if (available?.[0]?.number_plate) {
             setSelectedPlate(available[0].number_plate);
@@ -115,7 +117,9 @@ export default function ReportStolenPage() {
 
         // Remove the reported vehicle from selectable options right away.
         setVehicles((prev) => {
-          const remaining = prev.filter((v) => v.number_plate !== selectedPlate);
+          const remaining = prev.filter(
+            (v) => v.number_plate !== selectedPlate,
+          );
           setSelectedPlate(remaining[0]?.number_plate || "");
           return remaining;
         });
@@ -140,11 +144,13 @@ export default function ReportStolenPage() {
   return (
     <div className={styles.container}>
       <Header userName={userName} />
-      
+
       <main className={styles.main}>
         <div className={styles.formCard}>
           <h1>Report Stolen Vehicle</h1>
-          <p className={styles.subtitle}>Report your vehicle as stolen to authorities</p>
+          <p className={styles.subtitle}>
+            Report your vehicle as stolen to authorities
+          </p>
 
           {pageLoading ? (
             <p className={styles.subtitle}>Loading your vehicles...</p>
@@ -152,7 +158,12 @@ export default function ReportStolenPage() {
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.formGroup}>
                 <label>Select Your Vehicle</label>
-                <select value={selectedPlate} onChange={(e) => setSelectedPlate(e.target.value)} required>
+                <select
+                  value={selectedPlate}
+                  onChange={(e) => setSelectedPlate(e.target.value)}
+                  required
+                  className={styles.selectDropdown}
+                >
                   <option value="">Choose a vehicle</option>
                   {vehicles.map((vehicle) => (
                     <option key={vehicle._id} value={vehicle.number_plate}>
@@ -167,7 +178,9 @@ export default function ReportStolenPage() {
                 <input
                   type="date"
                   value={formData.incident_date}
-                  onChange={(e) => setFormData({ ...formData, incident_date: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, incident_date: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -177,7 +190,12 @@ export default function ReportStolenPage() {
                 <input
                   type="text"
                   value={formData.incident_location}
-                  onChange={(e) => setFormData({ ...formData, incident_location: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      incident_location: e.target.value,
+                    })
+                  }
                   placeholder="Where was the vehicle stolen?"
                   required
                 />
@@ -188,7 +206,12 @@ export default function ReportStolenPage() {
                 <input
                   type="text"
                   value={formData.police_report_number}
-                  onChange={(e) => setFormData({ ...formData, police_report_number: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      police_report_number: e.target.value,
+                    })
+                  }
                   placeholder="Police report reference number"
                 />
               </div>
@@ -197,23 +220,42 @@ export default function ReportStolenPage() {
                 <label>Additional Information</label>
                 <textarea
                   value={formData.additional_info}
-                  onChange={(e) => setFormData({ ...formData, additional_info: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      additional_info: e.target.value,
+                    })
+                  }
                   placeholder="Any additional details about the incident"
                   rows={4}
                 />
               </div>
 
               {message && (
-                <div className={message.includes("success") ? styles.successMessage : styles.errorMessage}>
+                <div
+                  className={
+                    message.includes("success")
+                      ? styles.successMessage
+                      : styles.errorMessage
+                  }
+                >
                   {message}
                 </div>
               )}
 
               <div className={styles.buttonGroup}>
-                <button type="submit" className={styles.submitButton} disabled={loading || !selectedPlate}>
+                <button
+                  type="submit"
+                  className={styles.submitButton}
+                  disabled={loading || !selectedPlate}
+                >
                   {loading ? "Processing..." : "Report Stolen Vehicle"}
                 </button>
-                <button type="button" className={styles.cancelButton} onClick={() => router.push("/explore")}>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={() => router.push("/explore")}
+                >
                   Cancel
                 </button>
               </div>
@@ -223,15 +265,24 @@ export default function ReportStolenPage() {
           <div className={styles.statusCard}>
             <h2>Your Stolen Vehicle Reports</h2>
             {reports.length === 0 ? (
-              <p className={styles.subtitle}>No stolen reports submitted yet.</p>
+              <p className={styles.subtitle}>
+                No stolen reports submitted yet.
+              </p>
             ) : (
               <div className={styles.listWrapper}>
                 {reports.map((report) => (
                   <div key={report._id} className={styles.listItem}>
-                    <strong>{report.vehicleId?.number_plate || "Vehicle"}</strong>
-                    <span>Incident: {new Date(report.incident_date).toLocaleDateString()}</span>
+                    <strong>
+                      {report.vehicleId?.number_plate || "Vehicle"}
+                    </strong>
+                    <span>
+                      Incident:{" "}
+                      {new Date(report.incident_date).toLocaleDateString()}
+                    </span>
                     <span>Location: {report.incident_location}</span>
-                    <span>Reported at: {new Date(report.createdAt).toLocaleString()}</span>
+                    <span>
+                      Reported at: {new Date(report.createdAt).toLocaleString()}
+                    </span>
                   </div>
                 ))}
               </div>
