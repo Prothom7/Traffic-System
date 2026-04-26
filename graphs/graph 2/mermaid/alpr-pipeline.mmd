@@ -1,0 +1,14 @@
+flowchart TD
+    A[Camera Captures Vehicle] --> B[Detect License Plate Region]
+    B --> C[OCR / ALPR Recognition]
+    C --> D{Plate Valid?}
+    D -->|No| E[Send for Manual Review]
+    D -->|Yes| F[Query Vehicle Database]
+    F --> G{Vehicle Found?}
+    G -->|No| H[Flag Unregistered Vehicle]
+    G -->|Yes| I[Check Speed / Rule Conditions]
+    I --> J{Violation Detected?}
+    J -->|No| K[Log Non-Violation Event]
+    J -->|Yes| L[Generate Fine]
+    L --> M[Create Violation Record]
+    M --> N[Send Notification]

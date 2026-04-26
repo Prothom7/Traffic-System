@@ -1,0 +1,14 @@
+stateDiagram-v2
+    [*] --> FixedPhase1
+    FixedPhase1: Phase 1: N-S Green
+    FixedPhase1 --> AdaptiveEval1: Phase ends
+    AdaptiveEval1: Analyze queue lengths
+    AdaptiveEval1 --> AdaptivePhase1: Extend N-S
+    AdaptivePhase1: Adaptive timing
+    AdaptivePhase1 --> AdaptivePhase2: Phase ends
+    AdaptivePhase2: E-W Green
+    AdaptivePhase2 --> AdaptiveEval2: Queue updated
+    AdaptiveEval2: Re-optimize timings
+    AdaptiveEval2 --> AdaptivePhase3: Shift priority
+    AdaptivePhase3: New signal split
+    AdaptivePhase3 --> AdaptiveEval2: Continuous optimization

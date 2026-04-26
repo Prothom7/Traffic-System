@@ -18,6 +18,7 @@ const ViolationSchema = new Schema({
 
 const TrafficRecordSchema = new Schema({
   vehicle_id: { type: Schema.Types.ObjectId, ref: "Vehicle", required: true },
+  user_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
   number_plate: { type: String },
   location_id: { type: Schema.Types.ObjectId, ref: "Location" },
   location: {
@@ -29,6 +30,7 @@ const TrafficRecordSchema = new Schema({
   speed: { type: Number },
   image_url: { type: String },
   violation: ViolationSchema,
+  credit_penalty: { type: Number, default: 0 },
 });
 
 const TrafficRecord = mongoose.models.TrafficRecord || mongoose.model("TrafficRecord", TrafficRecordSchema);

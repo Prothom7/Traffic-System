@@ -1,0 +1,46 @@
+flowchart LR
+  %% External entities
+  DR[Driver]
+  TP[Traffic Police]
+  AD[Admin]
+  GW[Payment Gateway]
+
+  %% Processes
+  P1((1.0 Data Capture))
+  P2((2.0 Violation Detection))
+  P3((3.0 Fine and Ticket Management))
+  P4((4.0 Notification and Reporting))
+  P5((5.0 User and Access Management))
+
+  %% Data stores
+  DS1[(D1 Vehicles)]
+  DS2[(D2 Violations)]
+  DS3[(D3 Users)]
+  DS4[(D4 Signals)]
+  DS5[(D5 Payments)]
+
+  %% Flows
+  TP -->|Manual reports| P1
+  P1 -->|Captured records| P2
+  P1 <--> DS1
+  P1 <--> DS4
+
+  P2 -->|Detected violation event| P3
+  P2 <--> DS2
+
+  P3 -->|Payment request| GW
+  GW -->|Payment confirmation| P3
+  P3 <--> DS5
+  P3 -->|Ticket details| P4
+
+  P4 -->|Violation notice, status updates| DR
+  P4 -->|Operational analytics| TP
+  P4 -->|Admin reports| AD
+
+  AD -->|Role and policy updates| P5
+  DR -->|Profile and authentication data| P5
+  TP -->|Officer account updates| P5
+  P5 <--> DS3
+
+  P4 <--> DS2
+  P4 <--> DS5

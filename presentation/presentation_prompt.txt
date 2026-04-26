@@ -1,0 +1,180 @@
+You are an expert presentation designer and technical communicator.
+
+Create a COMPLETE, PROFESSIONAL, HIGH-IMPACT presentation for a final-year project titled:
+
+"Smart Traffic Management System Using AI and Camera Networks"
+
+The presentation must be visually strong, modern, and suitable for academic evaluation.
+
+-------------------------------------
+🎯 OBJECTIVE
+-------------------------------------
+Present a fully functional traffic management system with:
+- Camera-based monitoring
+- Violation detection
+- Data analytics
+- Route optimization using graph edges
+- Real-time dashboard and admin control panel
+
+-------------------------------------
+📊 SLIDE STRUCTURE (STRICT)
+-------------------------------------
+
+1. Title Slide
+- Project name
+- Subtitle: AI-powered Traffic Optimization & Monitoring
+- Name, institution, date
+
+2. Problem Statement
+- Traffic congestion issues
+- Manual monitoring limitations
+- Lack of real-time data
+
+3. Objectives
+- Automate violation detection
+- Optimize traffic flow
+- Improve road safety
+- Provide admin control dashboard
+
+4. System Overview
+- High-level architecture diagram
+- Components:
+  - Cameras
+  - Backend API
+  - Database
+  - Admin dashboard
+  - Map visualization
+
+5. System Architecture
+- Use diagram (flowchart style)
+- Show data flow:
+  Camera → AI → Database → Dashboard
+
+6. Key Features
+- Live camera tracking
+- Violation detection
+- Heatmap visualization
+- Route graph (edges + distances)
+- Admin CRUD system
+
+7. Technologies Used
+- Frontend: Next.js, React
+- Backend: Node.js / API routes
+- Database: MongoDB
+- Visualization: Python (Matplotlib, Folium)
+- Maps: Leaflet
+
+8. Camera Network Map
+- Show map visualization
+- Explain clustering + coverage circles
+- Mention real Khulna locations
+
+9. Data Visualization
+Include:
+- Hourly violation graph
+- Violation type bar chart
+- Heatmap
+Explain insights briefly
+
+10. Graph-Based Road System
+- Explain nodes (camera locations)
+- Explain edges (distances)
+- Mention shortest path / optimization
+
+11. Admin Dashboard
+- Add/Edit/Delete camera
+- Manage edges
+- Distance auto-calculation (Haversine)
+
+12. Workflow (Step-by-step)
+- Detection → Processing → Storage → Notification
+
+13. Results / Impact
+- Reduced violations
+- Better traffic flow
+- Data-driven decisions
+
+14. Challenges
+- Data collection
+- Accuracy
+- Scaling system
+
+15. Future Work
+- AI model improvement
+- Real-time alerts
+- Mobile app
+- Smart signals
+
+16. Conclusion
+- System benefits
+- Real-world applicability
+
+17. Demo Slide
+- Show screenshots
+- Mention features
+
+18. Thank You Slide
+
+-------------------------------------
+🎨 DESIGN REQUIREMENTS
+-------------------------------------
+- Use dark modern theme (glassmorphism / dashboard style)
+- Use icons for each feature
+- Use minimal text (max 5 bullet points per slide)
+- Use diagrams instead of text whenever possible
+- Add charts and visuals wherever applicable
+- Maintain consistent font and color palette
+
+-------------------------------------
+📈 VISUALS TO INCLUDE
+-------------------------------------
+- System architecture diagram
+- Data flow diagram
+- Camera map visualization
+- Graph structure diagram
+- Charts (line, bar, heatmap)
+- UI screenshots
+
+-------------------------------------
+📦 OUTPUT FORMAT
+-------------------------------------
+- Slide-by-slide content
+- Each slide should include:
+  - Title
+  - Bullet points
+  - Visual suggestion
+  - Speaker notes
+
+-------------------------------------
+⚡ STYLE
+-------------------------------------
+- Clean
+- Professional
+- Impactful
+- Easy to present verbally
+
+Generate the full presentation now.
+🚀 How to Use This
+Option 1 (Fastest)
+
+Paste this prompt into:
+
+ChatGPT
+Gamma.app
+Canva Magic Design
+Tome.app
+Option 2 (Best for PPT)
+
+Use it in:
+
+Microsoft Copilot (PowerPoint)
+Google Slides AI tools
+🔥 Pro Tip (THIS WILL MAKE YOU STAND OUT)
+
+After generating slides, add these manually:
+
+Your camera map screenshot
+Your admin dashboard UI
+Your graphs from Python
+
+That’s what turns this from average → top-tier project.

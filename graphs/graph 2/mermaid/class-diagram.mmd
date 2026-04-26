@@ -1,0 +1,81 @@
+classDiagram
+    class User {
+        string user_id
+        string name
+        string email
+        string phone
+        string role
+        +login()
+        +updateProfile()
+        +logout()
+    }
+
+    class Driver {
+        string license_number
+        +viewViolations()
+        +payFine()
+        +requestRenewal()
+    }
+
+    class TrafficPolice {
+        string badge_number
+        +recordViolation()
+        +validateEvidence()
+        +viewAnalytics()
+    }
+
+    class Admin {
+        +manageUsers()
+        +approveRequests()
+        +configureRules()
+    }
+
+    class Vehicle {
+        string vehicle_id
+        string plate_number
+        string model
+        string owner_id
+        string status
+        +register()
+        +updateOwnership()
+    }
+
+    class Violation {
+        string violation_id
+        string vehicle_id
+        string location
+        string type
+        float speed_recorded
+        float speed_limit
+        float fine_amount
+        string status
+        +generateFine()
+        +sendNotification()
+    }
+
+    class Payment {
+        string payment_id
+        string violation_id
+        float amount
+        string method
+        string status
+        +process()
+        +verify()
+    }
+
+    class Notification {
+        string notification_id
+        string user_id
+        string message
+        string channel
+        +send()
+    }
+
+    User <|-- Driver
+    User <|-- TrafficPolice
+    User <|-- Admin
+    Driver "1" --> "0..*" Vehicle : owns
+    Vehicle "1" --> "0..*" Violation : involved_in
+    TrafficPolice "1" --> "0..*" Violation : records
+    Violation "1" --> "0..1" Payment : settled_by
+    Violation "1" --> "0..*" Notification : triggers

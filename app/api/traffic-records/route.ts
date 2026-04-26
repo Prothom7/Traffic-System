@@ -3,6 +3,54 @@ import { connect } from "@/dbConnection/dbConnection";
 import TrafficRecord from "@/models/trafficRecordModel";
 import Location from "@/models/locationModel";
 
+const BN_TO_ASCII_DIGIT: Record<string, string> = {
+  "০": "0",
+  "১": "1",
+  "২": "2",
+  "৩": "3",
+  "৪": "4",
+  "৫": "5",
+  "৬": "6",
+  "৭": "7",
+  "৮": "8",
+  "৯": "9",
+};
+
+function toAsciiDigits(value: string): string {
+  return value.replace(/[০-৯]/g, (digit) => BN_TO_ASCII_DIGIT[digit] || digit);
+}
+
+function normalizePlate(value: string): string {
+  return toAsciiDigits(value)
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .replace(/\s*-\s*/g, "-")
+    .trim();
+}
+
+function getPlateCandidates(value: string): string[] {
+  const normalized = normalizePlate(value);
+  const noMetro = normalized
+    .replace(/\bMETRO\b|মেট্রো/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return Array.from(
+    new Set([
+      normalized,
+      normalized.replace(/-/g, ""),
+      normalized.replace(/\s+/g, ""),
+      noMetro,
+      noMetro.replace(/-/g, ""),
+      noMetro.replace(/\s+/g, ""),
+    ])
+  ).filter(Boolean);
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export async function GET(req: Request) {
   try {
     await connect();
@@ -14,69 +62,86 @@ export async function GET(req: Request) {
       return NextResponse.json([], { status: 200 });
     }
 
-    // fetch traffic records for this number plate
+    const normalizedCandidates = getPlateCandidates(plate);
+    const plateMatcher = normalizedCandidates.map((candidate) => ({
+      number_plate: { $regex: `^${escapeRegExp(candidate)}$`, $options: "i" },
+    }));
+
     const records = await TrafficRecord.find({
-      number_plate: { $regex: plate, $options: "i" }
+      $or: plateMatcher,
     })
       .sort({ timestamp: -1 })
-      .select("number_plate violation timestamp location_id location image_url speed");
+      .lean(); // ✅ IMPORTANT FIX (faster + safer)
 
-    const locationIds = Array.from(
-      new Set(
+    if (!records.length) {
+      return NextResponse.json([]);
+    }
+
+    // collect location IDs
+    const locationIds = [
+      ...new Set(
         records
-          .map((record) => String(record.location_id || ""))
-          .filter((locationId) => !!locationId)
-      )
+          .map((r) => r.location_id)
+          .filter(Boolean)
+          .map((id) => id.toString())
+      ),
+    ];
+
+    const locations = await Location.find({
+      _id: { $in: locationIds },
+    }).lean();
+
+    const locationMap = new Map(
+      locations.map((l) => [l._id.toString(), l])
     );
 
-    const locationDocs = locationIds.length
-      ? await Location.find({ _id: { $in: locationIds } })
-          .select("location_name latitude longitude")
-          .lean()
-      : [];
-
-    const locationById = new Map(
-      locationDocs.map((location) => [String(location._id), location])
-    );
-
-    // transform to frontend-friendly format
-    const data = records.map(r => {
-      const doc = r.toObject();
-      const locationFromModel = doc.location_id
-        ? locationById.get(String(doc.location_id))
+    // ✅ FIX 2: SAFE NORMALIZATION (NO undefined fields)
+    const data = records.map((r) => {
+      const loc = r.location_id
+        ? locationMap.get(r.location_id.toString())
         : null;
-      const resolvedLocationName =
-        locationFromModel?.location_name || doc.location?.location_name;
-      const resolvedLatitude =
-        typeof locationFromModel?.latitude === "number"
-          ? locationFromModel.latitude
-          : doc.location?.latitude;
-      const resolvedLongitude =
-        typeof locationFromModel?.longitude === "number"
-          ? locationFromModel.longitude
-          : doc.location?.longitude;
 
       return {
-        _id: doc._id,
-        number_plate: doc.number_plate,
-        violation_type: doc.violation?.type,
-        severity: doc.violation?.severity,
-        fine_amount: doc.violation?.fine_amount,
-        status: doc.violation?.status,
-        paid_at: doc.violation?.paid_at,
-        payment_reference: doc.violation?.payment_reference,
-        date: doc.timestamp,
-        location_name: resolvedLocationName,
-        latitude: resolvedLatitude,
-        longitude: resolvedLongitude,
-        image_url: doc.image_url,
-        speed: doc.speed,
+        _id: r._id,
+        number_plate: r.number_plate || "",
+        
+        violation_type:
+          r.violation?.type || r.violation_type || "Unknown",
+
+        severity:
+          r.violation?.severity || r.severity || "Low",
+
+        fine_amount:
+          r.violation?.fine_amount || r.fine_amount || 0,
+
+        status:
+          r.violation?.status || r.status || "Pending",
+
+        paid_at:
+          r.violation?.paid_at || r.paid_at || null,
+
+        payment_reference:
+          r.violation?.payment_reference || null,
+
+        date: r.timestamp || r.date || null,
+
+        location_name:
+          loc?.location_name || r.location?.location_name || "Unknown",
+
+        latitude:
+          loc?.latitude ?? r.location?.latitude ?? null,
+
+        longitude:
+          loc?.longitude ?? r.location?.longitude ?? null,
+
+        image_url: r.image_url || null,
+        speed: r.speed || null,
       };
     });
 
     return NextResponse.json(data);
   } catch (err) {
-    console.error(err);
+    console.error("Traffic API error:", err);
     return NextResponse.json(
       { error: "Failed to fetch traffic records" },
       { status: 500 }

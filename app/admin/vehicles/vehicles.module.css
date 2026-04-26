@@ -54,8 +54,14 @@
 .container {
   width: 100%;
   max-width: min(1400px, 92vw);
-  min-height: min(600px, calc(100vh - 200px));
+
+  /* 🔥 better responsive minimum (doesn't over-restrict height) */
+  min-height: min(500px, calc(100vh - 240px));
+
   padding: clamp(24px, 4vw, 48px);
+
+  /* 🔥 keeps spacing below fixed header but more flexible */
+  margin-top: clamp(140px,4vh, 200px);
 
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 18px;
@@ -64,6 +70,9 @@
 
   color: #fff;
   box-sizing: border-box;
+
+  /* allows better shrink behavior */
+  height: auto;
 }
 
 .sectionTitle {

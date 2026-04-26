@@ -1,0 +1,18 @@
+sequenceDiagram
+    actor CAM as Camera
+    participant ALPR as ALPR Service
+    participant RULE as Rule Engine
+    participant DB as MongoDB
+    participant MAIL as Notification Service
+    actor DRV as Driver
+
+    CAM->>ALPR: Image captured
+    ALPR->>RULE: Plate extracted
+    RULE->>DB: Query vehicle by plate
+    DB-->>RULE: Vehicle found
+    RULE->>RULE: Evaluate rule and calculate fine
+    RULE->>DB: Create violation record
+    RULE->>MAIL: Trigger notification
+    MAIL->>DRV: Send SMS/Email/App alert
+    DRV->>DB: Pay fine online
+    DB-->>DRV: Payment confirmed

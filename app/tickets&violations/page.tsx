@@ -39,6 +39,7 @@ export default function TicketsViolationsPage() {
   const router = useRouter();
   const [userName, setUserName] = useState("User");
   const [creditScore, setCreditScore] = useState<number | null>(null);
+  const [vehicles, setVehicles] = useState<VehicleData[]>([]);
   const [records, setRecords] = useState<TrafficRecord[]>([]);
   const [mapMode, setMapMode] = useState<"markers" | "clusters" | "heatmap">("markers");
   const [loading, setLoading] = useState(true);
@@ -70,6 +71,7 @@ export default function TicketsViolationsPage() {
         const userVehicles = (profileData.data?.vehicles || []) as VehicleData[];
 
         setCreditScore(typeof userData?.credit_score === "number" ? userData.credit_score : null);
+        setVehicles(userVehicles);
         if (userVehicles.length === 0) {
           setRecords([]);
           setError("No vehicles found for this account.");
@@ -98,6 +100,65 @@ export default function TicketsViolationsPage() {
 
     fetchData();
   }, [router]);
+
+  useEffect(() => {
+    const token = getValidAuthTokenClient();
+    if (!token || vehicles.length === 0) return;
+
+    let isActive = true;
+
+    const refreshRecords = async () => {
+      try {
+        const profileRes = await fetch("/api/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const profileData = await profileRes.json();
+        const userData = profileData.data?.user as UserData | undefined;
+        if (isActive && typeof userData?.credit_score === "number") {
+          setCreditScore(userData.credit_score);
+        }
+
+        const recordResponses = await Promise.all(
+          vehicles.map((v) =>
+            fetch(`/api/traffic-records?plate=${encodeURIComponent(v.number_plate)}`)
+          )
+        );
+        const recordPayloads = await Promise.all(recordResponses.map((res) => res.json()));
+        const mergedRecords = recordPayloads
+          .flatMap((payload) => (Array.isArray(payload) ? payload : []))
+          .filter((item, index, self) => index === self.findIndex((r) => r._id === item._id));
+
+        if (isActive) {
+          setRecords(mergedRecords);
+        }
+      } catch (err) {
+        console.error("Real-time ticket refresh failed", err);
+      }
+    };
+
+    const source = new EventSource(
+      `/api/traffic-records/stream?token=${encodeURIComponent(token)}`
+    );
+
+    const onRecordCreated = () => {
+      refreshRecords();
+    };
+
+    source.addEventListener("traffic-record-created", onRecordCreated as EventListener);
+
+    const fallbackPoll = setInterval(refreshRecords, 10000);
+
+    source.onerror = () => {
+      source.close();
+    };
+
+    return () => {
+      isActive = false;
+      clearInterval(fallbackPoll);
+      source.removeEventListener("traffic-record-created", onRecordCreated as EventListener);
+      source.close();
+    };
+  }, [vehicles]);
 
   const { pendingTickets, paidTickets, totalViolations } = useMemo(() => {
     const tickets = records.filter((record) => record.violation_type);

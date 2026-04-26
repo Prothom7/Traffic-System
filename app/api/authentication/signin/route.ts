@@ -37,6 +37,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (user.isFrozen) {
+      return NextResponse.json(
+        { error: "Account is frozen. Please contact admin support." },
+        { status: 403 },
+      );
+    }
+
     const token = signToken({
       id: user._id.toString(),
       email: user.email,
