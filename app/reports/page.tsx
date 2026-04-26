@@ -2,10 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import styles from "./reports.module.css";
 import { decodeJWTClient, getValidAuthTokenClient } from "@/helpers/jwtClient";
+
+const StolenTrackingMap = dynamic(() => import("./StolenTrackingMap"), { ssr: false });
 
 interface VehicleData {
   _id?: string;
@@ -18,39 +21,63 @@ interface UserData {
   isAdmin?: boolean;
 }
 
-interface ReportItem {
+interface TrafficRecord {
   _id: string;
-  reason: string;
-  status: "Pending" | "Investigating" | "Resolved";
-  createdAt: string;
-  user_id?: {
+  date?: string;
+  location_name?: string;
+}
+
+interface StolenReport {
+  _id: string;
+  status: "Stolen" | "Recovered" | "open" | "recovered";
+  incident_location?: string;
+  last_seen_location?: string;
+  last_seen_time?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  reported_by_user_id?: {
     owner_name?: string;
     email?: string;
   };
-  vehicle_id?: {
+  vehicleId?: {
+    _id?: string;
     number_plate?: string;
     model?: string;
     vehicle_type?: string;
   };
 }
 
-interface TrafficRecord {
-  _id: string;
-  date?: string;
-  location_name?: string;
-  latitude?: number;
-  longitude?: number;
-  speed?: number;
-  image_url?: string;
+interface TrackingPrediction {
+  step: number;
+  eta: string;
+  latitude: number;
+  longitude: number;
+  estimated_speed_kmh: number;
 }
 
-interface StolenReport {
-  _id: string;
-  status: "open" | "closed";
-  incident_location?: string;
-  vehicleId?: {
-    number_plate?: string;
-  };
+interface TrackingData {
+  current: {
+    latitude: number;
+    longitude: number;
+    timestamp?: string;
+    location_name?: string;
+    speed_kmh?: number;
+  } | null;
+  predictions: TrackingPrediction[];
+  history?: Array<{
+    _id: string;
+    latitude: number;
+    longitude: number;
+    timestamp?: string;
+    location_name?: string;
+  }>;
+  adjacent_nodes?: Array<{
+    location_id: string;
+    location_name: string;
+    latitude: number;
+    longitude: number;
+    distance_km: number;
+  }>;
 }
 
 export default function ReportsPage() {
@@ -59,14 +86,19 @@ export default function ReportsPage() {
   const [userName, setUserName] = useState("User");
   const [vehicle, setVehicle] = useState<VehicleData | null>(null);
   const [stolenReport, setStolenReport] = useState<StolenReport | null>(null);
+  const [stolenReports, setStolenReports] = useState<StolenReport[]>([]);
   const [latestRecord, setLatestRecord] = useState<TrafficRecord | null>(null);
-  const [reports, setReports] = useState<ReportItem[]>([]);
+  const [tracking, setTracking] = useState<TrackingData | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [vehicleFilter, setVehicleFilter] = useState("all");
+  const [expandedVehicle, setExpandedVehicle] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchReport = async () => {
       const token = getValidAuthTokenClient();
 
@@ -79,21 +111,13 @@ export default function ReportsPage() {
       if (decoded?.name) setUserName(decoded.name);
 
       try {
-        const [profileRes, stolenRes] = await Promise.all([
-          fetch("/api/profile", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-          fetch("/api/services/report-stolen", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-        ]);
+        const profileRes = await fetch("/api/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         const profileData = await profileRes.json();
-        const stolenData = await stolenRes.json();
 
         if (!profileData.success) {
           setError(profileData.error || "Failed to load report data");
@@ -104,51 +128,92 @@ export default function ReportsPage() {
         const vehicles = (profileData.data?.vehicles || []) as VehicleData[];
         const vehicleData = vehicles[0] || null;
 
+        if (cancelled) return;
+
         setVehicle(vehicleData);
         setIsAdmin(!!userData?.isAdmin);
 
-        // FIX: actually store stolen report
-        if (stolenData?.success && stolenData?.data) {
-          setStolenReport(stolenData.data);
-        }
-
-        const reportsRes = await fetch(
-          `/api/reports?mine=${userData?.isAdmin ? "false" : "true"}`,
+        const stolenRes = await fetch(
+          `/api/services/report-stolen${userData?.isAdmin ? "?all=true" : ""}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
+        const stolenData = await stolenRes.json();
 
-        const reportsData = await reportsRes.json();
+        const stolenReports: StolenReport[] = Array.isArray(stolenData?.data)
+          ? stolenData.data
+          : [];
 
-        if (reportsData?.success && Array.isArray(reportsData.data)) {
-          setReports(reportsData.data);
-        }
+        setStolenReports(stolenReports);
+
+        const activeStolen = stolenReports.find((report) =>
+          ["Stolen", "open"].includes(String(report.status))
+        ) || null;
+
+        setStolenReport(activeStolen);
 
         if (vehicleData?.number_plate) {
-          const recordRes = await fetch(
-            `/api/traffic-records?plate=${encodeURIComponent(
-              vehicleData.number_plate
-            )}`
-          );
+          const fallbackLocation =
+            activeStolen?.last_seen_location ||
+            activeStolen?.incident_location ||
+            "";
+
+          const [recordRes, trackingRes] = await Promise.all([
+            fetch(
+              `/api/traffic-records?plate=${encodeURIComponent(
+                vehicleData.number_plate
+              )}`
+            ),
+            fetch(
+              `/api/tracking/predict?plate=${encodeURIComponent(
+                vehicleData.number_plate
+              )}&points=8&stepMinutes=2&lastSeenLocation=${encodeURIComponent(
+                fallbackLocation
+              )}`
+            ),
+          ]);
 
           const recordData = await recordRes.json();
+          const trackingData = await trackingRes.json();
 
-          if (Array.isArray(recordData) && recordData.length > 0) {
-            setLatestRecord(recordData[0]);
+          if (!cancelled) {
+            if (Array.isArray(recordData) && recordData.length > 0) {
+              setLatestRecord(recordData[0]);
+            } else {
+              setLatestRecord(null);
+            }
+
+            if (trackingData?.success && trackingData?.data) {
+              setTracking(trackingData.data as TrackingData);
+            } else {
+              setTracking(null);
+            }
           }
         }
+
       } catch (err) {
         console.error(err);
-        setError("An error occurred while loading report data");
+        if (!cancelled) {
+          setError("An error occurred while loading report data");
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchReport();
+
+    const interval = setInterval(fetchReport, 5000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [router]);
 
   const formatDateTime = (value?: string) => {
@@ -156,7 +221,50 @@ export default function ReportsPage() {
     return new Date(value).toLocaleString();
   };
 
-  const isStolen = stolenReport?.status === "open";
+  const timeAgo = (value?: string) => {
+    if (!value) return "-";
+    const diffMs = Date.now() - new Date(value).getTime();
+    const diffMin = Math.max(1, Math.floor(diffMs / 60000));
+    if (diffMin < 60) return `${diffMin} minute${diffMin === 1 ? "" : "s"} ago`;
+    const diffHour = Math.floor(diffMin / 60);
+    if (diffHour < 24) return `${diffHour} hour${diffHour === 1 ? "" : "s"} ago`;
+    const diffDay = Math.floor(diffHour / 24);
+    return `${diffDay} day${diffDay === 1 ? "" : "s"} ago`;
+  };
+
+  const normalizeTrackingStatus = (report: StolenReport) => {
+    const status = String(report.status || "").toLowerCase();
+    if (status === "recovered" || status === "closed") return "Recovered";
+
+    const lastSeen = report.last_seen_time || report.updatedAt;
+    if (lastSeen) {
+      const diffMs = Date.now() - new Date(lastSeen).getTime();
+      if (diffMs <= 15 * 60 * 1000) {
+        return "Tracking";
+      }
+    }
+    return "Stolen";
+  };
+
+  const reportVehicleOptions = Array.from(
+    new Set(stolenReports.map((report) => report.vehicleId?.number_plate).filter(Boolean))
+  ) as string[];
+
+  const filteredReports = stolenReports.filter((report) => {
+    if (vehicleFilter === "all") return true;
+    return report.vehicleId?.number_plate === vehicleFilter;
+  });
+
+  const groupedByVehicle = filteredReports.reduce<Record<string, StolenReport[]>>((acc, report) => {
+    const plate = report.vehicleId?.number_plate || "Unknown";
+    if (!acc[plate]) {
+      acc[plate] = [];
+    }
+    acc[plate].push(report);
+    return acc;
+  }, {});
+
+  const isStolen = !!stolenReport && ["Stolen", "open"].includes(String(stolenReport.status));
 
   return (
     <div className={styles.container}>
@@ -222,40 +330,33 @@ export default function ReportsPage() {
                 </span>
               </div>
 
-              {latestRecord ? (
+              {latestRecord || stolenReport ? (
                 <div className={styles.lastSeenGrid}>
 
                   <div>
                     <span className={styles.label}>Location</span>
                     <strong>
-                      {latestRecord.location_name || "Unknown location"}
+                      {stolenReport?.last_seen_location || latestRecord?.location_name || "Unknown location"}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span className={styles.label}>Last Seen</span>
+                    <strong>
+                      {stolenReport?.last_seen_location || "Unknown location"}
                     </strong>
                   </div>
 
                   <div>
                     <span className={styles.label}>Timestamp</span>
                     <strong>
-                      {formatDateTime(latestRecord.date)}
+                      {formatDateTime(stolenReport?.last_seen_time || latestRecord?.date)}
                     </strong>
                   </div>
 
                   <div>
-                    <span className={styles.label}>Speed</span>
-                    <strong>
-                      {latestRecord.speed !== undefined
-                        ? `${latestRecord.speed} km/h`
-                        : "-"}
-                    </strong>
-                  </div>
-
-                  <div>
-                    <span className={styles.label}>Coordinates</span>
-                    <strong>
-                      {latestRecord.latitude != null &&
-                       latestRecord.longitude != null
-                        ? `${latestRecord.latitude}, ${latestRecord.longitude}`
-                        : "-"}
-                    </strong>
+                    <span className={styles.label}>Latest Capture</span>
+                    <strong>{timeAgo(stolenReport?.last_seen_time || latestRecord?.date)}</strong>
                   </div>
 
                 </div>
@@ -271,18 +372,23 @@ export default function ReportsPage() {
               <div className={styles.cardHeader}>
                 <h2>Live Tracking</h2>
                 <span className={styles.statusBadge}>
-                  Coming Soon
+                  {isStolen ? "Active" : "Standby"}
                 </span>
               </div>
 
               <p>
                 {isStolen
-                  ? "Enable live tracking to follow the vehicle in real time once sensors are active."
+                  ? "Live stolen-vehicle tracking with predicted path is active and auto-refreshing."
                   : "Live tracking will activate when a stolen report is filed."}
               </p>
 
               <div className={styles.trackingPlaceholder}>
-                <span>Live map placeholder</span>
+                <StolenTrackingMap
+                  current={tracking?.current || null}
+                  history={tracking?.history || []}
+                  predictions={tracking?.predictions || []}
+                  adjacentNodes={tracking?.adjacent_nodes || []}
+                />
               </div>
 
               <button
@@ -290,47 +396,103 @@ export default function ReportsPage() {
                 disabled={!isStolen}
               >
                 {isStolen
-                  ? "Start Live Tracking"
+                  ? "Tracking Active"
                   : "Tracking Disabled"}
               </button>
+
+              {tracking?.predictions?.length ? (
+                <p>
+                  Predicted points: {tracking.predictions.length} | next ETA {formatDateTime(tracking.predictions[0]?.eta)}
+                </p>
+              ) : null}
+
+              {tracking?.current ? (
+                <p>
+                  Current location: {tracking.current.location_name || "Unknown"} | Updated {timeAgo(tracking.current.timestamp)}
+                </p>
+              ) : null}
+
+              {tracking?.history?.length ? (
+                <p>
+                  Movement history points: {tracking.history.length}
+                </p>
+              ) : null}
+
+              {tracking?.adjacent_nodes?.length ? (
+                <p>
+                  Adjacent possible next nodes: {tracking.adjacent_nodes.map((node) => node.location_name).slice(0, 4).join(", ")}
+                </p>
+              ) : null}
             </section>
 
 
             <section className={styles.card}>
               <div className={styles.cardHeader}>
-                <h2>
-                  {isAdmin ? "All Reported Vehicles" : "My Reports"}
-                </h2>
+                <h2>All Reported Vehicles</h2>
 
                 <span className={styles.statusBadge}>
-                  {reports.length} report(s)
+                  {filteredReports.length} report(s)
                 </span>
               </div>
 
-              {reports.length === 0 ? (
+              <div className={styles.filterRow}>
+                <label htmlFor="vehicle-filter" className={styles.label}>Filter by Vehicle</label>
+                <select
+                  id="vehicle-filter"
+                  className={styles.filterSelect}
+                  value={vehicleFilter}
+                  onChange={(e) => setVehicleFilter(e.target.value)}
+                >
+                  <option value="all">All vehicles</option>
+                  {reportVehicleOptions.map((plate) => (
+                    <option key={plate} value={plate}>{plate}</option>
+                  ))}
+                </select>
+              </div>
+
+              {filteredReports.length === 0 ? (
                 <div className={styles.placeholder}>
                   No reports found.
                 </div>
               ) : (
-                <div className={styles.lastSeenGrid}>
-                  {reports.slice(0,8).map((report)=>(
-                    <div key={report._id}>
-                      <span className={styles.label}>
-                        {report.vehicle_id?.number_plate || "Unknown plate"}
-                      </span>
+                <div className={styles.reportHistoryList}>
+                  {Object.entries(groupedByVehicle).map(([plate, items]) => {
+                    const latest = items[0];
+                    const isExpanded = expandedVehicle === plate;
+                    return (
+                      <div key={plate} className={styles.reportHistoryItem}>
+                        <div className={styles.reportHistoryHeader}>
+                          <div>
+                            <span className={styles.label}>{plate}</span>
+                            <strong>{normalizeTrackingStatus(latest)}</strong>
+                            <div>
+                              <small>
+                                Last seen: {latest.last_seen_location || latest.incident_location || "Unknown"}
+                              </small>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            className={styles.historyToggle}
+                            onClick={() => setExpandedVehicle(isExpanded ? null : plate)}
+                          >
+                            {isExpanded ? "Hide History" : "View Full History"}
+                          </button>
+                        </div>
 
-                      <strong>{report.reason}</strong>
-
-                      <div>
-                        <small>
-                          {report.status} | {formatDateTime(report.createdAt)}
-                          {isAdmin && report.user_id?.owner_name
-                            ? ` | ${report.user_id.owner_name}`
-                            : ""}
-                        </small>
+                        {(isExpanded ? items : items.slice(0, 1)).map((report) => (
+                          <div key={report._id} className={styles.reportHistoryEntry}>
+                            <div><span className={styles.label}>Report Timestamp</span><strong>{formatDateTime(report.createdAt)}</strong></div>
+                            <div><span className={styles.label}>Last Seen Location</span><strong>{report.last_seen_location || report.incident_location || "Unknown"}</strong></div>
+                            <div><span className={styles.label}>Current Status</span><strong>{normalizeTrackingStatus(report)}</strong></div>
+                            {isAdmin && report.reported_by_user_id?.owner_name ? (
+                              <div><span className={styles.label}>Owner</span><strong>{report.reported_by_user_id.owner_name}</strong></div>
+                            ) : null}
+                          </div>
+                        ))}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </section>

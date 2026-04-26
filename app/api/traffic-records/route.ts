@@ -106,7 +106,7 @@ export async function GET(req: Request) {
         number_plate: r.number_plate || "",
         
         violation_type:
-          r.violation?.type || r.violation_type || "Unknown",
+          r.violation?.type || r.violation_type || null,
 
         severity:
           r.violation?.severity || r.severity || "Low",

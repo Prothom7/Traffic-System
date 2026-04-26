@@ -111,7 +111,8 @@ export async function POST(req: NextRequest) {
       cause,
       camera_location,
       severity,
-      fine_amount,
+      speed,
+      image_url,
     } = body || {};
 
     if (!number_plate || !violation_type || !cause || !camera_location) {
@@ -148,17 +149,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Vehicle not found" }, { status: 404 });
     }
 
-    const fineAmountNumber = Number(fine_amount || 0);
-    if (Number.isNaN(fineAmountNumber) || fineAmountNumber < 0) {
-      return NextResponse.json({ error: "Invalid fine amount" }, { status: 400 });
-    }
-
-    const severityKey = normalizedSeverity(severity);
-    const resolvedFineAmount = fineAmountNumber > 0 ? fineAmountNumber : defaultFineBySeverity(severityKey);
-    const penaltyAmount = SEVERITY_PENALTY[severityKey] || 5;
-    const recoveryDays = SEVERITY_RECOVERY_DAYS[severityKey] || 7;
-    const penaltyExpiresAt = new Date(Date.now() + recoveryDays * 24 * 60 * 60 * 1000);
-
     const populatedOwner =
       vehicle.userId && typeof vehicle.userId === "object" && "_id" in vehicle.userId
         ? (vehicle.userId as any)
@@ -170,6 +160,120 @@ export async function POST(req: NextRequest) {
     }
 
     const ownerId = String(user._id);
+
+    const locationName = String(camera_location).trim();
+    const location = locationName
+      ? await Location.findOne({
+          location_name: { $regex: `^${locationName}$`, $options: "i" },
+        }).select("_id location_name latitude longitude")
+      : null;
+
+    const persistedPlate = normalizePlate(String(vehicle.number_plate || plate));
+
+    const stolenMatch = await StolenVehicle.findOne({
+      $or: [
+        { vehicle_id: vehicle._id },
+        { vehicleId: vehicle._id },
+        { number_plate: persistedPlate },
+        { chassis_number: vehicle.chassis_number },
+      ],
+      status: { $in: ["Stolen", "open"] },
+    });
+
+    if (stolenMatch) {
+      const now = new Date();
+      stolenMatch.last_seen_location = locationName;
+      stolenMatch.last_seen_time = now;
+      if (stolenMatch.status === "open") {
+        stolenMatch.status = "Stolen";
+      }
+      await stolenMatch.save();
+
+      const speedNumber = Number(speed);
+      const captureRecord = await TrafficRecord.create({
+        vehicle_id: vehicle._id,
+        user_id: user._id,
+        number_plate: persistedPlate,
+        location_id: location?._id,
+        location: location
+          ? {
+              location_name: location.location_name,
+              latitude: location.latitude,
+              longitude: location.longitude,
+            }
+          : {
+              location_name: locationName,
+            },
+        timestamp: now,
+        speed: Number.isFinite(speedNumber) ? speedNumber : undefined,
+        image_url: typeof image_url === "string" ? image_url : undefined,
+      });
+
+      const stolenAlertMessage = `High-priority alert: stolen vehicle ${persistedPlate} detected at ${locationName}.`;
+      const stolenNotification = await Notification.create({
+        vehicle_id: vehicle._id,
+        number_plate: persistedPlate,
+        violation_type: "Stolen Vehicle Detection",
+        cause: cause || "Automated camera match",
+        camera_location: locationName,
+        message: stolenAlertMessage,
+      });
+
+      const notificationPayload = {
+        _id: stolenNotification._id.toString(),
+        number_plate: stolenNotification.number_plate,
+        violation_type: stolenNotification.violation_type,
+        cause: stolenNotification.cause,
+        camera_location: stolenNotification.camera_location,
+        message: stolenNotification.message,
+        createdAt: stolenNotification.createdAt.toISOString(),
+      };
+
+      eventBus.emit("violation", {
+        vehicleId: vehicle._id.toString(),
+        notification: notificationPayload,
+      });
+
+      eventBus.emit("traffic-record-created", {
+        userId: String(user._id),
+        recordId: captureRecord._id.toString(),
+        number_plate: persistedPlate,
+        timestamp: now.toISOString(),
+      });
+
+      eventBus.emit("stolen-vehicle-detected", {
+        userId: String(user._id),
+        vehicleId: vehicle._id.toString(),
+        number_plate: persistedPlate,
+        location: locationName,
+        timestamp: now.toISOString(),
+      });
+
+      return NextResponse.json({
+        success: true,
+        pipelineAction: "stolen-alert",
+        recordId: captureRecord._id.toString(),
+        owner: {
+          user_id: ownerId,
+          owner_name: String(user.owner_name || ""),
+          contact: String(user.contact || ""),
+          email: String(user.email || ""),
+        },
+        notification: notificationPayload,
+        stolenMatch: {
+          number_plate: persistedPlate,
+          status: String(stolenMatch.status),
+          last_seen_location: String(stolenMatch.last_seen_location || locationName),
+          last_seen_time: new Date(stolenMatch.last_seen_time || now).toISOString(),
+        },
+      });
+    }
+
+    const severityKey = normalizedSeverity(severity);
+    const resolvedFineAmount = defaultFineBySeverity(severityKey);
+    const penaltyAmount = SEVERITY_PENALTY[severityKey] || 5;
+    const recoveryDays = SEVERITY_RECOVERY_DAYS[severityKey] || 7;
+    const penaltyExpiresAt = new Date(Date.now() + recoveryDays * 24 * 60 * 60 * 1000);
 
     const nextScore = Math.max(0, Number(user.credit_score || 100) - penaltyAmount);
     const shouldFreeze = nextScore <= 0;
@@ -195,15 +299,6 @@ export async function POST(req: NextRequest) {
       expires_at: penaltyExpiresAt,
       status: "Active",
     });
-
-    const locationName = String(camera_location).trim();
-    const location = locationName
-      ? await Location.findOne({
-          location_name: { $regex: `^${locationName}$`, $options: "i" },
-        }).select("_id location_name latitude longitude")
-      : null;
-
-    const persistedPlate = normalizePlate(String(vehicle.number_plate || plate));
 
     const record = await TrafficRecord.create({
       vehicle_id: vehicle._id,
@@ -238,75 +333,11 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
     });
 
-    let stolenMatchPayload: {
-      number_plate: string;
-      status: string;
-      last_seen_location: string;
-      last_seen_time: string;
-    } | null = null;
-
-    const stolenMatch = await StolenVehicle.findOne({
-      $or: [
-        { vehicle_id: vehicle._id },
-        { vehicleId: vehicle._id },
-        { number_plate: persistedPlate },
-        { chassis_number: vehicle.chassis_number },
-      ],
-      status: { $in: ["Stolen", "open"] },
-    });
-
-    if (stolenMatch) {
-      stolenMatch.last_seen_location = locationName;
-      stolenMatch.last_seen_time = new Date();
-      if (stolenMatch.status === "open") {
-        stolenMatch.status = "Stolen";
-      }
-      await stolenMatch.save();
-
-      const stolenAlertMessage = `High-priority alert: stolen vehicle ${persistedPlate} detected at ${locationName}.`;
-      const stolenNotification = await Notification.create({
-        vehicle_id: vehicle._id,
-        number_plate: persistedPlate,
-        violation_type: "Stolen Vehicle Detection",
-        cause: cause || "Automated camera match",
-        camera_location: locationName,
-        message: stolenAlertMessage,
-      });
-
-      eventBus.emit("violation", {
-        vehicleId: vehicle._id.toString(),
-        notification: {
-          _id: stolenNotification._id.toString(),
-          number_plate: stolenNotification.number_plate,
-          violation_type: stolenNotification.violation_type,
-          cause: stolenNotification.cause,
-          camera_location: stolenNotification.camera_location,
-          message: stolenNotification.message,
-          createdAt: stolenNotification.createdAt.toISOString(),
-        },
-      });
-
-      eventBus.emit("stolen-vehicle-detected", {
-        userId: String(user._id),
-        vehicleId: vehicle._id.toString(),
-        number_plate: persistedPlate,
-        location: locationName,
-        timestamp: new Date().toISOString(),
-      });
-
-      stolenMatchPayload = {
-        number_plate: persistedPlate,
-        status: String(stolenMatch.status),
-        last_seen_location: String(stolenMatch.last_seen_location || locationName),
-        last_seen_time: new Date(stolenMatch.last_seen_time || Date.now()).toISOString(),
-      };
-    }
-
     const notificationsEnabled = vehicle.notifications_enabled !== false;
     let notificationPayload = null;
 
     if (notificationsEnabled) {
-      const message = `Violation reported for ${persistedPlate}: ${violation_type} at ${locationName}.`;
+      const message = `Violation reported for ${persistedPlate}: ${violation_type} at ${locationName}. Fine: ${resolvedFineAmount}.`;
       const notification = await Notification.create({
         vehicle_id: vehicle._id,
         number_plate: persistedPlate,
@@ -334,6 +365,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      pipelineAction: "violation-created",
       recordId: record._id.toString(),
       owner: {
         user_id: ownerId,
@@ -350,7 +382,7 @@ export async function POST(req: NextRequest) {
         penalty_log_id: penaltyLog._id.toString(),
       },
       accountFrozen: shouldFreeze,
-      stolenMatch: stolenMatchPayload,
+      stolenMatch: null,
     });
   } catch (err) {
     console.error("Simulate violation error:", err);

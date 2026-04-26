@@ -14,12 +14,31 @@ export async function GET(req: NextRequest) {
       return auth.error!;
     }
 
-    const reports = await StolenVehicle.find({ reported_by_user_id: auth.context.userId })
-      .populate("vehicleId", "number_plate model vehicle_type status")
+    const { searchParams } = new URL(req.url);
+    const includeAll = searchParams.get("all") === "true";
+
+    const query = includeAll && auth.context.isAdmin
+      ? {}
+      : { reported_by_user_id: auth.context.userId };
+
+    const reports = await StolenVehicle.find(query)
+      .populate("vehicleId", "number_plate model vehicle_type status userId")
+      .populate("reported_by_user_id", "owner_name email")
       .sort({ createdAt: -1 })
       .lean();
 
-    return NextResponse.json({ success: true, data: reports });
+    const filteredReports = reports.filter((report: any) => {
+      const hasOwner = Boolean(report?.reported_by_user_id?._id || report?.reported_by_user_id);
+      const hasVehicle = Boolean(report?.vehicleId?._id);
+      const linkedOwnerVehicle =
+        hasOwner &&
+        hasVehicle &&
+        String(report.vehicleId.userId || "") === String(report.reported_by_user_id._id || report.reported_by_user_id);
+
+      return hasOwner && hasVehicle && linkedOwnerVehicle;
+    });
+
+    return NextResponse.json({ success: true, data: filteredReports });
   } catch (error: any) {
     console.error("Failed to fetch stolen reports:", error);
     return NextResponse.json(
@@ -66,10 +85,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const existing = await StolenVehicle.findOne({ vehicleId: vehicle._id });
+    const existing = await StolenVehicle.findOne({
+      vehicleId: vehicle._id,
+      status: { $in: ["Stolen", "open"] },
+    });
     if (existing) {
       return NextResponse.json(
-        { success: false, error: "This vehicle has already been reported as stolen" },
+        { success: false, error: "This vehicle already has an active stolen report" },
         { status: 409 }
       );
     }
